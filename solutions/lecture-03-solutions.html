@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COP 1047C – Lecture 3 Breakout Solutions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #080c14;
+    --surface:   #0f1724;
+    --surface2:  #16202e;
+    --border:    #1e2d42;
+    --border2:   #253347;
+    --accent:    #f59e0b;
+    --text:      #e2e8f0;
+    --muted:     #7d93af;
+    --green-bg:  #071510;
+    --green-bdr: #0d3322;
+    --green-txt: #34d399;
+    --tag-bg:    #1a2a3a;
+    --tag-txt:   #60a5fa;
+    --mono:      'JetBrains Mono', 'Courier New', monospace;
+    --sans:      'Outfit', system-ui, sans-serif;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .course-tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 4px;
+    padding: 3px 10px;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+  header h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .header-meta {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+  .header-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .header-badge strong { color: var(--text); display: block; font-size: 0.9rem; }
+
+  nav.tabs {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav.tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 0.75rem 1.4rem;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-num {
+    background: var(--tag-bg);
+    color: var(--tag-txt);
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 1px 7px;
+    font-family: var(--mono);
+  }
+  .tab-btn.active .tab-num { background: rgba(245,158,11,0.15); color: var(--accent); }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .panel-header { margin-bottom: 1.5rem; }
+  .panel-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.35rem;
+  }
+  .panel-title { font-size: 1.6rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+  .panel-desc { font-size: 0.9rem; color: var(--muted); margin-top: 0.4rem; max-width: 620px; }
+
+  .task-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 1.1rem 1.3rem;
+    margin-bottom: 1.5rem;
+  }
+  .task-card h3 {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 0.65rem;
+  }
+  .task-card ol { padding-left: 1.4rem; }
+  .task-card li {
+    font-size: 0.92rem;
+    color: var(--text);
+    margin-bottom: 0.35rem;
+    line-height: 1.5;
+  }
+  .task-card li code {
+    font-family: var(--mono);
+    font-size: 0.82em;
+    background: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: #93c5fd;
+  }
+  .challenge-pill {
+    display: inline-block;
+    background: rgba(245,158,11,0.15);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  .concepts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .concept-pill {
+    background: var(--tag-bg);
+    color: var(--tag-txt);
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-family: var(--mono);
+    padding: 3px 10px;
+  }
+
+  .note {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+  .note strong { color: var(--accent); }
+
+  .code-wrap {
+    position: relative;
+    margin-bottom: 1.5rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .code-bar {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.45rem 1rem;
+  }
+  .code-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .dot-red { background: #ff5f57; }
+  .dot-yel { background: #febc2e; }
+  .dot-grn { background: #28c840; }
+  .copy-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+  .copy-btn.copied { background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.3); color: #34d399; }
+  pre[class*="language-"] {
+    margin: 0 !important;
+    padding: 1rem 1.25rem !important;
+    border-radius: 0 !important;
+    background: #0d1117 !important;
+    font-family: var(--mono) !important;
+    font-size: 0.83rem !important;
+    line-height: 1.65 !important;
+    max-height: 520px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2) transparent;
+  }
+  pre[class*="language-"] > code {
+    padding: 0 !important;
+    background: transparent !important;
+  }
+  pre[class*="language-"]::-webkit-scrollbar { width: 6px; }
+  pre[class*="language-"]::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  .output-wrap {
+    background: var(--green-bg);
+    border: 1px solid var(--green-bdr);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+  .output-bar {
+    background: rgba(52,211,153,0.07);
+    border-bottom: 1px solid var(--green-bdr);
+    padding: 0.45rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-family: var(--mono);
+    color: var(--green-txt);
+    opacity: 0.8;
+  }
+  .output-bar::before { content: '▶'; font-size: 0.65rem; }
+  .output-wrap pre {
+    padding: 1rem 1.25rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--green-txt);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 1rem 1rem 0; }
+    main { padding: 1.25rem 1rem 3rem; }
+    .panel-title { font-size: 1.3rem; }
+    .tab-btn { padding: 0.65rem 0.9rem; font-size: 0.82rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <div class="course-tag">COP 1047C &nbsp;·&nbsp; West Campus</div>
+      <h1>Lecture 3 — Breakout Solutions</h1>
+      <div class="header-meta">Chapter 3: Types &nbsp;·&nbsp; May 26, 2026 &nbsp;·&nbsp; Prof. John Masseria</div>
+    </div>
+    <div class="header-badge">
+      <strong>4 Breakouts</strong>
+      Strings · Lists · Scores · Named Tuples
+    </div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn active" role="tab" data-panel="p1" onclick="switchTab(this)">
+      <span class="tab-num">01</span> Strings
+    </button>
+    <button class="tab-btn" role="tab" data-panel="p2" onclick="switchTab(this)">
+      <span class="tab-num">02</span> Lists
+    </button>
+    <button class="tab-btn" role="tab" data-panel="p3" onclick="switchTab(this)">
+      <span class="tab-num">03</span> Exam Scores
+    </button>
+    <button class="tab-btn" role="tab" data-panel="p4" onclick="switchTab(this)">
+      <span class="tab-num">04</span> Named Tuples
+    </button>
+  </nav>
+</header>
+
+<main>
+
+<!-- PANEL 1 — STRINGS -->
+<section id="p1" class="panel active">
+  <div class="panel-header">
+    <div class="panel-eyebrow">Breakout 1</div>
+    <div class="panel-title">Strings</div>
+    <div class="panel-desc">Indexing, negative indexing, concatenation, F-strings, and number formatting.</div>
+  </div>
+  <div class="concepts">
+    <span class="concept-pill">str</span>
+    <span class="concept-pill">indexing</span>
+    <span class="concept-pill">negative indexing</span>
+    <span class="concept-pill">len()</span>
+    <span class="concept-pill">input()</span>
+    <span class="concept-pill">f-strings</span>
+    <span class="concept-pill">:.2f</span>
+    <span class="concept-pill">:,d</span>
+    <span class="concept-pill">:b &nbsp;:x</span>
+  </div>
+  <div class="task-card">
+    <h3>Your Tasks</h3>
+    <ol>
+      <li><strong>Part A</strong> — Create a string with your full name. Print your first initial using <code>negative indexing</code>.</li>
+      <li><strong>Part B</strong> — Ask for a first and last name. Print: <code>Hello, [Name]! Your name has [N] characters.</code></li>
+      <li><strong>Part C</strong> — Using an F-string, print a receipt: item name, quantity, price per unit, and total cost.</li>
+      <li><span class="challenge-pill">Challenge</span> Ask for a whole number. Display it as: plain decimal, comma-formatted, binary, and hexadecimal.</li>
+    </ol>
+  </div>
+  <div class="note">
+    <strong>Note:</strong>&nbsp; <code>input()</code> always returns a string. To do math with user input, always cast it first — e.g. <code>int(input(...))</code>.
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="code-bar-left">
+        <span class="dot dot-red"></span><span class="dot dot-yel"></span><span class="dot dot-grn"></span>
+        &nbsp; breakout1_strings.py
+      </div>
+      <button class="copy-btn" onclick="copyCode(this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+    <pre><code class="language-python"># ============================================================
+# COP 1047C - Lecture 3 Breakout 1: Strings
+# ============================================================
+
+# ----------------------------------------------------------
+# PART A: Create a string with your full name and print
+#         your first initial using negative indexing.
+# ----------------------------------------------------------
+
+# Create the string
+full_name = &quot;John Masseria&quot;
+
+# Positive indexing: first character is always index 0
+print(&quot;First initial (positive index):&quot;, full_name[0])
+
+# Negative indexing: to reach the FIRST character from the right,
+# count backward the full length of the string.
+# &quot;John Masseria&quot; has 13 characters, so index -13 reaches &#x27;J&#x27;.
+print(&quot;First initial (negative index):&quot;, full_name[-13])
+
+# BONUS: compute the negative index dynamically using len()
+# so this works for any name without counting by hand.
+name_length = len(full_name)
+print(&quot;First initial (dynamic negative index):&quot;, full_name[-name_length])
+
+# Sample output:
+# First initial (positive index): J
+# First initial (negative index): J
+# First initial (dynamic negative index): J
+
+
+# ----------------------------------------------------------
+# PART B: Ask for a first and last name, then print a
+#         greeting showing the total character count.
+# ----------------------------------------------------------
+
+print(&quot;\n--- Part B ---&quot;)
+
+first = input(&quot;Enter your first name: &quot;)
+last  = input(&quot;Enter your last name:  &quot;)
+
+full  = first + &quot; &quot; + last          # concatenate with a space
+count = len(full)                   # total characters including the space
+
+print(f&quot;Hello, {full}! Your name has {count} characters.&quot;)
+
+# Sample interaction:
+# Enter your first name: Maria
+# Enter your last name:  Garcia
+# Hello, Maria Garcia! Your name has 12 characters.
+
+
+# ----------------------------------------------------------
+# PART C: Print a formatted receipt using an F-string.
+# ----------------------------------------------------------
+
+print(&quot;\n--- Part C: Receipt ---&quot;)
+
+item          = &quot;USB-C Cable&quot;
+quantity      = 3
+price_per_unit = 12.99
+total_cost    = quantity * price_per_unit
+
+print(f&quot;Item:           {item}&quot;)
+print(f&quot;Quantity:       {quantity}&quot;)
+print(f&quot;Price per unit: ${price_per_unit:.2f}&quot;)
+print(f&quot;Total cost:     ${total_cost:.2f}&quot;)
+
+# Sample output:
+# Item:           USB-C Cable
+# Quantity:       3
+# Price per unit: $12.99
+# Total cost:     $38.97
+
+
+# ----------------------------------------------------------
+# CHALLENGE: Ask for a whole number and display it four ways:
+#   1. Plain integer
+#   2. Integer with comma separator
+#   3. Binary representation
+#   4. Hexadecimal representation
+# ----------------------------------------------------------
+
+print(&quot;\n--- Challenge: Number Formats ---&quot;)
+
+user_input = input(&quot;Enter a whole number: &quot;)
+number = int(user_input)             # input() always returns a string — cast it!
+
+print(f&quot;Decimal (plain):  {number:d}&quot;)
+print(f&quot;Decimal (commas): {number:,d}&quot;)
+print(f&quot;Binary:           {number:b}&quot;)
+print(f&quot;Hex (lowercase):  {number:x}&quot;)
+print(f&quot;Hex (uppercase):  {number:X}&quot;)
+
+# Sample interaction:
+# Enter a whole number: 255
+# Decimal (plain):  255
+# Decimal (commas): 255
+# Binary:           11111111
+# Hex (lowercase):  ff
+# Hex (uppercase):  FF
+</code></pre>
+  </div>
+  <div class="output-wrap">
+    <div class="output-bar">Sample Output (Parts A &amp; C + Challenge using 255)</div>
+    <pre>First initial (positive index): J
+First initial (negative index): J
+First initial (dynamic negative index): J
+
+--- Part C: Receipt ---
+Item:           USB-C Cable
+Quantity:       3
+Price per unit: $12.99
+Total cost:     $38.97
+
+--- Challenge: Number Formats ---
+Decimal (plain):  255
+Decimal (commas): 255
+Binary:           11111111
+Hex (lowercase):  ff
+Hex (uppercase):  FF</pre>
+  </div>
+</section>
+
+<!-- PANEL 2 — LISTS -->
+<section id="p2" class="panel">
+  <div class="panel-header">
+    <div class="panel-eyebrow">Breakout 2</div>
+    <div class="panel-title">Lists</div>
+    <div class="panel-desc">Creating, reading, growing, and shrinking a mutable list of student names.</div>
+  </div>
+  <div class="concepts">
+    <span class="concept-pill">list</span>
+    <span class="concept-pill">indexing</span>
+    <span class="concept-pill">negative indexing</span>
+    <span class="concept-pill">len()</span>
+    <span class="concept-pill">.append()</span>
+    <span class="concept-pill">.remove()</span>
+  </div>
+  <div class="task-card">
+    <h3>Your Tasks</h3>
+    <ol>
+      <li>Create a <code>list</code> containing 5 student names.</li>
+      <li>Print the <strong>first</strong> and <strong>last</strong> names using indexing.</li>
+      <li>Add a new name to the end using <code>.append()</code>.</li>
+      <li>Remove a name by value using <code>.remove()</code>.</li>
+    </ol>
+  </div>
+  <div class="note">
+    <strong>Key idea:</strong>&nbsp; Unlike strings, lists are <em>mutable</em> — you can change them after creation. <code>.append()</code> grows the list; <code>.remove()</code> shrinks it.
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="code-bar-left">
+        <span class="dot dot-red"></span><span class="dot dot-yel"></span><span class="dot dot-grn"></span>
+        &nbsp; breakout2_lists.py
+      </div>
+      <button class="copy-btn" onclick="copyCode(this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+    <pre><code class="language-python"># ============================================================
+# COP 1047C - Lecture 3 Breakout 2: Lists
+# ============================================================
+
+# ----------------------------------------------------------
+# Step 1: Create a list of 5 student names.
+# ----------------------------------------------------------
+
+students = [&quot;Alice Morales&quot;, &quot;Ben Carter&quot;, &quot;Carlos Vega&quot;, &quot;Diana Lin&quot;, &quot;Evan Ruiz&quot;]
+
+print(&quot;Original list:&quot;)
+print(students)
+
+# ----------------------------------------------------------
+# Step 2: Print the first and last name in the list.
+#
+# Lists use zero-based indexing, just like strings.
+# The first item is index 0; the last is index -1.
+# ----------------------------------------------------------
+
+print(&quot;\nFirst student:&quot;, students[0])   # index 0
+print(&quot;Last student: &quot;, students[-1])   # negative index — last item
+
+# ----------------------------------------------------------
+# Step 3: Add a new student using append().
+#
+# append() adds one item to the END of the list.
+# The list grows by 1.
+# ----------------------------------------------------------
+
+students.append(&quot;Fatima Hassan&quot;)
+
+print(&quot;\nAfter append():&quot;)
+print(students)
+print(&quot;List now has&quot;, len(students), &quot;students.&quot;)
+
+# ----------------------------------------------------------
+# Step 4: Remove a student by value using remove().
+#
+# remove() searches for the FIRST occurrence of the value
+# and deletes it. The list shrinks by 1.
+# ----------------------------------------------------------
+
+students.remove(&quot;Ben Carter&quot;)
+
+print(&quot;\nAfter remove():&quot;)
+print(students)
+print(&quot;List now has&quot;, len(students), &quot;students.&quot;)
+
+# ----------------------------------------------------------
+# Sample output:
+#
+# Original list:
+# [&#x27;Alice Morales&#x27;, &#x27;Ben Carter&#x27;, &#x27;Carlos Vega&#x27;, &#x27;Diana Lin&#x27;, &#x27;Evan Ruiz&#x27;]
+#
+# First student: Alice Morales
+# Last student:  Evan Ruiz
+#
+# After append():
+# [&#x27;Alice Morales&#x27;, &#x27;Ben Carter&#x27;, &#x27;Carlos Vega&#x27;, &#x27;Diana Lin&#x27;, &#x27;Evan Ruiz&#x27;, &#x27;Fatima Hassan&#x27;]
+# List now has 6 students.
+#
+# After remove():
+# [&#x27;Alice Morales&#x27;, &#x27;Carlos Vega&#x27;, &#x27;Diana Lin&#x27;, &#x27;Evan Ruiz&#x27;, &#x27;Fatima Hassan&#x27;]
+# List now has 5 students.
+# ----------------------------------------------------------
+</code></pre>
+  </div>
+  <div class="output-wrap">
+    <div class="output-bar">Sample Output</div>
+    <pre>Original list:
+['Alice Morales', 'Ben Carter', 'Carlos Vega', 'Diana Lin', 'Evan Ruiz']
+
+First student: Alice Morales
+Last student:  Evan Ruiz
+
+After append():
+['Alice Morales', 'Ben Carter', 'Carlos Vega', 'Diana Lin', 'Evan Ruiz', 'Fatima Hassan']
+List now has 6 students.
+
+After remove():
+['Alice Morales', 'Carlos Vega', 'Diana Lin', 'Evan Ruiz', 'Fatima Hassan']
+List now has 5 students.</pre>
+  </div>
+</section>
+
+<!-- PANEL 3 — EXAM SCORES -->
+<section id="p3" class="panel">
+  <div class="panel-header">
+    <div class="panel-eyebrow">Breakout 3</div>
+    <div class="panel-title">Exam Scores</div>
+    <div class="panel-desc">Using built-in functions to compute statistics on a list of numerical data.</div>
+  </div>
+  <div class="concepts">
+    <span class="concept-pill">list</span>
+    <span class="concept-pill">max()</span>
+    <span class="concept-pill">min()</span>
+    <span class="concept-pill">sum()</span>
+    <span class="concept-pill">len()</span>
+    <span class="concept-pill">:.1f</span>
+  </div>
+  <div class="task-card">
+    <h3>Your Tasks</h3>
+    <ol>
+      <li>Create a <code>list</code> of at least 5 exam scores.</li>
+      <li>Compute and print the <strong>highest score</strong> using <code>max()</code>.</li>
+      <li>Compute and print the <strong>lowest score</strong> using <code>min()</code>.</li>
+      <li>Compute and print the <strong>average</strong> using <code>sum()</code> and <code>len()</code>.</li>
+    </ol>
+  </div>
+  <div class="note">
+    <strong>Formula:</strong>&nbsp; Average = <code>sum(scores) / len(scores)</code>. Python's <code>sum()</code> totals all values; <code>len()</code> gives the count. Divide the two to get the mean.
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="code-bar-left">
+        <span class="dot dot-red"></span><span class="dot dot-yel"></span><span class="dot dot-grn"></span>
+        &nbsp; breakout3_exam_scores.py
+      </div>
+      <button class="copy-btn" onclick="copyCode(this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+    <pre><code class="language-python"># ============================================================
+# COP 1047C - Lecture 3 Breakout 3: Exam Scores
+# ============================================================
+#
+# Store a list of exam scores, then compute and print:
+#   - Average score
+#   - Highest score
+#   - Lowest score
+# ============================================================
+
+# ----------------------------------------------------------
+# Step 1: Define the list of exam scores.
+# ----------------------------------------------------------
+
+scores = [88, 92, 75, 100, 63, 84, 71, 95, 78, 90]
+
+print(&quot;Exam scores:&quot;, scores)
+print(&quot;Number of scores:&quot;, len(scores))
+
+# ----------------------------------------------------------
+# Step 2: Compute statistics.
+#
+# Python provides built-in functions for this:
+#   max()  → returns the largest value in the list
+#   min()  → returns the smallest value in the list
+#   sum()  → returns the total of all values
+#   len()  → returns the number of items (used to compute average)
+# ----------------------------------------------------------
+
+highest = max(scores)
+lowest  = min(scores)
+average = sum(scores) / len(scores)   # sum ÷ count = average
+
+# ----------------------------------------------------------
+# Step 3: Print results with F-string formatting.
+#
+# :.1f formats a float to 1 decimal place, which is
+# appropriate for a grade average.
+# ----------------------------------------------------------
+
+print(f&quot;\nHighest score: {highest}&quot;)
+print(f&quot;Lowest score:  {lowest}&quot;)
+print(f&quot;Average score: {average:.1f}&quot;)
+
+# ----------------------------------------------------------
+# Sample output:
+#
+# Exam scores: [88, 92, 75, 100, 63, 84, 71, 95, 78, 90]
+# Number of scores: 10
+#
+# Highest score: 100
+# Lowest score:  63
+# Average score: 83.6
+# ----------------------------------------------------------
+</code></pre>
+  </div>
+  <div class="output-wrap">
+    <div class="output-bar">Sample Output — scores: [88, 92, 75, 100, 63, 84, 71, 95, 78, 90]</div>
+    <pre>Exam scores: [88, 92, 75, 100, 63, 84, 71, 95, 78, 90]
+Number of scores: 10
+
+Highest score: 100
+Lowest score:  63
+Average score: 83.6</pre>
+  </div>
+</section>
+
+<!-- PANEL 4 — NAMED TUPLES -->
+<section id="p4" class="panel">
+  <div class="panel-header">
+    <div class="panel-eyebrow">Breakout 4</div>
+    <div class="panel-title">Named Tuples — SHIP</div>
+    <div class="panel-desc">Defining and using a named tuple to represent structured, immutable records.</div>
+  </div>
+  <div class="concepts">
+    <span class="concept-pill">namedtuple</span>
+    <span class="concept-pill">from collections import</span>
+    <span class="concept-pill">dot notation</span>
+    <span class="concept-pill">immutable</span>
+    <span class="concept-pill">:,d</span>
+    <span class="concept-pill">:^50 (centering)</span>
+  </div>
+  <div class="task-card">
+    <h3>Your Tasks</h3>
+    <ol>
+      <li>Import <code>namedtuple</code> from the <code>collections</code> module.</li>
+      <li>Define a <code>Ship</code> named tuple with fields: <code>name</code>, <code>capacity</code>, <code>home_port</code>, <code>year_built</code>.</li>
+      <li>Create at least <strong>two ship instances</strong> with real or invented data.</li>
+      <li>Print each ship's details using <strong>dot notation</strong> — e.g. <code>ship.name</code>, <code>ship.capacity</code>.</li>
+      <li><span class="challenge-pill">Challenge</span> Compute each ship's age with <code>2026 - ship.year_built</code>. Try uncommenting the immutability line to see what error you get.</li>
+    </ol>
+  </div>
+  <div class="note">
+    <strong>Tuple vs. List:</strong>&nbsp; Use a <em>tuple</em> when the data is fixed. Use a <em>list</em> when it needs to grow or change. Named tuples add readable field names on top of normal tuple behaviour.
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="code-bar-left">
+        <span class="dot dot-red"></span><span class="dot dot-yel"></span><span class="dot dot-grn"></span>
+        &nbsp; breakout4_named_tuple_ship.py
+      </div>
+      <button class="copy-btn" onclick="copyCode(this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+    <pre><code class="language-python"># ============================================================
+# COP 1047C - Lecture 3 Breakout 4: Named Tuples — SHIP
+# ============================================================
+#
+# Create a named tuple called SHIP with fields:
+#   name, capacity, home_port, year_built
+#
+# Then create at least two ship instances and print details.
+# ============================================================
+
+# namedtuple lives in the &#x27;collections&#x27; module.
+# We import only what we need so we don&#x27;t have to write
+# collections.namedtuple every time.
+from collections import namedtuple
+
+# ----------------------------------------------------------
+# Step 1: Define the SHIP named tuple &quot;blueprint&quot;.
+#
+# namedtuple() takes two arguments:
+#   1. The name of the tuple type (string)
+#   2. A list of field names (list of strings)
+# ----------------------------------------------------------
+
+Ship = namedtuple(&quot;Ship&quot;, [&quot;name&quot;, &quot;capacity&quot;, &quot;home_port&quot;, &quot;year_built&quot;])
+
+# ----------------------------------------------------------
+# Step 2: Create ship instances.
+#
+# Values are assigned positionally — same order as the
+# field list above.
+# ----------------------------------------------------------
+
+wonder = Ship(
+    name       = &quot;Wonder of the Seas&quot;,
+    capacity   = 6988,
+    home_port  = &quot;Port Canaveral, FL&quot;,
+    year_built = 2022
+)
+
+icon = Ship(
+    name       = &quot;Icon of the Seas&quot;,
+    capacity   = 7600,
+    home_port  = &quot;Miami, FL&quot;,
+    year_built = 2024
+)
+
+oasis = Ship(
+    name       = &quot;Oasis of the Seas&quot;,
+    capacity   = 6296,
+    home_port  = &quot;Port Canaveral, FL&quot;,
+    year_built = 2009
+)
+
+# ----------------------------------------------------------
+# Step 3: Print each ship&#x27;s details using dot notation.
+#
+# Named tuples let us use field names (ship.name) instead
+# of positional indexes (ship[0]), which is much more
+# readable.
+# ----------------------------------------------------------
+
+print(&quot;=&quot; * 50)
+print(f&quot;{&#x27;ROYAL CARIBBEAN FLEET SUMMARY&#x27;:^50}&quot;)
+print(&quot;=&quot; * 50)
+
+print(f&quot;\nShip Name:  {wonder.name}&quot;)
+print(f&quot;Capacity:   {wonder.capacity:,d} passengers&quot;)
+print(f&quot;Home Port:  {wonder.home_port}&quot;)
+print(f&quot;Year Built: {wonder.year_built}&quot;)
+print(f&quot;Age:        {2026 - wonder.year_built} years&quot;)
+print(&quot;-&quot; * 50)
+
+print(f&quot;\nShip Name:  {icon.name}&quot;)
+print(f&quot;Capacity:   {icon.capacity:,d} passengers&quot;)
+print(f&quot;Home Port:  {icon.home_port}&quot;)
+print(f&quot;Year Built: {icon.year_built}&quot;)
+print(f&quot;Age:        {2026 - icon.year_built} years&quot;)
+print(&quot;-&quot; * 50)
+
+print(f&quot;\nShip Name:  {oasis.name}&quot;)
+print(f&quot;Capacity:   {oasis.capacity:,d} passengers&quot;)
+print(f&quot;Home Port:  {oasis.home_port}&quot;)
+print(f&quot;Year Built: {oasis.year_built}&quot;)
+print(f&quot;Age:        {2026 - oasis.year_built} years&quot;)
+print(&quot;-&quot; * 50)
+
+# ----------------------------------------------------------
+# Step 4: Demonstrate immutability.
+#
+# Tuples cannot be changed after creation. This line
+# will raise a TypeError if uncommented — try it!
+# ----------------------------------------------------------
+
+# wonder.capacity = 9000   # ← TypeError: can&#x27;t set attribute
+
+# ----------------------------------------------------------
+# Step 5: Demonstrate that index access still works.
+#
+# Named tuples are still tuples under the hood —
+# you can access by position if you want to.
+# ----------------------------------------------------------
+
+print(&quot;\nAccessing by index still works:&quot;)
+print(f&quot;  icon[0] → {icon[0]}&quot;)   # name
+print(f&quot;  icon[1] → {icon[1]}&quot;)   # capacity
+
+# ----------------------------------------------------------
+# Sample output:
+#
+# ==================================================
+#           ROYAL CARIBBEAN FLEET SUMMARY
+# ==================================================
+#
+# Ship Name:  Wonder of the Seas
+# Capacity:   6,988 passengers
+# Home Port:  Port Canaveral, FL
+# Year Built: 2022
+# Age:        4 years
+# --------------------------------------------------
+#
+# Ship Name:  Icon of the Seas
+# Capacity:   7,600 passengers
+# Home Port:  Miami, FL
+# Year Built: 2024
+# Age:        2 years
+# --------------------------------------------------
+#
+# Ship Name:  Oasis of the Seas
+# Capacity:   6,296 passengers
+# Home Port:  Port Canaveral, FL
+# Year Built: 2009
+# Age:        17 years
+# --------------------------------------------------
+#
+# Accessing by index still works:
+#   icon[0] → Icon of the Seas
+#   icon[1] → 7600
+# ----------------------------------------------------------
+</code></pre>
+  </div>
+  <div class="output-wrap">
+    <div class="output-bar">Sample Output</div>
+    <pre>==================================================
+          ROYAL CARIBBEAN FLEET SUMMARY           
+==================================================
+
+Ship Name:  Wonder of the Seas
+Capacity:   6,988 passengers
+Home Port:  Port Canaveral, FL
+Year Built: 2022
+Age:        4 years
+--------------------------------------------------
+
+Ship Name:  Icon of the Seas
+Capacity:   7,600 passengers
+Home Port:  Miami, FL
+Year Built: 2024
+Age:        2 years
+--------------------------------------------------
+
+Ship Name:  Oasis of the Seas
+Capacity:   6,296 passengers
+Home Port:  Port Canaveral, FL
+Year Built: 2009
+Age:        17 years
+--------------------------------------------------
+
+Accessing by index still works:
+  icon[0] → Icon of the Seas
+  icon[1] → 7600</pre>
+  </div>
+</section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+function switchTab(btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(btn.dataset.panel).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-wrap').querySelector('code');
+  navigator.clipboard.writeText(code.textContent).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy';
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>

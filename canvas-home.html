@@ -1,0 +1,349 @@
+<!--
+  COP 1047C · Canvas Home Page
+  ─────────────────────────────────────────────────────────────
+  HOW TO USE:
+  1. In Canvas, go to Pages → Create Page (or edit your home page).
+  2. Click the HTML editor button (</>).
+  3. Select-all and paste this file's contents.
+  4. Before saving, do a find-and-replace:
+       YOUR-GITHUB-USERNAME  →  your actual GitHub username
+  5. Click Save & Publish.
+
+  HOW TO UPDATE EACH WEEK:
+  After each lecture, find that lecture's row in the HTML below.
+  • Change the row's background-color from #f9fafb (grey) to #f0fdf4 (green).
+  • Replace the "—" cell with the three link buttons (copy from Lecture 03).
+  • Update the href URLs to match the new lecture number.
+
+  LINK PATTERN:
+  Slides:    https://YOUR-GITHUB-USERNAME.github.io/cop1047c-summer2026/slides/lecture-XX-slides.pdf
+  Notes:     https://YOUR-GITHUB-USERNAME.github.io/cop1047c-summer2026/lectures/lecture-XX-summary.html
+  Solutions: https://YOUR-GITHUB-USERNAME.github.io/cop1047c-summer2026/solutions/lecture-XX-solutions.html
+  (Replace XX with the zero-padded lecture number, e.g. 04, 05, 06…)
+  ─────────────────────────────────────────────────────────────
+-->
+
+<!-- ═══════════════ OUTER WRAPPER ═══════════════ -->
+<div style="max-width:900px; margin:0 auto;">
+
+  <!-- ── HERO BANNER ── -->
+  <div style="background-color:#0d1b2e; border-radius:8px; padding:1.75rem 2rem; margin-bottom:1rem;">
+    <p style="margin:0 0 0.4rem; font-size:12px; font-weight:600; color:#f59e0b;">
+      MIAMI DADE COLLEGE &nbsp;·&nbsp; WEST CAMPUS &nbsp;·&nbsp; SUMMER 2026
+    </p>
+    <h2 style="margin:0 0 0.5rem; font-size:22px; font-weight:700; color:#ffffff; line-height:1.2;">
+      Introduction to Python Programming
+    </h2>
+    <p style="margin:0; font-size:14px; color:#94a3b8; line-height:1.6;">
+      COP 1047C-2265-7811 &nbsp;·&nbsp; Prof. John Masseria &nbsp;·&nbsp; Tuesdays 5:40–10:00 PM
+      &nbsp;·&nbsp;
+      <a href="mailto:jmasseri@mdc.edu"
+         style="color:#f59e0b; text-decoration:none;">jmasseri@mdc.edu</a>
+      &nbsp;·&nbsp; May 11 – July 31, 2026
+    </p>
+  </div>
+
+  <!-- ── INFO STRIP ── -->
+  <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:1rem;">
+
+    <div style="flex:1; min-width:180px; background-color:#f0f9ff; border:1px solid #bae6fd;
+                border-radius:6px; padding:0.65rem 1rem;">
+      <div style="font-size:11px; font-weight:700; color:#0284c7; margin-bottom:3px;">TEXTBOOK</div>
+      <div style="font-size:13px; font-weight:600; color:#0c4a6e;">zyBook · SharkPack</div>
+      <div style="font-size:12px; color:#0369a1;">ISBN 979-8-203-97769-4</div>
+    </div>
+
+    <div style="flex:1; min-width:180px; background-color:#f0fdf4; border:1px solid #86efac;
+                border-radius:6px; padding:0.65rem 1rem;">
+      <div style="font-size:11px; font-weight:700; color:#15803d; margin-bottom:3px;">SOFTWARE</div>
+      <div style="font-size:13px; font-weight:600; color:#14532d;">Python 3.14+</div>
+      <div style="font-size:12px; color:#166534;">Visual Studio Code</div>
+    </div>
+
+    <div style="flex:1; min-width:180px; background-color:#fefce8; border:1px solid #fde047;
+                border-radius:6px; padding:0.65rem 1rem;">
+      <div style="font-size:11px; font-weight:700; color:#a16207; margin-bottom:3px;">MIDTERM</div>
+      <div style="font-size:13px; font-weight:600; color:#713f12;">Due June 23 (before class)</div>
+      <div style="font-size:12px; color:#92400e;">50 questions · Ch 1–5 · Take-home</div>
+    </div>
+
+    <div style="flex:1; min-width:180px; background-color:#fdf2f8; border:1px solid #f0abfc;
+                border-radius:6px; padding:0.65rem 1rem;">
+      <div style="font-size:11px; font-weight:700; color:#a21caf; margin-bottom:3px;">FINAL PROJECT</div>
+      <div style="font-size:13px; font-weight:600; color:#701a75;">DNA Sequence Search</div>
+      <div style="font-size:12px; color:#86198f;">Due July 30 · 150 points</div>
+    </div>
+
+  </div>
+
+  <!-- ── IMPORTANT DATES ── -->
+  <div style="background-color:#fff7ed; border:1px solid #fed7aa; border-radius:6px;
+              padding:0.75rem 1rem; margin-bottom:1rem; display:flex; flex-wrap:wrap; gap:1.5rem;">
+    <div>
+      <span style="font-size:11px; font-weight:700; color:#c2410c;">WITHDRAW DEADLINE</span><br>
+      <span style="font-size:14px; font-weight:600; color:#7c2d12;">June 30, 2026</span>
+    </div>
+    <div>
+      <span style="font-size:11px; font-weight:700; color:#c2410c;">W-GRADE LAST DAY</span><br>
+      <span style="font-size:14px; font-weight:600; color:#7c2d12;">Last day to withdraw without F</span>
+    </div>
+    <div>
+      <span style="font-size:11px; font-weight:700; color:#c2410c;">END OF SEMESTER</span><br>
+      <span style="font-size:14px; font-weight:600; color:#7c2d12;">July 31, 2026</span>
+    </div>
+    <div style="margin-left:auto;">
+      <span style="font-size:11px; font-weight:700; color:#c2410c;">ATTENDANCE POLICY</span><br>
+      <span style="font-size:13px; color:#7c2d12;">Max 4 absences · 3 consecutive = auto-withdraw</span>
+    </div>
+  </div>
+
+  <!-- ── LECTURE MATERIALS ── -->
+  <h3 style="font-size:16px; font-weight:700; margin:0 0 0.6rem; color:#0f172a;">
+    Lecture Materials
+  </h3>
+  <p style="font-size:13px; color:#64748b; margin:0 0 0.75rem;">
+    Slides, notes, and breakout solutions are posted here after each class.
+    All materials open in a new tab.
+  </p>
+
+  <div style="overflow-x:auto; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:1.25rem;">
+    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+
+      <!-- Table header -->
+      <thead>
+        <tr style="background-color:#f1f5f9;">
+          <th style="padding:0.65rem 0.75rem; text-align:left; font-weight:700;
+                     color:#475569; border-bottom:1px solid #e2e8f0; white-space:nowrap;">#</th>
+          <th style="padding:0.65rem 0.75rem; text-align:left; font-weight:700;
+                     color:#475569; border-bottom:1px solid #e2e8f0; white-space:nowrap;">Date</th>
+          <th style="padding:0.65rem 0.75rem; text-align:left; font-weight:700;
+                     color:#475569; border-bottom:1px solid #e2e8f0;">Topic</th>
+          <th style="padding:0.65rem 0.75rem; text-align:left; font-weight:700;
+                     color:#475569; border-bottom:1px solid #e2e8f0; white-space:nowrap;">zyBook Due</th>
+          <th style="padding:0.65rem 0.75rem; text-align:left; font-weight:700;
+                     color:#475569; border-bottom:1px solid #e2e8f0;">Materials</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <!-- ── PAST · NO MATERIALS ── -->
+        <tr style="background-color:#fffbeb; border-bottom:1px solid #fde68a;">
+          <td style="padding:0.6rem 0.75rem; border-left:3px solid #f59e0b;
+                     font-weight:600; color:#92400e;">01</td>
+          <td style="padding:0.6rem 0.75rem; color:#78350f; white-space:nowrap;">May 12</td>
+          <td style="padding:0.6rem 0.75rem; color:#78350f;">
+            <strong style="color:#78350f;">Chapter 1</strong> &nbsp;Introduction to Python
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#92400e; white-space:nowrap;">May 19</td>
+          <td style="padding:0.6rem 0.75rem; color:#b45309; font-style:italic;">
+            Materials not posted
+          </td>
+        </tr>
+
+        <tr style="background-color:#fffbeb; border-bottom:1px solid #fde68a;">
+          <td style="padding:0.6rem 0.75rem; border-left:3px solid #f59e0b;
+                     font-weight:600; color:#92400e;">02</td>
+          <td style="padding:0.6rem 0.75rem; color:#78350f; white-space:nowrap;">May 19</td>
+          <td style="padding:0.6rem 0.75rem; color:#78350f;">
+            <strong style="color:#78350f;">Chapter 2</strong> &nbsp;Variables &amp; Expressions
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#92400e; white-space:nowrap;">May 26</td>
+          <td style="padding:0.6rem 0.75rem; color:#b45309; font-style:italic;">
+            Materials not posted
+          </td>
+        </tr>
+
+        <!-- ── AVAILABLE ── -->
+        <tr style="background-color:#f0fdf4; border-bottom:1px solid #bbf7d0;">
+          <td style="padding:0.6rem 0.75rem; border-left:3px solid #10b981;
+                     font-weight:600; color:#065f46;">03</td>
+          <td style="padding:0.6rem 0.75rem; color:#064e3b; white-space:nowrap;">May 26</td>
+          <td style="padding:0.6rem 0.75rem; color:#064e3b;">
+            <strong style="color:#064e3b;">Chapter 3</strong> &nbsp;Types
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#065f46; white-space:nowrap;">June 2</td>
+          <td style="padding:0.6rem 0.75rem;">
+            <a href="https://YOUR-GITHUB-USERNAME.github.io/cop1047c-summer2026/slides/lecture-03-slides.pdf"
+               target="_blank"
+               style="background-color:#1e3a5f; color:#ffffff; padding:4px 11px; border-radius:4px;
+                      font-size:12px; font-weight:600; text-decoration:none;
+                      display:inline-block; margin:2px 4px 2px 0;">Slides</a>
+            <a href="https://YOUR-GITHUB-USERNAME.github.io/cop1047c-summer2026/lectures/lecture-03-summary.html"
+               target="_blank"
+               style="background-color:#1e3a5f; color:#ffffff; padding:4px 11px; border-radius:4px;
+                      font-size:12px; font-weight:600; text-decoration:none;
+                      display:inline-block; margin:2px 4px 2px 0;">Notes</a>
+            <a href="https://YOUR-GITHUB-USERNAME.github.io/cop1047c-summer2026/solutions/lecture-03-solutions.html"
+               target="_blank"
+               style="background-color:#1e3a5f; color:#ffffff; padding:4px 11px; border-radius:4px;
+                      font-size:12px; font-weight:600; text-decoration:none;
+                      display:inline-block; margin:2px 4px 2px 0;">Solutions</a>
+          </td>
+        </tr>
+
+        <!-- ── UPCOMING ── -->
+        <tr style="background-color:#f9fafb; border-bottom:1px solid #e2e8f0;">
+          <td style="padding:0.6rem 0.75rem; font-weight:600; color:#94a3b8; border-left:3px solid #e2e8f0;">04</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">June 2</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8;">
+            <strong style="color:#94a3b8;">Chapter 4</strong> &nbsp;Branching
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">June 9</td>
+          <td style="padding:0.6rem 0.75rem; color:#cbd5e1;">—</td>
+        </tr>
+
+        <tr style="background-color:#f9fafb; border-bottom:1px solid #e2e8f0;">
+          <td style="padding:0.6rem 0.75rem; font-weight:600; color:#94a3b8; border-left:3px solid #e2e8f0;">05</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">June 9</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8;">
+            <strong style="color:#94a3b8;">Chapter 5</strong> &nbsp;Loops
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">June 16</td>
+          <td style="padding:0.6rem 0.75rem; color:#cbd5e1;">—</td>
+        </tr>
+
+        <tr style="background-color:#f9fafb; border-bottom:1px solid #e2e8f0;">
+          <td style="padding:0.6rem 0.75rem; font-weight:600; color:#94a3b8; border-left:3px solid #e2e8f0;">06</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">June 16</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8;">
+            <strong style="color:#94a3b8;">Chapter 6</strong> &nbsp;Functions
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">June 23</td>
+          <td style="padding:0.6rem 0.75rem; color:#cbd5e1;">—</td>
+        </tr>
+
+        <tr style="background-color:#f9fafb; border-bottom:1px solid #e2e8f0;">
+          <td style="padding:0.6rem 0.75rem; font-weight:600; color:#94a3b8; border-left:3px solid #e2e8f0;">07</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">June 23</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8;">
+            <strong style="color:#94a3b8;">Chapter 7</strong> &nbsp;Strings
+            <span style="display:inline-block; background-color:#fef3c7; color:#92400e;
+                         font-size:11px; font-weight:600; padding:1px 7px; border-radius:3px;
+                         margin-left:6px;">Midterm due before class</span>
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">June 30</td>
+          <td style="padding:0.6rem 0.75rem; color:#cbd5e1;">—</td>
+        </tr>
+
+        <tr style="background-color:#f9fafb; border-bottom:1px solid #e2e8f0;">
+          <td style="padding:0.6rem 0.75rem; font-weight:600; color:#94a3b8; border-left:3px solid #e2e8f0;">08</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">June 30</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8;">
+            <strong style="color:#94a3b8;">Chapter 8</strong> &nbsp;Exceptions
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">July 7</td>
+          <td style="padding:0.6rem 0.75rem; color:#cbd5e1;">—</td>
+        </tr>
+
+        <tr style="background-color:#f9fafb; border-bottom:1px solid #e2e8f0;">
+          <td style="padding:0.6rem 0.75rem; font-weight:600; color:#94a3b8; border-left:3px solid #e2e8f0;">09</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">July 7</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8;">
+            <strong style="color:#94a3b8;">Chapter 9</strong> &nbsp;Lists &amp; Dictionaries
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">July 14</td>
+          <td style="padding:0.6rem 0.75rem; color:#cbd5e1;">—</td>
+        </tr>
+
+        <tr style="background-color:#f9fafb; border-bottom:1px solid #e2e8f0;">
+          <td style="padding:0.6rem 0.75rem; font-weight:600; color:#94a3b8; border-left:3px solid #e2e8f0;">10</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">July 14</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8;">
+            <strong style="color:#94a3b8;">Chapter 12</strong> &nbsp;Files
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">July 21</td>
+          <td style="padding:0.6rem 0.75rem; color:#cbd5e1;">—</td>
+        </tr>
+
+        <tr style="background-color:#f9fafb; border-bottom:1px solid #e2e8f0;">
+          <td style="padding:0.6rem 0.75rem; font-weight:600; color:#94a3b8; border-left:3px solid #e2e8f0;">11</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">July 21</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8;">
+            <strong style="color:#94a3b8;">Chapter 10</strong> &nbsp;Classes
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">July 21</td>
+          <td style="padding:0.6rem 0.75rem; color:#cbd5e1;">—</td>
+        </tr>
+
+        <tr style="background-color:#f9fafb;">
+          <td style="padding:0.6rem 0.75rem; font-weight:600; color:#94a3b8; border-left:3px solid #e2e8f0;">12</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">July 28</td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8;">
+            <strong style="color:#94a3b8;">Final Review</strong> &nbsp;DNA Sequence Search Project
+            <span style="display:inline-block; background-color:#fef3c7; color:#92400e;
+                         font-size:11px; font-weight:600; padding:1px 7px; border-radius:3px;
+                         margin-left:6px;">Project due July 30</span>
+          </td>
+          <td style="padding:0.6rem 0.75rem; color:#94a3b8; white-space:nowrap;">—</td>
+          <td style="padding:0.6rem 0.75rem; color:#cbd5e1;">—</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── GRADING BREAKDOWN ── -->
+  <h3 style="font-size:16px; font-weight:700; margin:0 0 0.6rem; color:#0f172a;">
+    Grade Breakdown
+  </h3>
+
+  <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:1.5rem;">
+
+    <div style="flex:1; min-width:160px; background-color:#f8fafc; border:1px solid #e2e8f0;
+                border-radius:6px; padding:0.65rem 1rem;
+                display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:13px; color:#475569;">zyBooks Labs &amp; Programming</span>
+      <span style="font-size:15px; font-weight:700; color:#f59e0b;">30%</span>
+    </div>
+
+    <div style="flex:1; min-width:160px; background-color:#f8fafc; border:1px solid #e2e8f0;
+                border-radius:6px; padding:0.65rem 1rem;
+                display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:13px; color:#475569;">zyBooks Readings</span>
+      <span style="font-size:15px; font-weight:700; color:#f59e0b;">25%</span>
+    </div>
+
+    <div style="flex:1; min-width:160px; background-color:#f8fafc; border:1px solid #e2e8f0;
+                border-radius:6px; padding:0.65rem 1rem;
+                display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:13px; color:#475569;">Final Exam / Project</span>
+      <span style="font-size:15px; font-weight:700; color:#f59e0b;">20%</span>
+    </div>
+
+    <div style="flex:1; min-width:160px; background-color:#f8fafc; border:1px solid #e2e8f0;
+                border-radius:6px; padding:0.65rem 1rem;
+                display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:13px; color:#475569;">Midterm Exam</span>
+      <span style="font-size:15px; font-weight:700; color:#f59e0b;">15%</span>
+    </div>
+
+    <div style="flex:1; min-width:160px; background-color:#f8fafc; border:1px solid #e2e8f0;
+                border-radius:6px; padding:0.65rem 1rem;
+                display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:13px; color:#475569;">In-class Group Projects</span>
+      <span style="font-size:15px; font-weight:700; color:#f59e0b;">5%</span>
+    </div>
+
+    <div style="flex:1; min-width:160px; background-color:#f8fafc; border:1px solid #e2e8f0;
+                border-radius:6px; padding:0.65rem 1rem;
+                display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:13px; color:#475569;">Attendance &amp; Participation</span>
+      <span style="font-size:15px; font-weight:700; color:#f59e0b;">5%</span>
+    </div>
+
+  </div>
+
+  <!-- ── FOOTER NOTE ── -->
+  <p style="font-size:12px; color:#94a3b8; border-top:1px solid #e2e8f0; padding-top:0.75rem; margin:0;">
+    All materials hosted at
+    <a href="https://YOUR-GITHUB-USERNAME.github.io/cop1047c-summer2026"
+       target="_blank"
+       style="color:#0284c7; text-decoration:none;">
+      github.io/cop1047c-summer2026
+    </a>
+    &nbsp;·&nbsp; Questions? Post on the Class Question Board or email
+    <a href="mailto:jmasseri@mdc.edu" style="color:#0284c7; text-decoration:none;">jmasseri@mdc.edu</a>
+  </p>
+
+</div>

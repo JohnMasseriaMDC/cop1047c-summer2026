@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COP 1047C – Lecture 3 Summary: Chapter 3 Types</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #080c14;
+    --surface:   #0f1724;
+    --surface2:  #16202e;
+    --border:    #1e2d42;
+    --border2:   #253347;
+    --accent:    #f59e0b;
+    --text:      #e2e8f0;
+    --muted:     #7d93af;
+    --green-bg:  #071510;
+    --green-bdr: #0d3322;
+    --green-txt: #34d399;
+    --tag-bg:    #1a2a3a;
+    --tag-txt:   #60a5fa;
+    --warn-bg:   rgba(239,68,68,0.07);
+    --warn-bdr:  rgba(239,68,68,0.25);
+    --warn-txt:  #fca5a5;
+    --mono:      'JetBrains Mono', 'Courier New', monospace;
+    --sans:      'Outfit', system-ui, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.1rem;
+  }
+  .course-tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 4px;
+    padding: 3px 10px;
+    display: inline-block;
+    margin-bottom: 0.35rem;
+  }
+  header h1 { font-size: 1.35rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+  .header-meta { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+  .header-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .header-badge strong { color: var(--text); display: block; font-size: 0.9rem; }
+
+  /* ── SECTION NAV ── */
+  nav.sections {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav.sections::-webkit-scrollbar { display: none; }
+  nav.sections a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.83rem;
+    font-weight: 500;
+    padding: 0.65rem 1.1rem;
+    border-bottom: 3px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  nav.sections a:hover { color: var(--text); border-bottom-color: var(--border2); }
+
+  /* ── LAYOUT ── */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 5rem;
+  }
+
+  /* ── SECTION BLOCKS ── */
+  .section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 120px;
+  }
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.35rem;
+  }
+  .section > h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── TOPIC BLOCKS ── */
+  .topic {
+    margin-bottom: 2rem;
+    scroll-margin-top: 120px;
+  }
+  .topic h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .topic-num {
+    background: rgba(245,158,11,0.15);
+    color: var(--accent);
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: var(--mono);
+    padding: 2px 9px;
+    flex-shrink: 0;
+  }
+
+  /* ── PROSE ── */
+  p { margin-bottom: 0.85rem; color: var(--text); }
+  p:last-child { margin-bottom: 0; }
+
+  ul, ol { padding-left: 1.5rem; margin-bottom: 0.85rem; }
+  li { margin-bottom: 0.3rem; line-height: 1.6; }
+  li:last-child { margin-bottom: 0; }
+
+  strong { color: var(--text); font-weight: 600; }
+  em { color: var(--muted); font-style: italic; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.83em;
+    background: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    padding: 2px 6px;
+    color: #93c5fd;
+  }
+
+  /* ── SUBHEADINGS ── */
+  h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin: 1.25rem 0 0.6rem;
+  }
+
+  /* ── CODE BLOCKS ── */
+  .code-wrap {
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin: 0.75rem 0 1.25rem;
+  }
+  .code-bar {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  pre[class*="language-"] {
+    margin: 0 !important;
+    padding: 1rem 1.25rem !important;
+    border-radius: 0 !important;
+    background: #0d1117 !important;
+    font-family: var(--mono) !important;
+    font-size: 0.83rem !important;
+    line-height: 1.65 !important;
+  }
+  pre[class*="language-"] > code {
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  /* ── TABLES ── */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 0.75rem 0 1.25rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  thead tr {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border2);
+  }
+  thead th {
+    padding: 0.65rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  tbody td {
+    padding: 0.6rem 1rem;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  tbody td:first-child code { color: var(--accent); }
+  .tick { color: #34d399; }
+  .cross { color: #f87171; }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    margin: 0.75rem 0 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .callout-warn {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-bdr);
+    color: var(--warn-txt);
+  }
+  .callout-warn strong { color: #fca5a5; }
+  .callout-info {
+    background: rgba(96,165,250,0.07);
+    border: 1px solid rgba(96,165,250,0.2);
+    color: #93c5fd;
+  }
+  .callout-info strong { color: #93c5fd; }
+  .callout-note {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.2);
+    color: var(--muted);
+  }
+  .callout-note strong { color: var(--accent); }
+
+  /* ── ADMIN REMINDERS ── */
+  .reminder-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .reminder-list li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 0.65rem 1rem;
+    font-size: 0.92rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* ── ACTIVITIES ── */
+  .activity {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .activity h4 {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.6rem;
+  }
+  .activity ol { padding-left: 1.3rem; margin: 0; }
+  .activity li { font-size: 0.9rem; margin-bottom: 0.3rem; }
+  .challenge-pill {
+    display: inline-block;
+    background: rgba(245,158,11,0.15);
+    color: var(--accent);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 4px;
+    padding: 1px 7px;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+
+  /* ── DIVIDER ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    header { padding: 1rem 1rem 0; }
+    main { padding: 1.5rem 1rem 3rem; }
+    header h1 { font-size: 1.15rem; }
+    nav.sections a { padding: 0.55rem 0.8rem; font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <div class="course-tag">COP 1047C &nbsp;·&nbsp; West Campus</div>
+      <h1>Lecture 3 Summary — Chapter 3: Types</h1>
+      <div class="header-meta">May 26, 2026 &nbsp;·&nbsp; Prof. John Masseria &nbsp;·&nbsp; MDC Live</div>
+    </div>
+    <div class="header-badge">
+      <strong>Chapter 3</strong>
+      Types
+    </div>
+  </div>
+  <nav class="sections" aria-label="Page sections">
+    <a href="#admin">Admin</a>
+    <a href="#review">Review</a>
+    <a href="#strings">Strings</a>
+    <a href="#lists">Lists</a>
+    <a href="#tuples">Tuples</a>
+    <a href="#dicts">Dictionaries</a>
+    <a href="#sets">Sets</a>
+    <a href="#casting">Casting</a>
+    <a href="#binary">Binary</a>
+    <a href="#activities">Activities</a>
+    <a href="#upcoming">Coming Up</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ═══════════════ ADMIN ═══════════════ -->
+<section class="section" id="admin">
+  <div class="section-eyebrow">Administrative</div>
+  <h2>📋 Reminders</h2>
+  <ul class="reminder-list">
+    <li><strong>Chapter 2</strong> readings and labs were due tonight. Complete them in zyBooks — grades sync automatically.</li>
+    <li><strong>Chapter 3</strong> readings and labs are due <strong>June 2, 2026</strong>.</li>
+    <li><strong>Midterm Exam:</strong> Take-home, available after <strong>June 16</strong>; due before class on <strong>June 23</strong>. 50 multiple-choice / true-false questions covering Chapters 1–5. Requires lockdown browser + webcam.</li>
+    <li><strong>Tutor available</strong> at West Campus — use this resource if you're falling behind.</li>
+    <li><strong>Circle In</strong> (in Canvas): Use the AI tutor for questions, and complete the <strong>Course Feedback</strong> exit ticket after each class.</li>
+  </ul>
+</section>
+
+<!-- ═══════════════ REVIEW ═══════════════ -->
+<section class="section" id="review">
+  <div class="section-eyebrow">Previously Covered</div>
+  <h2>🔁 Quick Review</h2>
+  <ul>
+    <li><strong>Variables</strong> are identifiers that point to objects in memory.</li>
+    <li>Identifiers are alphanumeric and case-sensitive; the first character must be a letter or underscore.</li>
+    <li><code>int</code> objects hold whole numbers; fractional values are truncated.</li>
+    <li><code>float</code> objects hold decimal / floating-point numbers.</li>
+    <li>Use <code>type()</code> to inspect the type of any variable.</li>
+  </ul>
+</section>
+
+<!-- ═══════════════ STRINGS ═══════════════ -->
+<section class="section" id="strings">
+  <div class="section-eyebrow">Topic 1</div>
+  <h2>📘 Strings</h2>
+
+  <p>A <strong>string</strong> is a sequence of characters enclosed in single or double quotes.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">name = "TRISH"</code></pre>
+  </div>
+
+  <h4>Indexing</h4>
+  <p>Strings use <strong>zero-based indexing</strong> — the first character is at index <code>0</code>. Negative indexes count backward from the end.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">print(name[0])   # → T  (first character)
+print(name[4])   # → H  (fifth character)
+print(name[-1])  # → H  (last character, via negative index)</code></pre>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>Index out of range:</strong> Accessing an index beyond the string length raises an <code>IndexError</code>. Python catches this explicitly — a safety advantage over older languages like C, which would silently read adjacent memory.
+  </div>
+
+  <div class="callout callout-info">
+    <strong>Strings are immutable:</strong> Once created, a string cannot be modified. To make a change you must create a new string.
+  </div>
+
+  <h4>Concatenation</h4>
+  <p>The <code>+</code> operator is <em>overloaded</em> for strings — it concatenates rather than adds.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">first = "New"
+last  = "York"
+city  = first + " " + last   # → "New York"
+
+# You cannot concatenate a string with an integer directly — convert first:
+room = "Room " + str(5)      # → "Room 5"</code></pre>
+  </div>
+
+  <h4>F-Strings</h4>
+  <p>Prefix a string with <code>f</code> and place expressions inside <code>{}</code> to embed values directly.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">number = 6
+amount = 32
+print(f"{number} burritos cost ${amount}")  # → 6 burritos cost $32</code></pre>
+  </div>
+
+  <h4>F-String Formatting Codes</h4>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Format</th>
+          <th>Meaning</th>
+          <th>Example</th>
+          <th>Output</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>:.2f</code></td><td>Float, 2 decimal places</td><td><code>f"{3.14159:.2f}"</code></td><td><code>3.14</code></td></tr>
+        <tr><td><code>:d</code></td><td>Integer (decimal)</td><td><code>f"{4:d}"</code></td><td><code>4</code></td></tr>
+        <tr><td><code>:3d</code></td><td>Integer, 3 spaces wide</td><td><code>f"{4:3d}"</code></td><td><code>&nbsp;&nbsp;4</code></td></tr>
+        <tr><td><code>:03d</code></td><td>Integer with leading zeros</td><td><code>f"{4:03d}"</code></td><td><code>004</code></td></tr>
+        <tr><td><code>:,d</code></td><td>Integer with comma separators</td><td><code>f"{7600:,d}"</code></td><td><code>7,600</code></td></tr>
+        <tr><td><code>:,.2f</code></td><td>Float with commas + 2 decimals</td><td><code>f"{1234567.89:,.2f}"</code></td><td><code>1,234,567.89</code></td></tr>
+        <tr><td><code>:b</code></td><td>Binary representation</td><td><code>f"{13:b}"</code></td><td><code>1101</code></td></tr>
+        <tr><td><code>:08b</code></td><td>Binary, 8 digits, leading zeros</td><td><code>f"{13:08b}"</code></td><td><code>00001101</code></td></tr>
+        <tr><td><code>:x</code></td><td>Hexadecimal (lowercase)</td><td><code>f"{122:x}"</code></td><td><code>7a</code></td></tr>
+        <tr><td><code>:X</code></td><td>Hexadecimal (uppercase)</td><td><code>f"{122:X}"</code></td><td><code>7A</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════ LISTS ═══════════════ -->
+<section class="section" id="lists">
+  <div class="section-eyebrow">Topic 2</div>
+  <h2>📋 Lists</h2>
+
+  <p>A <strong>list</strong> is a mutable, ordered sequence that can hold items of any type, defined with square brackets.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">students = ["Alice", "Bob", "Carlos", "Diana", "Evan"]
+print(students[0])   # → Alice
+print(students[-1])  # → Evan</code></pre>
+  </div>
+
+  <h4>Common Operations</h4>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">students.append("Fatima")      # Add to the end
+students.remove("Bob")         # Remove by value
+print(len(students))           # Number of items</code></pre>
+  </div>
+
+  <p><strong>Lists vs. Strings:</strong> Both are indexed sequences, but strings are <em>immutable</em> while lists are <em>mutable</em> — use a list when your collection needs to grow, shrink, or change.</p>
+</section>
+
+<!-- ═══════════════ TUPLES ═══════════════ -->
+<section class="section" id="tuples">
+  <div class="section-eyebrow">Topic 3</div>
+  <h2>📦 Tuples</h2>
+
+  <p>A <strong>tuple</strong> is an immutable, ordered sequence defined with parentheses.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">white_house = ("1600 Pennsylvania Ave", "Washington", "DC")
+print(white_house[0])   # → 1600 Pennsylvania Ave</code></pre>
+  </div>
+
+  <ul>
+    <li>Tuples <strong>cannot be modified</strong> after creation — useful for fixed or constant data.</li>
+    <li>Python can optimize tuples internally because it knows they won't change.</li>
+    <li>Tuples print with <code>()</code>; lists print with <code>[]</code>.</li>
+  </ul>
+
+  <h4>Named Tuples</h4>
+  <p>Import <code>namedtuple</code> from the <code>collections</code> module to give fields readable names instead of numeric indexes.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">from collections import namedtuple
+
+Car = namedtuple("Car", ["make", "model", "price", "seats"])
+blazer = Car("Chevrolet", "Blazer", 32000, 8)
+
+print(blazer.make)    # → Chevrolet
+print(blazer.price)   # → 32000</code></pre>
+  </div>
+
+  <h4>List vs. Tuple — When to Use Which</h4>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Type</th><th>Mutable?</th><th>Use When…</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>list</code></td>
+          <td><span class="tick">✅ Yes</span></td>
+          <td>Data will grow, shrink, or change</td>
+        </tr>
+        <tr>
+          <td><code>tuple</code></td>
+          <td><span class="cross">❌ No</span></td>
+          <td>Data is fixed (like constants)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════ DICTIONARIES ═══════════════ -->
+<section class="section" id="dicts">
+  <div class="section-eyebrow">Topic 4</div>
+  <h2>🗂️ Dictionaries</h2>
+
+  <p>A <strong>dictionary</strong> stores <strong>key-value pairs</strong>, similar to a real-world lookup table. Defined with curly braces containing <code>key: value</code> pairs.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">scores = {}                          # Empty dictionary
+scores["Lionel Messi"] = 91
+scores["Cristiano Ronaldo"] = 90
+
+print(scores["Lionel Messi"])        # → 91
+print(len(scores))                   # → 2</code></pre>
+  </div>
+
+  <ul>
+    <li>Keys are typically strings; values can be any type.</li>
+    <li>Real-world parallel: <strong>Redis</strong> is a production key-value store used to cache web data rather than repeatedly querying a database.</li>
+  </ul>
+</section>
+
+<!-- ═══════════════ SETS ═══════════════ -->
+<section class="section" id="sets">
+  <div class="section-eyebrow">Topic 5</div>
+  <h2>🔵 Sets</h2>
+
+  <p>A <strong>set</strong> is an unordered collection of <strong>unique</strong> values — duplicates are automatically removed.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python"># Creating a set from a list (auto-deduplicates)
+names = ["Alice", "Bob", "Alice", "Carlos", "Bob"]
+unique = set(names)
+print(unique)   # → {'Alice', 'Bob', 'Carlos'}</code></pre>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>Important gotcha:</strong> <code>{}</code> creates an empty <strong>dictionary</strong>, NOT an empty set. To create an empty set use <code>my_set = set()</code>.
+  </div>
+
+  <h4>Set Operations</h4>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">A = {1, 2, 3, "gorgon"}
+B = {3, "gorgon", 4, 5}
+
+C = A.union(B)           # All unique items from both sets (returns new set)
+D = A.intersection(B)    # Only items in both sets (returns new set)
+E = A.difference(B)      # Items in A but not in B</code></pre>
+  </div>
+
+  <p><strong>Methods:</strong> <code>add()</code>, <code>remove()</code>, <code>pop()</code> (removes a random item — order is not guaranteed), <code>clear()</code></p>
+</section>
+
+<!-- ═══════════════ CASTING ═══════════════ -->
+<section class="section" id="casting">
+  <div class="section-eyebrow">Topic 6</div>
+  <h2>🔄 Type Conversion (Casting)</h2>
+
+  <p>Python performs <strong>implicit</strong> conversion in some cases, but often you must convert explicitly.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">x = int("42")          # String → Integer
+y = float("3.14")      # String → Float
+z = str(100)           # Integer → String</code></pre>
+  </div>
+
+  <h4>Common Gotchas</h4>
+  <ul>
+    <li><code>int("3.14")</code> will <strong>fail</strong> — convert to float first: <code>int(float("3.14"))</code></li>
+    <li>Strings with commas like <code>"1,000"</code> cannot be converted directly — strip the comma first.</li>
+    <li><code>input()</code> <strong>always returns a string</strong> — always cast before doing math.</li>
+  </ul>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">age = int(input("Enter your age: "))   # Must cast!</code></pre>
+  </div>
+</section>
+
+<!-- ═══════════════ BINARY ═══════════════ -->
+<section class="section" id="binary">
+  <div class="section-eyebrow">Topic 7</div>
+  <h2>💻 Binary &amp; Hexadecimal</h2>
+
+  <p>Computers store everything in <strong>binary</strong> (0s and 1s) because circuits have two states: on / off, charged / uncharged.</p>
+  <p><strong>Hexadecimal</strong> (base 16, using 0–9 and A–F) is a compact way to represent binary data — each hex digit represents exactly 4 binary bits.</p>
+
+  <h4>Binary → Decimal</h4>
+  <p><code>1101</code> = 1×8 + 1×4 + 0×2 + 1×1 = <strong>13</strong></p>
+
+  <h4>Decimal → Binary</h4>
+  <p>Repeatedly divide by 2 and collect remainders (read from bottom to top):<br>
+  17 ÷ 2 = 8 R<strong>1</strong>, 8 ÷ 2 = 4 R<strong>0</strong>, 4 ÷ 2 = 2 R<strong>0</strong>, 2 ÷ 2 = 1 R<strong>0</strong>, 1 ÷ 2 = 0 R<strong>1</strong> → <strong>10001</strong></p>
+
+  <h4>Using F-Strings for Instant Conversion</h4>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">n = 13
+print(f"{n:b}")    # → 1101      (binary)
+print(f"{n:08b}")  # → 00001101  (8-bit binary with leading zeros)
+print(f"{n:x}")    # → d         (hexadecimal lowercase)
+print(f"{n:X}")    # → D         (hexadecimal uppercase)</code></pre>
+  </div>
+</section>
+
+<!-- ═══════════════ ACTIVITIES ═══════════════ -->
+<section class="section" id="activities">
+  <div class="section-eyebrow">Practice</div>
+  <h2>🛠️ Hands-On Activities</h2>
+
+  <div class="activity">
+    <h4>Activity 1 — Strings</h4>
+    <ol>
+      <li>Create a string variable with your full name.</li>
+      <li>Print your first initial using <strong>negative indexing</strong>.</li>
+      <li>Write a program that asks for a first and last name, then prints: <code>Hello, [Name]! Your name has [N] characters.</code></li>
+      <li>Using an F-string, print a receipt with: item name, quantity, price per unit, and total cost (formatted to 2 decimal places).</li>
+      <li><span class="challenge-pill">Challenge</span> Ask for a whole number and print it in binary and hexadecimal.</li>
+    </ol>
+  </div>
+
+  <div class="activity">
+    <h4>Activity 2 — Lists</h4>
+    <ol>
+      <li>Create a list of 5 student names.</li>
+      <li>Print the first and last names in the list.</li>
+      <li>Add a new student name with <code>.append()</code>.</li>
+      <li>Remove one student name with <code>.remove()</code>.</li>
+    </ol>
+  </div>
+
+  <div class="activity">
+    <h4>Activity 3 — Exam Scores</h4>
+    <ol>
+      <li>Create a list of exam scores.</li>
+      <li>Compute and print the <strong>average</strong> using <code>sum()</code> and <code>len()</code>.</li>
+      <li>Compute and print the <strong>highest</strong> score using <code>max()</code>.</li>
+      <li>Compute and print the <strong>lowest</strong> score using <code>min()</code>.</li>
+    </ol>
+  </div>
+
+  <div class="activity">
+    <h4>Activity 4 — Named Tuple</h4>
+    <ol>
+      <li>Create a named tuple called <code>SHIP</code> with fields: <code>name</code>, <code>capacity</code>, <code>home_port</code>, <code>year_built</code>.</li>
+      <li>Create at least two ship instances.</li>
+      <li>Print each ship's details using dot notation.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ UPCOMING ═══════════════ -->
+<section class="section" id="upcoming">
+  <div class="section-eyebrow">Schedule</div>
+  <h2>📅 Coming Up</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Item</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>June 2</td><td>Chapter 3 readings &amp; labs due</td></tr>
+        <tr><td>June 9</td><td>Chapter 4 – Branching</td></tr>
+        <tr><td>June 16</td><td>Chapter 5 – Loops</td></tr>
+        <tr><td>After June 16</td><td>Midterm available (Chapters 1–5)</td></tr>
+        <tr><td>June 23</td><td>Midterm due (before class)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Questions? Post on the <strong>Class Question Board</strong> in Canvas, email
+  <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>, or use the <strong>Circle In</strong> AI tutor.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>
