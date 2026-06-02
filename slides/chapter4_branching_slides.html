@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 4: Branching — COP 1047C Introduction to Python Programming</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg:       #0d1117;
+    --surface:  #161b22;
+    --surface2: #21262d;
+    --accent:   #f78166;
+    --accent2:  #58a6ff;
+    --accent3:  #3fb950;
+    --accent4:  #d2a8ff;
+    --text:     #e6edf3;
+    --muted:    #8b949e;
+    --border:   #30363d;
+    --slide-w:  1280px;
+    --slide-h:  720px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #010409;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 60px;
+    gap: 20px;
+  }
+
+  /* ── NAV BAR ── */
+  #nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(13,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 20px;
+    z-index: 100;
+  }
+  #nav button {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 18px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  #nav button:hover { background: var(--surface2); border-color: var(--accent2); }
+  #nav button:disabled { opacity: 0.35; cursor: default; }
+  #slide-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    min-width: 80px;
+    text-align: center;
+  }
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent4));
+    transition: width .3s ease;
+    z-index: 101;
+  }
+
+  /* ── SLIDE WRAPPER ── */
+  .slide {
+    width: min(var(--slide-w), 100%);
+    min-height: var(--slide-h);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    animation: fadein .25s ease;
+  }
+  .slide.active { display: flex; }
+  @keyframes fadein { from { opacity:0; transform:translateY(8px);} to { opacity:1; transform:none;} }
+
+  /* ── SLIDE HEADER BAND ── */
+  .slide-header {
+    padding: 18px 40px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .chapter-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--accent);
+    color: #000;
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .slide-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: .04em;
+  }
+  .mdc-badge {
+    margin-left: auto;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* ── SLIDE BODY ── */
+  .slide-body {
+    flex: 1;
+    padding: 36px 56px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ── HERO (title slide) ── */
+  .hero { justify-content: center; align-items: flex-start; }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent2);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .hero h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -.03em;
+    background: linear-gradient(135deg, var(--text) 40%, var(--accent4));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 12px;
+    max-width: 560px;
+    line-height: 1.6;
+  }
+  .hero-meta {
+    margin-top: 32px;
+    display: flex;
+    gap: 32px;
+  }
+  .hero-meta-item { display: flex; flex-direction: column; gap: 3px; }
+  .hero-meta-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font-family: 'JetBrains Mono', monospace; }
+  .hero-meta-value { font-size: 15px; font-weight: 500; color: var(--text); }
+
+  /* decorative corner grid */
+  .corner-grid {
+    position: absolute;
+    right: 40px; bottom: 40px;
+    width: 200px; height: 200px;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: .4;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  /* ── HEADING ── */
+  h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.025em;
+    color: var(--text);
+  }
+  h2 .accent { color: var(--accent); }
+  h2 .accent2 { color: var(--accent2); }
+  h2 .accent4 { color: var(--accent4); }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-bottom: -8px;
+  }
+
+  /* ── BODY TEXT ── */
+  p { font-size: 17px; line-height: 1.7; color: var(--text); font-weight: 300; }
+  p strong { font-weight: 600; color: var(--accent2); }
+
+  /* ── TWO-COL ── */
+  .cols { display: grid; gap: 28px; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .cols-60-40 { grid-template-columns: 60fr 40fr; }
+  .cols-50-50 { grid-template-columns: 1fr 1fr; }
+
+  /* ── CONCEPT CARDS ── */
+  .card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .card-icon { font-size: 22px; line-height: 1; }
+  .card-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent2);
+  }
+  .card-body { font-size: 14.5px; line-height: 1.6; color: var(--text); font-weight: 300; }
+  .card.green .card-title { color: var(--accent3); }
+  .card.orange .card-title { color: var(--accent); }
+  .card.purple .card-title { color: var(--accent4); }
+
+  /* ── CODE BLOCK ── */
+  pre {
+    background: #010409;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.75;
+    overflow-x: auto;
+    color: #e6edf3;
+    letter-spacing: 0;
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0, "calt" 0;
+  }
+  .kw  { color: #ff7b72; }   /* keyword */
+  .fn  { color: #d2a8ff; }   /* function */
+  .str { color: #a5d6ff; }   /* string */
+  .num { color: #79c0ff; }   /* number */
+  .cm  { color: #8b949e; font-style: italic; } /* comment */
+  .op  { color: #ff7b72; }   /* operator */
+  .var { color: #ffa657; }   /* variable */
+  .bool { color: #79c0ff; }  /* boolean */
+
+  /* ── INLINE CODE ── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .88em;
+    background: rgba(110,118,129,.1);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    letter-spacing: 0;
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0, "calt" 0;
+    color: var(--accent4);
+  }
+
+  /* ── BULLET LIST ── */
+  ul.bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  ul.bullets li {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text);
+    font-weight: 300;
+    padding-left: 24px;
+    position: relative;
+  }
+  ul.bullets li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent2);
+    font-size: 12px;
+    top: 4px;
+  }
+  ul.bullets li strong { color: var(--accent2); font-weight: 600; }
+  ul.bullets li .hl-orange { color: var(--accent); font-weight: 600; }
+  ul.bullets li .hl-green  { color: var(--accent3); font-weight: 600; }
+  ul.bullets li .hl-purple { color: var(--accent4); font-weight: 600; }
+
+  /* ── OPERATOR TABLE ── */
+  .op-table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .op-table th {
+    text-align: left;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .op-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid rgba(48,54,61,.5);
+    line-height: 1.5;
+    vertical-align: top;
+  }
+  .op-table tr:last-child td { border-bottom: none; }
+  .op-table td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent4);
+    white-space: nowrap;
+    letter-spacing: 0;
+  }
+  .op-table td:first-child code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+    letter-spacing: 0;
+  }
+  .op-table td:nth-child(2) { color: var(--muted); font-size: 13px; }
+  .op-table td:nth-child(2) code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    color: var(--accent4);
+    letter-spacing: 0;
+  }
+  .op-table td:nth-child(3) {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--accent3);
+    letter-spacing: 0;
+  }
+  .op-table td:nth-child(3) code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+    letter-spacing: 0;
+  }
+  .op-table-wrap {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ── FLOWCHART ── */
+  .flowchart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .fc-box {
+    background: var(--surface2);
+    border: 1.5px solid var(--accent2);
+    border-radius: 6px;
+    padding: 8px 20px;
+    color: var(--text);
+    white-space: nowrap;
+    text-align: center;
+    min-width: 180px;
+  }
+  .fc-diamond {
+    background: var(--surface2);
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    padding: 8px 20px;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    min-width: 200px;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2px 0;
+  }
+  .fc-arrow {
+    width: 1.5px;
+    height: 20px;
+    background: var(--muted);
+    position: relative;
+  }
+  .fc-arrow::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--muted);
+  }
+  .fc-row { display: flex; align-items: center; gap: 16px; width: 100%; justify-content: center; }
+  .fc-branch-label { font-size: 11px; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+  .fc-horiz-arrow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--muted);
+    font-size: 18px;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    background: rgba(88,166,255,.08);
+    border-left: 3px solid var(--accent2);
+    border-radius: 0 6px 6px 0;
+    padding: 12px 18px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text);
+  }
+  .highlight-box.orange {
+    background: rgba(247,129,102,.08);
+    border-left-color: var(--accent);
+  }
+  .highlight-box.green {
+    background: rgba(63,185,80,.08);
+    border-left-color: var(--accent3);
+  }
+  .highlight-box.purple {
+    background: rgba(210,168,255,.08);
+    border-left-color: var(--accent4);
+  }
+
+  /* ── TRUTH TABLE ── */
+  .truth-table { border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 13px; width: 100%; }
+  .truth-table th {
+    background: var(--surface2);
+    padding: 8px 14px;
+    text-align: center;
+    color: var(--accent2);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    border: 1px solid var(--border);
+  }
+  .truth-table td {
+    padding: 7px 14px;
+    text-align: center;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .truth-table .t { color: var(--accent3); font-weight: 700; }
+  .truth-table .f { color: var(--accent); font-weight: 700; }
+
+  /* ── QUIZ SLIDE ── */
+  .quiz-q {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 22px;
+  }
+  .quiz-q .q-text { font-size: 16px; line-height: 1.6; margin-bottom: 14px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    background: rgba(48,54,61,.4);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 14px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    user-select: none;
+  }
+  .quiz-opt:hover { border-color: var(--accent2); background: rgba(88,166,255,.06); }
+  .quiz-opt.correct { border-color: var(--accent3); background: rgba(63,185,80,.1); }
+  .quiz-opt.wrong   { border-color: var(--accent); background: rgba(247,129,102,.1); }
+  .quiz-opt .badge {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; flex-shrink: 0;
+    color: var(--muted);
+  }
+  .quiz-opt.correct .badge { background: var(--accent3); border-color: var(--accent3); color: #000; }
+  .quiz-opt.wrong   .badge { background: var(--accent); border-color: var(--accent); color: #000; }
+
+  /* ── SECTION DIVIDER SLIDE ── */
+  .section-divider {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+  .section-divider .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 80px;
+    font-weight: 700;
+    color: var(--border);
+    line-height: 1;
+    letter-spacing: -.04em;
+  }
+  .section-divider h2 {
+    font-size: 42px;
+  }
+  .section-divider p {
+    color: var(--muted);
+    max-width: 500px;
+    margin: 0 auto;
+    font-size: 16px;
+  }
+  .divider-line {
+    width: 60px; height: 3px;
+    background: var(--accent2);
+    border-radius: 2px;
+    margin: 4px auto;
+  }
+
+  /* ── ERROR BOX ── */
+  .error-box {
+    background: rgba(247,129,102,.08);
+    border: 1px solid rgba(247,129,102,.3);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .error-box .error-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: .1em;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* ── BADGE ── */
+  .badge-pill {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-weight: 700;
+    letter-spacing: .04em;
+  }
+  .badge-pill.blue   { background: rgba(88,166,255,.15); color: var(--accent2); border: 1px solid rgba(88,166,255,.3); }
+  .badge-pill.orange { background: rgba(247,129,102,.15); color: var(--accent); border: 1px solid rgba(247,129,102,.3); }
+  .badge-pill.green  { background: rgba(63,185,80,.15); color: var(--accent3); border: 1px solid rgba(63,185,80,.3); }
+  .badge-pill.purple { background: rgba(210,168,255,.15); color: var(--accent4); border: 1px solid rgba(210,168,255,.3); }
+
+  /* ── KEY RULE ── */
+  .key-rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .key-rule .kr-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .key-rule .kr-text { font-size: 15px; line-height: 1.6; color: var(--text); font-weight: 300; }
+  .key-rule .kr-text strong { color: var(--accent2); font-weight: 600; }
+
+  /* ── TRY IT BLOCKS ── */
+  .tryit-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+  .tryit-block:hover { border-color: var(--accent3); }
+  .tryit-answer {
+    display: none;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .tryit-block.open .tryit-answer { display: block; }
+  .tryit-answer-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent3);
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .tryit-q p { font-size: 15px; line-height: 1.6; }
+
+  /* spacing helpers */
+  .mt4  { margin-top: 4px; }
+  .mt8  { margin-top: 8px; }
+  .mt12 { margin-top: 12px; }
+  .gap4  { gap: 4px !important; }
+  .gap8  { gap: 8px !important; }
+  .gap12 { gap: 12px !important; }
+  .gap16 { gap: 16px !important; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 800px) {
+    .hero h1 { font-size: 40px; }
+    .slide-body { padding: 24px 28px; }
+    h2 { font-size: 26px; }
+    .cols-2, .cols-60-40, .cols-50-50, .cols-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 1 — TITLE
+═════════════════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div class="slide-header">
+    <span class="chapter-tag">CHAPTER 4</span>
+    <span class="slide-title">COP 1047C · Introduction to Python Programming</span>
+    <span class="mdc-badge">Miami Dade College · Summer 2026</span>
+  </div>
+  <div class="slide-body hero">
+    <div>
+      <p class="hero-eyebrow">Chapter 4 · Sections 4.1 – 4.12</p>
+      <h1>Branching</h1>
+      <p class="hero-sub">Making decisions in code: if, elif, else, logical operators, ranges, and more.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">Instructor</span>
+          <span class="hero-meta-value">John Masseria</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">Due</span>
+          <span class="hero-meta-value">June 9, 2026</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">Sections</span>
+          <span class="hero-meta-value">4.1 – 4.12</span>
+        </div>
+      </div>
+    </div>
+    <div class="corner-grid"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 2 — AGENDA
+═════════════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="slide-header">
+    <span class="chapter-tag">CHAPTER 4</span>
+    <span class="slide-title">Today's Agenda</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>What We'll <span class="accent2">Cover</span></h2>
+    <div class="cols cols-2">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="card">
+          <span class="card-title">4.1 &amp; 4.2 — if / if-else / elif</span>
+          <span class="card-body">Branch concept, equality &amp; inequality operators, multi-branch structures</span>
+        </div>
+        <div class="card">
+          <span class="card-title">4.3 &amp; 4.4 — Ranges with Branches</span>
+          <span class="card-body">Detecting number ranges, relational operators, operator chaining</span>
+        </div>
+        <div class="card">
+          <span class="card-title">4.5 &amp; 4.6 — Logical Operators</span>
+          <span class="card-body">and, or, not; detecting ranges with &amp; without gaps</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="card green">
+          <span class="card-title">4.7 — Multiple &amp; Nested if Statements</span>
+          <span class="card-body">Independent if vs. if-elif-else; nested decision structures</span>
+        </div>
+        <div class="card orange">
+          <span class="card-title">4.8 – 4.10 — Comparisons, Membership, Precedence</span>
+          <span class="card-body">Types, in/not in, is/is not, operator order</span>
+        </div>
+        <div class="card purple">
+          <span class="card-title">4.11 &amp; 4.12 — Blocks &amp; Conditional Expressions</span>
+          <span class="card-body">Indentation rules, ternary expressions</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 3 — DIVIDER 4.1
+═════════════════════════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="slide-header">
+    <span class="chapter-tag">4.1</span>
+    <span class="slide-title">If-else Branches (General)</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body section-divider">
+    <div class="section-num">4.1</div>
+    <div class="divider-line"></div>
+    <h2>If-else Branches <span class="accent2">(General)</span></h2>
+    <p>Introducing the branch concept — how programs take different paths based on conditions.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 4 — BRANCH CONCEPT
+═════════════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="slide-header">
+    <span class="chapter-tag">4.1</span>
+    <span class="slide-title">The Branch Concept</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Core Idea</p>
+    <h2>What Is a <span class="accent">Branch</span>?</h2>
+    <div class="cols cols-60-40" style="gap:28px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="highlight-box">
+          A <strong>branch</strong> is a sequence of statements that only executes under a certain condition. Programs make decisions by evaluating expressions that are <strong>True</strong> or <strong>False</strong>.
+        </div>
+        <ul class="bullets">
+          <li>An <strong>if</strong> branch executes <em>only when</em> its expression is True</li>
+          <li>An <strong>if-else</strong> branch always executes one of two paths</li>
+          <li>An <strong>if-elif-else</strong> chain handles three or more outcomes</li>
+          <li>Exactly <span class="hl-orange">one</span> branch in an if-elif-else executes per run</li>
+        </ul>
+        <div class="highlight-box orange">
+          <strong>Real-world analogy:</strong> A restaurant host seats a party of 1 at the counter, party of 2 at a small table, and larger parties at a large table — one rule fires per group.
+        </div>
+      </div>
+      <div>
+        <div class="flowchart" style="gap:0;">
+          <div class="fc-box">userAge = Get input</div>
+          <div class="fc-arrow"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="fc-diamond" style="min-width:180px;min-height:56px;font-size:12px;">userAge &gt; 65</div>
+          </div>
+          <div class="fc-row" style="margin-top:4px;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <span class="fc-branch-label" style="color:var(--accent3);">True ✓</span>
+              <div class="fc-box" style="border-color:var(--accent3);color:var(--accent3);font-size:12px;">rate = rate - 20</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <span class="fc-branch-label">False</span>
+              <div class="fc-box" style="font-size:12px;border-color:var(--muted);color:var(--muted);">(skip)</div>
+            </div>
+          </div>
+          <div class="fc-arrow" style="margin-top:6px;"></div>
+          <div class="fc-box" style="font-size:12px;">print rate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 5 — IF SYNTAX
+═════════════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="slide-header">
+    <span class="chapter-tag">4.2</span>
+    <span class="slide-title">Detecting Equal Values with Branches</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Python <span class="accent">if</span>, <span class="accent">if-else</span>, <span class="accent">elif</span> Syntax</h2>
+    <div class="cols cols-2" style="align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <pre><span class="cm"># if statement</span>
+<span class="kw">if</span> <span class="var">num_years</span> <span class="op">==</span> <span class="num">50</span>:
+    <span class="fn">print</span>(<span class="str">"Congrats!"</span>)
+    <span class="var">hotel_rate</span> <span class="op">=</span> <span class="var">hotel_rate</span> <span class="op">/</span> <span class="num">2</span></pre>
+        <pre><span class="cm"># if-else statement</span>
+<span class="kw">if</span> <span class="var">div_remainder</span> <span class="op">==</span> <span class="num">0</span>:
+    <span class="fn">print</span>(<span class="str">f"</span><span class="var">{user_num}</span><span class="str"> is even."</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">f"</span><span class="var">{user_num}</span><span class="str"> is odd."</span>)</pre>
+        <pre><span class="cm"># multi-branch elif</span>
+<span class="kw">if</span> <span class="var">num_years</span> <span class="op">==</span> <span class="num">1</span>:
+    <span class="fn">print</span>(<span class="str">"First year!"</span>)
+<span class="kw">elif</span> <span class="var">num_years</span> <span class="op">==</span> <span class="num">25</span>:
+    <span class="fn">print</span>(<span class="str">"Silver!"</span>)
+<span class="kw">elif</span> <span class="var">num_years</span> <span class="op">==</span> <span class="num">50</span>:
+    <span class="fn">print</span>(<span class="str">"Golden!"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Nothing special."</span>)</pre>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="key-rule">
+          <span class="kr-icon">🔑</span>
+          <span class="kr-text">Use <strong>==</strong> (equality) to compare, never <strong>=</strong> (assignment) inside a condition.</span>
+        </div>
+        <div class="key-rule">
+          <span class="kr-icon">📐</span>
+          <span class="kr-text"><strong>Indentation is required.</strong> Branch statements must be indented (4 spaces standard).</span>
+        </div>
+        <div class="op-table-wrap">
+          <table class="op-table">
+            <tr><th>Operator</th><th>Meaning</th><th>Example (x=3)</th></tr>
+            <tr><td><code>==</code></td><td>equal to</td><td><code>x == 3</code> → True</td></tr>
+            <tr><td><code>!=</code></td><td>not equal to</td><td><code>x != 4</code> → True</td></tr>
+          </table>
+        </div>
+        <div class="error-box">
+          <span class="error-label">⚠ COMMON ERROR</span>
+          Writing <code>if x = 5:</code> causes a <strong>SyntaxError</strong>. Always use <code>==</code> for comparison.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     BREAKOUT 1 — NOW YOU TRY
+═════════════════════════════════════════════ -->
+<div class="slide" id="s_breakout1">
+  <div class="slide-header">
+    <span class="chapter-tag" style="background:var(--accent3);color:#000;">TRY IT</span>
+    <span class="slide-title">Now You Try — if / if-else / elif</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Now You <span class="accent3">Try</span> ✏️</h2>
+    <p style="font-size:15px;color:var(--muted);">Open VS Code and write your solutions. Be ready to share with the class in ~8 minutes.</p>
+    <div class="cols cols-3" style="align-items:start;gap:14px;">
+
+      <div class="card" style="height:100%;">
+        <span class="badge-pill green" style="margin-bottom:4px;display:inline-block;">Problem 1 — Trace</span>
+        <span class="card-body" style="font-size:14px;margin-bottom:10px;">What does this code print? Work through it line by line <em>without</em> running it first.</span>
+        <pre style="font-size:13px;"><span class="var">num_apples</span> <span class="op">=</span> <span class="num">5</span>
+<span class="kw">if</span> <span class="var">num_apples</span> <span class="op">&lt;</span> <span class="num">7</span>:
+    <span class="fn">print</span>(<span class="str">"a"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"e"</span>)
+<span class="fn">print</span>(<span class="str">"k"</span>)</pre>
+        <div class="highlight-box" style="margin-top:10px;font-size:13px;">
+          <strong>Output:</strong><br>
+          <span style="font-family:'JetBrains Mono',monospace;">?<br>?</span>
+        </div>
+      </div>
+
+      <div class="card" style="height:100%;">
+        <span class="badge-pill blue" style="margin-bottom:4px;display:inline-block;">Problem 2 — Write</span>
+        <span class="card-body" style="font-size:14px;margin-bottom:10px;">Write an <code>if-else</code> statement from scratch:</span>
+        <div class="highlight-box" style="font-size:13.5px;margin-bottom:10px;">
+          Read an integer into <code>barcode_check_digit</code>.<br><br>
+          If it equals <code>7</code>, assign <code>group_id = 1</code>.<br>
+          Otherwise, assign <code>group_id = barcode_check_digit</code>.<br><br>
+          Print <code>group_id</code>.
+        </div>
+        <div class="highlight-box orange" style="font-size:13px;">
+          Test: input <code>7</code> → prints <code>1</code><br>
+          Test: input <code>3</code> → prints <code>3</code>
+        </div>
+      </div>
+
+      <div class="card" style="height:100%;">
+        <span class="badge-pill orange" style="margin-bottom:4px;display:inline-block;">Problem 3 — Trace</span>
+        <span class="card-body" style="font-size:14px;margin-bottom:10px;">What is the final value of <code>employee_bonus</code> when <code>num_sales = 7</code>? Which branch executes and why?</span>
+        <pre style="font-size:12.5px;"><span class="kw">if</span> <span class="var">num_sales</span> <span class="op">==</span> <span class="num">0</span>:
+    <span class="var">employee_bonus</span> <span class="op">=</span> <span class="num">0</span>
+<span class="kw">elif</span> <span class="var">num_sales</span> <span class="op">==</span> <span class="num">1</span>:
+    <span class="var">employee_bonus</span> <span class="op">=</span> <span class="num">2</span>
+<span class="kw">elif</span> <span class="var">num_sales</span> <span class="op">==</span> <span class="num">2</span>:
+    <span class="var">employee_bonus</span> <span class="op">=</span> <span class="num">5</span>
+<span class="kw">else</span>:
+    <span class="var">employee_bonus</span> <span class="op">=</span> <span class="num">10</span></pre>
+        <div class="highlight-box" style="margin-top:10px;font-size:13px;">
+          <strong>employee_bonus = ?</strong>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 6 — RELATIONAL OPERATORS
+═════════════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="slide-header">
+    <span class="chapter-tag">4.4</span>
+    <span class="slide-title">Detecting Ranges with Branches</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Relational <span class="accent2">Operators</span></h2>
+    <div class="cols cols-2" style="align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="op-table-wrap">
+          <table class="op-table">
+            <tr><th>Op</th><th>Meaning</th><th>Example (x=3)</th></tr>
+            <tr><td><code>&lt;</code></td><td>less than</td><td><code>x &lt; 4</code> → True</td></tr>
+            <tr><td><code>&gt;</code></td><td>greater than</td><td><code>x &gt; 2</code> → True</td></tr>
+            <tr><td><code>&lt;=</code></td><td>less than or equal</td><td><code>x &lt;= 3</code> → True</td></tr>
+            <tr><td><code>&gt;=</code></td><td>greater than or equal</td><td><code>x &gt;= 3</code> → True</td></tr>
+            <tr><td><code>==</code></td><td>equal</td><td><code>x == 3</code> → True</td></tr>
+            <tr><td><code>!=</code></td><td>not equal</td><td><code>x != 4</code> → True</td></tr>
+          </table>
+        </div>
+        <div class="error-box">
+          <span class="error-label">⚠ INVALID OPERATORS</span>
+          <code>=&gt;</code>, <code>!&lt;</code>, <code>&lt;&gt;</code> are <strong>not valid</strong> Python operators. Python uses <code>&gt;=</code>, <code>&lt;=</code>, <code>!=</code>.
+        </div>
+      </div>
+      <div>
+        <pre><span class="var">user_age</span> <span class="op">=</span> <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Enter age: "</span>))
+
+<span class="kw">if</span> <span class="var">user_age</span> <span class="op">&lt;</span> <span class="num">16</span>:    <span class="cm"># ≤ 15</span>
+    <span class="fn">print</span>(<span class="str">"Too young."</span>)
+    <span class="var">insurance_price</span> <span class="op">=</span> <span class="num">0</span>
+<span class="kw">elif</span> <span class="var">user_age</span> <span class="op">&lt;</span> <span class="num">25</span>:  <span class="cm"># 16–24</span>
+    <span class="var">insurance_price</span> <span class="op">=</span> <span class="num">4800</span>
+<span class="kw">elif</span> <span class="var">user_age</span> <span class="op">&lt;</span> <span class="num">40</span>:  <span class="cm"># 25–39</span>
+    <span class="var">insurance_price</span> <span class="op">=</span> <span class="num">2350</span>
+<span class="kw">else</span>:                  <span class="cm"># 40+</span>
+    <span class="var">insurance_price</span> <span class="op">=</span> <span class="num">2100</span>
+
+<span class="fn">print</span>(<span class="str">f"Annual: $</span><span class="var">{insurance_price}</span><span class="str">"</span>)</pre>
+        <div class="highlight-box" style="margin-top:10px;">
+          Once a branch is entered, the <strong>remaining elif/else branches are skipped</strong>. Each branch's range is implicitly bounded by the previous False expressions.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 7 — OPERATOR CHAINING
+═════════════════════════════════════════════ -->
+<div class="slide" id="s7">
+  <div class="slide-header">
+    <span class="chapter-tag">4.4</span>
+    <span class="slide-title">Operator Chaining</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Operator <span class="accent4">Chaining</span></h2>
+    <div class="cols cols-2" style="align-items:start;gap:28px;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <p>Python lets you <strong>chain</strong> relational operators left-to-right, just like math notation.</p>
+        <pre><span class="cm"># Is user_grade in high school?</span>
+<span class="kw">if</span> <span class="num">9</span> <span class="op">&lt;=</span> <span class="var">user_grade</span> <span class="op">&lt;=</span> <span class="num">12</span>:
+    <span class="fn">print</span>(<span class="str">"in high school"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"not in high school"</span>)</pre>
+        <div class="highlight-box">
+          <code>9 &lt;= user_grade &lt;= 12</code> is equivalent to<br>
+          <code>(9 &lt;= user_grade) and (user_grade &lt;= 12)</code>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card">
+          <span class="card-title">How Chaining Works</span>
+          <span class="card-body">Evaluates left-to-right. If <code>a &lt; b</code> is False, evaluation stops — <code>b &lt; c</code> is never checked.</span>
+        </div>
+        <div class="card green">
+          <span class="card-title">Examples</span>
+          <span class="card-body">
+            <code>0 &lt;= x &lt; 100</code> — x is a nonneg. number under 100<br><br>
+            <code>z &lt; x &lt; y</code> — x is between z and y<br><br>
+            <code>10 &lt; x &lt; 15</code> — x is 11, 12, 13, or 14
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 8 — DIVIDER 4.5
+═════════════════════════════════════════════ -->
+<div class="slide" id="s8">
+  <div class="slide-header">
+    <span class="chapter-tag">4.5</span>
+    <span class="slide-title">Logical Operators</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body section-divider">
+    <div class="section-num">4.5</div>
+    <div class="divider-line"></div>
+    <h2>Logical <span class="accent3">Operators</span></h2>
+    <p>Using <code>and</code>, <code>or</code>, and <code>not</code> to build complex conditions and detect ranges.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 9 — AND / OR / NOT
+═════════════════════════════════════════════ -->
+<div class="slide" id="s9">
+  <div class="slide-header">
+    <span class="chapter-tag">4.5</span>
+    <span class="slide-title">and, or, not</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2><span class="accent3">and</span> · <span class="accent2">or</span> · <span class="accent">not</span></h2>
+    <div class="cols cols-3" style="align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="badge-pill green">AND</div>
+        <div class="highlight-box green">True <strong>only when BOTH</strong> operands are True.</div>
+        <table class="truth-table">
+          <tr><th>A</th><th>B</th><th>A and B</th></tr>
+          <tr><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr>
+          <tr><td class="f">F</td><td class="t">T</td><td class="f">F</td></tr>
+          <tr><td class="t">T</td><td class="f">F</td><td class="f">F</td></tr>
+          <tr><td class="t">T</td><td class="t">T</td><td class="t">T</td></tr>
+        </table>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="badge-pill blue">OR</div>
+        <div class="highlight-box">True when <strong>at least ONE</strong> operand is True.</div>
+        <table class="truth-table">
+          <tr><th>A</th><th>B</th><th>A or B</th></tr>
+          <tr><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr>
+          <tr><td class="f">F</td><td class="t">T</td><td class="t">T</td></tr>
+          <tr><td class="t">T</td><td class="f">F</td><td class="t">T</td></tr>
+          <tr><td class="t">T</td><td class="t">T</td><td class="t">T</td></tr>
+        </table>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="badge-pill orange">NOT</div>
+        <div class="highlight-box orange">Returns the <strong>opposite</strong> Boolean value.</div>
+        <table class="truth-table">
+          <tr><th>A</th><th>not A</th></tr>
+          <tr><td class="t">T</td><td class="f">F</td></tr>
+          <tr><td class="f">F</td><td class="t">T</td></tr>
+        </table>
+        <div class="card" style="margin-top:6px;">
+          <span class="card-body">Given <code>age=19, days=7</code>:<br>
+          <code>(age&gt;16) and (days&gt;10)</code> → <span style="color:var(--accent)">False</span><br>
+          <code>(age&gt;16) or (days&gt;10)</code> → <span style="color:var(--accent3)">True</span><br>
+          <code>not (days &gt; 10)</code> → <span style="color:var(--accent3)">True</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 10 — RANGES WITH LOGICAL OPS
+═════════════════════════════════════════════ -->
+<div class="slide" id="s10">
+  <div class="slide-header">
+    <span class="chapter-tag">4.5 / 4.6</span>
+    <span class="slide-title">Ranges with Logical Operators</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Ranges <span class="accent2">With</span> &amp; <span class="accent">Without</span> Gaps</h2>
+    <div class="cols cols-2" style="align-items:start;gap:24px;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="badge-pill green">No Gap — Implicit Ranges</div>
+        <p style="font-size:15px;">Sequential elif is cleaner when ranges are contiguous — the lower bound is implicit.</p>
+        <pre><span class="kw">if</span> <span class="var">x</span> <span class="op">&lt;</span> <span class="num">0</span>:
+    <span class="cm"># negative</span>
+<span class="kw">elif</span> <span class="var">x</span> <span class="op">&lt;=</span> <span class="num">10</span>:
+    <span class="cm"># 0..10  (implicit x >= 0)</span>
+<span class="kw">elif</span> <span class="var">x</span> <span class="op">&lt;=</span> <span class="num">20</span>:
+    <span class="cm"># 11..20 (implicit x > 10)</span>
+<span class="kw">else</span>:
+    <span class="cm"># 21+</span></pre>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="badge-pill orange">With Gap — Explicit Ranges</div>
+        <p style="font-size:15px;">Use <code>and</code>/<code>or</code> when ranges have a gap (non-contiguous values).</p>
+        <pre><span class="cm"># Movie ticket — gap is ages 13–64</span>
+<span class="kw">if</span> <span class="var">user_age</span> <span class="op">&lt;=</span> <span class="num">12</span>:
+    <span class="var">ticket</span> <span class="op">=</span> <span class="num">11</span>   <span class="cm"># child</span>
+<span class="kw">elif</span> <span class="var">user_age</span> <span class="op">&gt;=</span> <span class="num">65</span>:
+    <span class="var">ticket</span> <span class="op">=</span> <span class="num">12</span>   <span class="cm"># senior</span>
+<span class="kw">else</span>:
+    <span class="var">ticket</span> <span class="op">=</span> <span class="num">14</span>   <span class="cm"># adult</span>
+
+<span class="cm"># Office with two valid ranges:</span>
+<span class="kw">if</span> (<span class="var">office_num</span> <span class="op">&gt;=</span> <span class="num">100</span> <span class="kw">and</span>
+        <span class="var">office_num</span> <span class="op">&lt;=</span> <span class="num">150</span>) <span class="kw">or</span> \
+   (<span class="var">office_num</span> <span class="op">&gt;=</span> <span class="num">200</span> <span class="kw">and</span>
+        <span class="var">office_num</span> <span class="op">&lt;=</span> <span class="num">250</span>):
+    <span class="fn">print</span>(<span class="str">"Valid office"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     BREAKOUT 2 — NOW YOU TRY
+═════════════════════════════════════════════ -->
+<div class="slide" id="s_breakout2">
+  <div class="slide-header">
+    <span class="chapter-tag" style="background:var(--accent3);color:#000;">TRY IT</span>
+    <span class="slide-title">Now You Try — Ranges &amp; Logical Operators</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Now You <span class="accent3">Try</span> ✏️</h2>
+    <p style="font-size:15px;color:var(--muted);">Open VS Code and write your solutions. Be ready to share with the class in ~8 minutes.</p>
+    <div class="cols cols-3" style="align-items:start;gap:14px;">
+
+      <div class="card" style="height:100%;">
+        <span class="badge-pill green" style="margin-bottom:4px;display:inline-block;">Problem 1 — Fix the Bug</span>
+        <span class="card-body" style="font-size:14px;margin-bottom:10px;">This code never prints <code>"Teenager"</code>. Find and fix the bug.</span>
+        <pre style="font-size:13px;"><span class="var">input_val</span> <span class="op">=</span> <span class="fn">int</span>(<span class="fn">input</span>())
+<span class="kw">if</span> (<span class="var">input_val</span> <span class="op">&lt;</span> <span class="num">13</span>) <span class="kw">and</span> \
+   (<span class="var">input_val</span> <span class="op">&gt;</span> <span class="num">19</span>):
+    <span class="fn">print</span>(<span class="str">"Teenager"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Not a teenager"</span>)</pre>
+        <div class="highlight-box orange" style="margin-top:10px;font-size:13px;">
+          Test: input <code>15</code> → should print <code>Teenager</code><br>
+          Test: input <code>25</code> → should print <code>Not a teenager</code>
+        </div>
+      </div>
+
+      <div class="card" style="height:100%;">
+        <span class="badge-pill blue" style="margin-bottom:4px;display:inline-block;">Problem 2 — Trace</span>
+        <span class="card-body" style="font-size:14px;margin-bottom:10px;">What range of <code>num_passengers</code> values triggers each branch? Write the range next to each <code>print</code>.</span>
+        <pre style="font-size:13px;"><span class="var">num_passengers</span> <span class="op">=</span> <span class="fn">int</span>(<span class="fn">input</span>())
+<span class="kw">if</span> <span class="var">num_passengers</span> <span class="op">&lt;=</span> <span class="num">8</span>:
+    <span class="fn">print</span>(<span class="str">"Compact van"</span>)
+<span class="kw">elif</span> <span class="var">num_passengers</span> <span class="op">&lt;</span> <span class="num">15</span>:
+    <span class="fn">print</span>(<span class="str">"Medium van"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Group too large"</span>)</pre>
+        <div class="highlight-box" style="margin-top:10px;font-size:13px;">
+          Compact van: ____<br>
+          Medium van: ____<br>
+          Group too large: ____
+        </div>
+      </div>
+
+      <div class="card" style="height:100%;">
+        <span class="badge-pill orange" style="margin-bottom:4px;display:inline-block;">Problem 3 — Write</span>
+        <span class="card-body" style="font-size:14px;margin-bottom:10px;">Write the missing condition using a single <code>if</code> and logical operators:</span>
+        <div class="highlight-box" style="font-size:13.5px;margin-bottom:10px;">
+          Read an integer into <code>lemon_amount</code>.<br><br>
+          Print <code>"Unrespectable supply"</code> if the amount is <strong>fewer than 15</strong> or <strong>25 or more</strong>.<br><br>
+          Otherwise print <code>"Acceptable supply"</code>.
+        </div>
+        <div class="highlight-box orange" style="font-size:13px;">
+          Test: input <code>10</code> → <code>Unrespectable supply</code><br>
+          Test: input <code>20</code> → <code>Acceptable supply</code><br>
+          Test: input <code>25</code> → <code>Unrespectable supply</code>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 11 — MULTIPLE / NESTED IF
+═════════════════════════════════════════════ -->
+<div class="slide" id="s11">
+  <div class="slide-header">
+    <span class="chapter-tag">4.7</span>
+    <span class="slide-title">Multiple &amp; Nested if Statements</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Multiple <span class="accent">if</span> vs. Nested <span class="accent4">if-else</span></h2>
+    <div class="cols cols-2" style="align-items:start;gap:24px;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="badge-pill orange">Multiple Independent if Statements</div>
+        <p style="font-size:14px;">Each <code>if</code> is <strong>independent</strong> — more than one can execute.</p>
+        <pre><span class="cm"># ALL that are True will execute!</span>
+<span class="kw">if</span> <span class="var">cash</span> <span class="op">&gt;</span> <span class="num">12</span>:
+    <span class="fn">print</span>(<span class="str">"Buy a hat."</span>)
+
+<span class="kw">if</span> <span class="var">cash</span> <span class="op">&gt;=</span> <span class="num">23</span>:
+    <span class="fn">print</span>(<span class="str">"Buy a new coat."</span>)
+
+<span class="kw">if</span> <span class="var">cash</span> <span class="op">&lt;=</span> <span class="num">1</span>:
+    <span class="fn">print</span>(<span class="str">"Save money."</span>)</pre>
+        <div class="highlight-box orange">If <code>cash = 25</code>, the first two <em>both</em> print. There is no mutual exclusion.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="badge-pill purple">Nested if-else</div>
+        <p style="font-size:14px;">An <code>if-else</code> <strong>inside</strong> another branch — checks an additional condition only when the outer condition is True.</p>
+        <pre><span class="kw">if</span> <span class="var">user_choice</span> <span class="op">==</span> <span class="num">2</span>:
+    <span class="kw">if</span> <span class="var">num_items</span> <span class="op">&lt;</span> <span class="num">0</span>:
+        <span class="fn">print</span>(<span class="str">"choice 2, negative"</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="str">"choice 2, non-neg"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"not choice 2"</span>)</pre>
+        <div class="key-rule">
+          <span class="kr-icon">💡</span>
+          <span class="kr-text"><strong>Key rule:</strong> if-elif-else → only one branch fires. Multiple separate if statements → any matching branch fires.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 12 — MEMBERSHIP & IDENTITY
+═════════════════════════════════════════════ -->
+<div class="slide" id="s12">
+  <div class="slide-header">
+    <span class="chapter-tag">4.9</span>
+    <span class="slide-title">Membership &amp; Identity Operators</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Membership <span class="accent3">in</span> / <span class="accent">not in</span></h2>
+    <div class="cols cols-2" style="align-items:start;gap:24px;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="op-table-wrap">
+          <table class="op-table">
+            <tr><th>Operator</th><th>Meaning</th></tr>
+            <tr><td><code>in</code></td><td>True if left value is found in the right container</td></tr>
+            <tr><td><code>not in</code></td><td>True if left value is NOT found in container</td></tr>
+            <tr><td><code>is</code></td><td>True if both operands reference the SAME object</td></tr>
+            <tr><td><code>is not</code></td><td>True if operands reference DIFFERENT objects</td></tr>
+          </table>
+        </div>
+        <pre><span class="var">prices</span> <span class="op">=</span> [<span class="str">"$20"</span>, <span class="num">15</span>, <span class="num">5</span>]
+<span class="fn">print</span>(<span class="num">15</span> <span class="kw">in</span> <span class="var">prices</span>)   <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="num">44</span> <span class="kw">in</span> <span class="var">prices</span>)   <span class="cm"># False</span>
+
+<span class="cm"># Works on strings too!</span>
+<span class="kw">if</span> <span class="str">"abc"</span> <span class="kw">in</span> <span class="str">"123abcd"</span>:
+    <span class="fn">print</span>(<span class="str">"Found substring"</span>)
+
+<span class="cm"># Checking list membership</span>
+<span class="var">special_list</span> <span class="op">=</span> [<span class="op">-</span><span class="num">99</span>, <span class="num">0</span>, <span class="num">44</span>]
+<span class="kw">if</span> <span class="var">special_num</span> <span class="kw">in</span> <span class="var">special_list</span>:
+    <span class="fn">print</span>(<span class="str">"Special number"</span>)</pre>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="highlight-box green">
+          <strong>in with dictionaries</strong> only checks <strong>keys</strong>, not values! <code>3 in {"A":1, "B":3}</code> → False
+        </div>
+        <div class="error-box">
+          <span class="error-label">⚠ AVOID is/is not for value comparison</span>
+          Use <code>==</code> to compare values. <code>is</code> checks memory identity, not equality — it can give unexpected results with integers, strings, etc.
+        </div>
+        <div class="card green">
+          <span class="card-title">Good Practice</span>
+          <span class="card-body">Use <code>in</code> / <code>not in</code> to replace long chains of <code>or</code> comparisons:<br><br>
+          ❌ <code>x==1 or x==2 or x==3</code><br>
+          ✅ <code>x in [1, 2, 3]</code>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 13 — OPERATOR PRECEDENCE
+═════════════════════════════════════════════ -->
+<div class="slide" id="s13">
+  <div class="slide-header">
+    <span class="chapter-tag">4.10</span>
+    <span class="slide-title">Order of Evaluation</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Operator <span class="accent4">Precedence</span></h2>
+    <div class="cols cols-60-40" style="align-items:start;gap:24px;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="op-table-wrap">
+          <table class="op-table">
+            <tr><th>Priority</th><th>Operator(s)</th><th>Description</th></tr>
+            <tr><td>1 (highest)</td><td><code>( )</code></td><td>Parentheses — always first</td></tr>
+            <tr><td>2</td><td><code>* / % + -</code></td><td>Arithmetic operators</td></tr>
+            <tr><td>3</td><td><code>&lt; &lt;= &gt; &gt;= == !=</code></td><td>Relational &amp; equality</td></tr>
+            <tr><td>4</td><td><code>not</code></td><td>Logical NOT</td></tr>
+            <tr><td>5</td><td><code>and</code></td><td>Logical AND</td></tr>
+            <tr><td>6 (lowest)</td><td><code>or</code></td><td>Logical OR</td></tr>
+          </table>
+        </div>
+        <div class="highlight-box">
+          <code>x == 5 or y == 10 and z != 10</code><br>
+          evaluates as →<br>
+          <code>(x == 5) or ((y == 10) and (z != 10))</code>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="error-box">
+          <span class="error-label">⚠ COMMON MISTAKE</span>
+          <code>not a == b</code><br>
+          intended: <code>(not a) == b</code><br>
+          actual: <code>not (a == b)</code><br><br>
+          Always add parentheses when mixing <code>not</code> with other operators!
+        </div>
+        <div class="card green">
+          <span class="card-title">Best Practice</span>
+          <span class="card-body">Use parentheses to make the order of evaluation <strong>explicit</strong> and clear to the reader, even when not required by the language.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 14 — INDENTATION
+═════════════════════════════════════════════ -->
+<div class="slide" id="s14">
+  <div class="slide-header">
+    <span class="chapter-tag">4.11</span>
+    <span class="slide-title">Code Blocks &amp; Indentation</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Code Blocks &amp; <span class="accent">Indentation</span></h2>
+    <div class="cols cols-2" style="align-items:start;gap:24px;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <ul class="bullets">
+          <li>Python uses <strong>indentation</strong> (not braces) to define code blocks</li>
+          <li>Standard: <span class="hl-orange">4 spaces</span> per indentation level</li>
+          <li>A new code block follows any line ending with a <strong>colon</strong> (<code>:</code>)</li>
+          <li><span class="hl-orange">Never mix tabs and spaces</span> — Python 3 raises <code>IndentationError</code></li>
+        </ul>
+        <pre><span class="var">antique</span> <span class="op">=</span> <span class="bool">False</span>
+<span class="var">domestic</span> <span class="op">=</span> <span class="bool">False</span>
+
+<span class="kw">if</span> <span class="var">year</span> <span class="op">&lt;</span> <span class="num">1970</span>:
+    <span class="var">antique</span> <span class="op">=</span> <span class="bool">True</span>    <span class="cm"># block 1</span>
+
+<span class="kw">if</span> <span class="var">model</span> <span class="kw">in</span> [<span class="str">"Ford"</span>, <span class="str">"Chevy"</span>]:
+    <span class="var">domestic</span> <span class="op">=</span> <span class="bool">True</span>   <span class="cm"># block 2</span>
+
+<span class="kw">if</span> <span class="var">antique</span>:
+    <span class="kw">if</span> <span class="var">domestic</span>:         <span class="cm"># nested!</span>
+        <span class="fn">print</span>(<span class="str">"Old &amp; domestic"</span>)</pre>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="error-box">
+          <span class="error-label">⚠ INDENTATION ERRORS</span>
+          These <strong>all</strong> cause errors or wrong behavior:<br><br>
+          • Inconsistent indent within a block<br>
+          • Mixing tabs and spaces<br>
+          • Indenting code that shouldn't be in a block<br>
+          • Missing indent after <code>if/else/elif:</code>
+        </div>
+        <div class="card green">
+          <span class="card-title">Tip: Configure Your Editor</span>
+          <span class="card-body">Set VS Code to insert 4 spaces when you press Tab. This prevents accidental tab/space mixing.</span>
+        </div>
+        <div class="highlight-box">
+          Long statements can wrap to the next line inside <strong>parentheses</strong> without breaking the code block — Python treats them as continuation lines.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 15 — CONDITIONAL EXPRESSIONS
+═════════════════════════════════════════════ -->
+<div class="slide" id="s15">
+  <div class="slide-header">
+    <span class="chapter-tag">4.12</span>
+    <span class="slide-title">Conditional Expressions</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Conditional <span class="accent4">Expressions</span> (Ternary)</h2>
+    <div class="cols cols-2" style="align-items:start;gap:24px;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="highlight-box purple">
+          <strong>Syntax:</strong><br>
+          <code style="font-size:15px;">value_if_true &nbsp;<span style="color:var(--accent4)">if</span>&nbsp; condition &nbsp;<span style="color:var(--accent4)">else</span>&nbsp; value_if_false</code>
+        </div>
+        <p style="font-size:15px;">The <strong>condition in the middle</strong> is evaluated first. Then either the left or right expression is returned.</p>
+        <pre><span class="cm"># Instead of:</span>
+<span class="kw">if</span> <span class="var">x</span> <span class="op">&lt;</span> <span class="num">100</span>:
+    <span class="var">y</span> <span class="op">=</span> <span class="num">0</span>
+<span class="kw">else</span>:
+    <span class="var">y</span> <span class="op">=</span> <span class="var">x</span>
+
+<span class="cm"># Write:</span>
+<span class="var">y</span> <span class="op">=</span> <span class="num">0</span> <span class="kw">if</span> (<span class="var">x</span> <span class="op">&lt;</span> <span class="num">100</span>) <span class="kw">else</span> <span class="var">x</span>
+
+<span class="cm"># More examples:</span>
+<span class="var">cond_str</span> <span class="op">=</span> <span class="str">"negative"</span> <span class="kw">if</span> <span class="var">val</span> <span class="op">&lt;</span> <span class="num">0</span> <span class="kw">else</span> <span class="str">"non-negative"</span>
+
+<span class="var">num_users</span> <span class="op">=</span> <span class="var">num_users</span><span class="op">+</span><span class="num">1</span> <span class="kw">if</span> <span class="var">dir</span><span class="op">==</span><span class="num">3</span> <span class="kw">else</span> <span class="var">num_users</span><span class="op">-</span><span class="num">1</span></pre>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card purple">
+          <span class="card-title">When to Use</span>
+          <span class="card-body">Best for simple <strong>value assignments</strong> where both branches just assign to the same variable. Avoid for complex logic — readability matters.</span>
+        </div>
+        <div class="card orange">
+          <span class="card-title">When NOT to Use</span>
+          <span class="card-body">If the two branches assign to <strong>different variables</strong>, a conditional expression isn't possible — use a regular if-else instead.</span>
+        </div>
+        <div class="error-box">
+          <span class="error-label">⚠ NOTE</span>
+          The condition is evaluated <strong>before</strong> left or right expressions — even though it appears in the middle syntactically.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 16 — COMPARING DATA TYPES
+═════════════════════════════════════════════ -->
+<div class="slide" id="s16">
+  <div class="slide-header">
+    <span class="chapter-tag">4.8</span>
+    <span class="slide-title">Comparing Data Types &amp; Common Errors</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Comparing <span class="accent2">Data Types</span></h2>
+    <div class="cols cols-2" style="align-items:start;gap:24px;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <ul class="bullets">
+          <li><strong>Integers / floats:</strong> compared arithmetically. <code>5 &lt;= 5.0</code> → True</li>
+          <li><strong>Strings:</strong> compared character by character (Unicode values). <code>"FRIDAY" == "friday"</code> → False (case-sensitive!)</li>
+          <li><strong>Lists / tuples:</strong> element-by-element; first mismatch determines result</li>
+          <li><strong>Dicts:</strong> only <code>==</code> and <code>!=</code>; must match all keys AND values</li>
+          <li><span class="hl-orange">Avoid</span> <code>==</code> with floats — rounding errors make equality unreliable</li>
+        </ul>
+        <pre><span class="var">my_str</span> <span class="op">=</span> <span class="str">"Tuesday"</span>
+<span class="fn">print</span>(<span class="var">my_str</span> <span class="op">==</span> <span class="str">"Tuesday"</span>)  <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="var">my_str</span> <span class="op">==</span> <span class="str">"tuesday"</span>)  <span class="cm"># False!</span>
+
+<span class="cm"># Comparing different types → TypeError</span>
+<span class="cm"># 1 &lt; "abc"  ← will crash!</span></pre>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="error-box">
+          <span class="error-label">⚠ COMMON BRANCHING ERRORS</span>
+          1. Using <code>=</code> instead of <code>==</code>:<br>
+          &nbsp;&nbsp;<code>if x = 5:</code> → <strong>SyntaxError</strong><br><br>
+          2. Invalid operators:<br>
+          &nbsp;&nbsp;<code>=&gt;</code>, <code>!&lt;</code>, <code>&lt;&gt;</code> are not valid<br><br>
+          3. Comparing incompatible types:<br>
+          &nbsp;&nbsp;<code>1 &lt; "abc"</code> → <strong>TypeError</strong>
+        </div>
+        <div class="card green">
+          <span class="card-title">String Comparison Note</span>
+          <span class="card-body">Most string comparisons use <code>==</code> or <code>!=</code>. Relational operators (<code>&lt;</code>, <code>&gt;</code>) compare by Unicode values — capital letters come before lowercase in the Unicode table.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 17 — QUICK QUIZ
+═════════════════════════════════════════════ -->
+<div class="slide" id="s17">
+  <div class="slide-header">
+    <span class="chapter-tag">QUIZ</span>
+    <span class="slide-title">Quick Check</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Quick <span class="accent">Check</span> ✓</h2>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <div class="quiz-q">
+        <div class="q-text"><strong>Q1.</strong> What is the output?
+        <pre style="margin-top:8px;"><span class="var">num_items</span> <span class="op">=</span> <span class="num">5</span>
+<span class="kw">if</span> <span class="var">num_items</span> <span class="op">&gt;</span> <span class="num">2</span>:
+    <span class="fn">print</span>(<span class="str">"c"</span>)
+<span class="kw">elif</span> <span class="var">num_items</span> <span class="op">&lt;</span> <span class="num">9</span>:
+    <span class="fn">print</span>(<span class="str">"d"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"h"</span>)
+
+<span class="fn">print</span>(<span class="str">"m"</span>)</pre></div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="checkAnswer(this, false)"><span class="badge">A</span> d<br>m</div>
+          <div class="quiz-opt" onclick="checkAnswer(this, true)"><span class="badge">B</span> c<br>m</div>
+          <div class="quiz-opt" onclick="checkAnswer(this, false)"><span class="badge">C</span> c<br>d<br>m</div>
+          <div class="quiz-opt" onclick="checkAnswer(this, false)"><span class="badge">D</span> h<br>m</div>
+        </div>
+      </div>
+
+      <div class="quiz-q">
+        <div class="q-text"><strong>Q2.</strong> Given <code>x = 1</code>, what does <code>(x &lt; 7) and (x &gt; 2)</code> evaluate to?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="checkAnswer(this, false)"><span class="badge">A</span> True</div>
+          <div class="quiz-opt" onclick="checkAnswer(this, true)"><span class="badge">B</span> False</div>
+        </div>
+      </div>
+
+      <div class="quiz-q">
+        <div class="q-text"><strong>Q3.</strong> Which expression correctly detects if <code>x</code> is between 13 and 19 inclusive?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="checkAnswer(this, false)"><span class="badge">A</span> <code>(x &lt; 13) and (x &gt; 19)</code></div>
+          <div class="quiz-opt" onclick="checkAnswer(this, true)"><span class="badge">B</span> <code>(x &gt;= 13) and (x &lt;= 19)</code></div>
+          <div class="quiz-opt" onclick="checkAnswer(this, false)"><span class="badge">C</span> <code>(x &gt; 13) or (x &lt; 19)</code></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 18 — SUMMARY
+═════════════════════════════════════════════ -->
+<div class="slide" id="s18">
+  <div class="slide-header">
+    <span class="chapter-tag">SUMMARY</span>
+    <span class="slide-title">Chapter 4 Wrap-Up</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <h2>Chapter 4 <span class="accent2">Summary</span></h2>
+    <div class="cols cols-3" style="align-items:start;gap:14px;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="badge-pill blue">Structure</div>
+        <ul class="bullets">
+          <li><strong>if</strong> — one optional branch</li>
+          <li><strong>if-else</strong> — exactly one of two paths</li>
+          <li><strong>if-elif-else</strong> — exactly one of N paths</li>
+          <li>Multiple <strong>if</strong> — any/all can execute</li>
+          <li><strong>Nested</strong> — if inside another branch</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="badge-pill green">Operators</div>
+        <ul class="bullets">
+          <li><code>== != &lt; &gt; &lt;= &gt;=</code> relational</li>
+          <li><code>and or not</code> logical</li>
+          <li><code>in  not in</code> membership</li>
+          <li><code>is  is not</code> identity</li>
+          <li>Precedence: arithmetic → relational → not → and → or</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="badge-pill orange">Key Rules</div>
+        <ul class="bullets">
+          <li>Always <code>==</code> (never <code>=</code>) in conditions</li>
+          <li>4-space indentation, never mix tabs/spaces</li>
+          <li>Use <code>and</code> for ranges, <code>or</code> for gaps</li>
+          <li>Parentheses make precedence explicit</li>
+          <li>Conditional expressions: <code>x if cond else y</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:8px;">
+      <strong>Due:</strong> zyBook Chapter 4 — Branching (Labs &amp; Readings) → <strong>June 9, 2026</strong> · 11:59 PM
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     NAV
+═════════════════════════════════════════════ -->
+<div id="nav">
+  <button id="btn-first" onclick="goTo(0)">⟪ First</button>
+  <button id="btn-prev"  onclick="prev()">‹ Prev</button>
+  <span id="slide-counter">1 / 18</span>
+  <button id="btn-next"  onclick="next()">Next ›</button>
+  <button id="btn-last"  onclick="goTo(slides.length-1)">Last ⟫</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let cur = 0;
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(n, slides.length - 1));
+    slides[cur].classList.add('active');
+    document.getElementById('slide-counter').textContent = `${cur+1} / ${slides.length}`;
+    document.getElementById('btn-prev').disabled  = cur === 0;
+    document.getElementById('btn-first').disabled = cur === 0;
+    document.getElementById('btn-next').disabled  = cur === slides.length - 1;
+    document.getElementById('btn-last').disabled  = cur === slides.length - 1;
+    document.getElementById('progress-bar').style.width =
+      ((cur + 1) / slides.length * 100) + '%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function next() { goTo(cur + 1); }
+  function prev() { goTo(cur - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prev();
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End')  goTo(slides.length - 1);
+  });
+
+  function checkAnswer(el, correct) {
+    const opts = el.parentElement.querySelectorAll('.quiz-opt');
+    opts.forEach(o => o.classList.remove('correct', 'wrong'));
+    el.classList.add(correct ? 'correct' : 'wrong');
+    el.querySelector('.badge').textContent = correct ? '✓' : '✗';
+  }
+
+  function toggleAnswer(block) {
+    block.classList.toggle('open');
+  }
+
+  goTo(0);
+</script>
+</body>
+</html>

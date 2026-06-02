@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 4 Breakout Solutions — COP 1047C</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300&display=swap');
+
+  :root {
+    --bg:      #0d1117;
+    --surface: #161b22;
+    --sur2:    #21262d;
+    --border:  #30363d;
+    --text:    #e6edf3;
+    --muted:   #8b949e;
+    --green:   #3fb950;
+    --blue:    #58a6ff;
+    --orange:  #f78166;
+    --purple:  #d2a8ff;
+    --yellow:  #e3b341;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 28px;
+    margin-bottom: 48px;
+  }
+  .page-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .page-header h1 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.1;
+  }
+  .page-header h1 span { color: var(--green); }
+  .page-meta {
+    margin-top: 14px;
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+  .meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .meta-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font-family: 'JetBrains Mono', monospace; }
+  .meta-value { font-size: 14px; font-weight: 500; }
+
+  .instructor-note {
+    background: rgba(247,129,102,.07);
+    border: 1px solid rgba(247,129,102,.25);
+    border-left: 3px solid var(--orange);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 48px;
+    color: var(--text);
+  }
+  .instructor-note strong { color: var(--orange); }
+
+  /* ── BREAKOUT SECTION ── */
+  .breakout-section { margin-bottom: 56px; }
+
+  .breakout-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .breakout-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: .06em;
+    flex-shrink: 0;
+  }
+  .breakout-tag.b1 { background: var(--blue); color: #000; }
+  .breakout-tag.b2 { background: var(--purple); color: #000; }
+  .breakout-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+
+  /* ── PROBLEM ── */
+  .problem {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .problem-q {
+    padding: 18px 22px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .prob-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 99px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .prob-num.green  { background: rgba(63,185,80,.15);   color: var(--green);  border: 1px solid rgba(63,185,80,.3); }
+  .prob-num.blue   { background: rgba(88,166,255,.15);  color: var(--blue);   border: 1px solid rgba(88,166,255,.3); }
+  .prob-num.orange { background: rgba(247,129,102,.15); color: var(--orange); border: 1px solid rgba(247,129,102,.3); }
+  .problem-q p { font-size: 15px; line-height: 1.65; font-weight: 300; }
+  .problem-q p strong { font-weight: 600; color: var(--blue); }
+
+  .problem-answer { padding: 20px 22px; }
+  .answer-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  /* ── CODE ── */
+  pre {
+    background: #010409;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.75;
+    overflow-x: auto;
+    color: #e6edf3;
+    letter-spacing: 0;
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0, "calt" 0;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .88em;
+    background: rgba(110,118,129,.12);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    letter-spacing: 0;
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0, "calt" 0;
+  }
+  .kw   { color: #ff7b72; }
+  .fn   { color: #d2a8ff; }
+  .str  { color: #a5d6ff; }
+  .num  { color: #79c0ff; }
+  .cm   { color: #8b949e; font-style: italic; }
+  .op   { color: #ff7b72; }
+  .var  { color: #ffa657; }
+  .bool { color: #79c0ff; }
+  .out  { color: var(--green); }
+
+  /* ── EXPLANATION ── */
+  .explanation {
+    margin-top: 14px;
+    background: var(--sur2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    font-weight: 300;
+  }
+  .explanation strong { color: var(--blue); font-weight: 600; }
+  .explanation .hl-green  { color: var(--green);  font-weight: 600; }
+  .explanation .hl-orange { color: var(--orange); font-weight: 600; }
+
+  /* ── TRACE TABLE ── */
+  .trace-table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin-top: 12px; }
+  .trace-table th {
+    background: var(--sur2);
+    padding: 8px 14px;
+    text-align: left;
+    color: var(--muted);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    border: 1px solid var(--border);
+  }
+  .trace-table td {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .trace-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--purple); letter-spacing: 0; }
+  .trace-table .result-yes { color: var(--green); font-weight: 600; }
+  .trace-table .result-no  { color: var(--muted); }
+
+  /* ── OUTPUT BOX ── */
+  .output-box {
+    background: #010409;
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--green);
+    margin-top: 12px;
+    letter-spacing: 0;
+  }
+  .output-box .out-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    display: block;
+    margin-bottom: 6px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  /* ── RANGE CARDS ── */
+  .range-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+  .range-card {
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+  .range-card .branch-name { font-weight: 700; font-size: 13px; display: block; margin-bottom: 4px; }
+  .range-card .range-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0; }
+  .rc-green  { background: rgba(63,185,80,.1);   border: 1px solid rgba(63,185,80,.3);   }
+  .rc-green  .branch-name { color: var(--green); }
+  .rc-blue   { background: rgba(88,166,255,.1);  border: 1px solid rgba(88,166,255,.3);  }
+  .rc-blue   .branch-name { color: var(--blue); }
+  .rc-orange { background: rgba(247,129,102,.1); border: 1px solid rgba(247,129,102,.3); }
+  .rc-orange .branch-name { color: var(--orange); }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <p class="page-eyebrow">Instructor Solutions · Chapter 4</p>
+  <h1>Breakout Exercise <span>Solutions</span></h1>
+  <div class="page-meta">
+    <div class="meta-item">
+      <span class="meta-label">Course</span>
+      <span class="meta-value">COP 1047C — Introduction to Python Programming</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Chapter</span>
+      <span class="meta-value">4 — Branching</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Semester</span>
+      <span class="meta-value">Summer 2026 · Miami Dade College</span>
+    </div>
+  </div>
+</div>
+
+<div class="instructor-note">
+  <strong>📋 Instructor note:</strong> This document contains solutions and explanations for both in-class breakout exercises from the Chapter 4 lecture. Share this link <em>after</em> the class session. Walk through each solution live using the lecture slides before posting.
+</div>
+
+<!-- ══════════════════════════════════════
+     BREAKOUT 1
+══════════════════════════════════════ -->
+<section class="breakout-section">
+  <div class="breakout-header">
+    <span class="breakout-tag b1">Breakout 1</span>
+    <h2>if / if-else / elif</h2>
+  </div>
+
+  <!-- P1 -->
+  <div class="problem">
+    <div class="problem-q">
+      <span class="prob-num green">P1</span>
+      <p><strong>Trace:</strong> What does this code print? Work through it line by line without running it first.</p>
+    </div>
+    <div class="problem-answer">
+      <span class="answer-label">▸ Solution</span>
+      <pre><span class="var">num_apples</span> <span class="op">=</span> <span class="num">5</span>
+<span class="kw">if</span> <span class="var">num_apples</span> <span class="op">&lt;</span> <span class="num">7</span>:   <span class="cm"># 5 < 7 → True → this branch executes</span>
+    <span class="fn">print</span>(<span class="str">"a"</span>)
+<span class="kw">else</span>:                  <span class="cm"># skipped</span>
+    <span class="fn">print</span>(<span class="str">"e"</span>)
+<span class="fn">print</span>(<span class="str">"k"</span>)             <span class="cm"># always runs — outside the if-else</span></pre>
+      <div class="output-box">
+        <span class="out-label">Output</span>
+        <span class="out">a</span><br>
+        <span class="out">k</span>
+      </div>
+      <div class="explanation">
+        <strong>Key concept:</strong> The condition <code>5 &lt; 7</code> evaluates to <span class="hl-green">True</span>, so the <code>if</code> branch executes and prints <code>"a"</code>. The <code>else</code> branch is <span class="hl-orange">skipped entirely</span>. Because <code>print("k")</code> is <em>outside and after</em> the if-else block (no indentation), it <strong>always runs</strong> regardless of which branch fired.
+      </div>
+    </div>
+  </div>
+
+  <!-- P2 -->
+  <div class="problem">
+    <div class="problem-q">
+      <span class="prob-num blue">P2</span>
+      <p><strong>Write:</strong> Read an integer into <code>barcode_check_digit</code>. If it equals <code>7</code>, assign <code>group_id = 1</code>. Otherwise, assign <code>group_id = barcode_check_digit</code>. Print <code>group_id</code>.</p>
+    </div>
+    <div class="problem-answer">
+      <span class="answer-label">▸ Solution</span>
+      <pre><span class="var">barcode_check_digit</span> <span class="op">=</span> <span class="fn">int</span>(<span class="fn">input</span>())
+
+<span class="kw">if</span> <span class="var">barcode_check_digit</span> <span class="op">==</span> <span class="num">7</span>:
+    <span class="var">group_id</span> <span class="op">=</span> <span class="num">1</span>
+<span class="kw">else</span>:
+    <span class="var">group_id</span> <span class="op">=</span> <span class="var">barcode_check_digit</span>
+
+<span class="fn">print</span>(<span class="var">group_id</span>)</pre>
+      <div class="output-box">
+        <span class="out-label">Test cases</span>
+        Input <code>7</code> → <span class="out">1</span><br>
+        Input <code>3</code> → <span class="out">3</span><br>
+        Input <code>0</code> → <span class="out">0</span>
+      </div>
+      <div class="explanation">
+        <strong>Key concept:</strong> Use <code>==</code> (equality operator) to compare, never <code>=</code> (assignment). The <code>else</code> branch handles every value that isn't 7 by simply passing the digit through unchanged.
+      </div>
+    </div>
+  </div>
+
+  <!-- P3 -->
+  <div class="problem">
+    <div class="problem-q">
+      <span class="prob-num orange">P3</span>
+      <p><strong>Trace:</strong> What is the final value of <code>employee_bonus</code> when <code>num_sales = 7</code>? Which branch executes and why?</p>
+    </div>
+    <div class="problem-answer">
+      <span class="answer-label">▸ Solution</span>
+      <table class="trace-table">
+        <tr>
+          <th>Branch</th>
+          <th>Condition</th>
+          <th>Evaluates to</th>
+          <th>Executes?</th>
+        </tr>
+        <tr>
+          <td>if num_sales == 0</td>
+          <td>7 == 0</td>
+          <td>False</td>
+          <td class="result-no">No — skipped</td>
+        </tr>
+        <tr>
+          <td>elif num_sales == 1</td>
+          <td>7 == 1</td>
+          <td>False</td>
+          <td class="result-no">No — skipped</td>
+        </tr>
+        <tr>
+          <td>elif num_sales == 2</td>
+          <td>7 == 2</td>
+          <td>False</td>
+          <td class="result-no">No — skipped</td>
+        </tr>
+        <tr>
+          <td>else</td>
+          <td>(no condition)</td>
+          <td>—</td>
+          <td class="result-yes">✓ Yes — fires</td>
+        </tr>
+      </table>
+      <div class="output-box" style="margin-top:12px;">
+        <span class="out-label">Result</span>
+        employee_bonus = <span class="out">10</span>
+      </div>
+      <div class="explanation">
+        <strong>Key concept:</strong> In an <code>if-elif-else</code> chain, Python checks each condition <em>in order</em> and stops at the first one that is True. When <code>num_sales</code> is 7, none of the <code>==</code> checks match, so the <span class="hl-green">else</span> branch is the catch-all that executes. Exactly one branch always fires.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     BREAKOUT 2
+══════════════════════════════════════ -->
+<section class="breakout-section">
+  <div class="breakout-header">
+    <span class="breakout-tag b2">Breakout 2</span>
+    <h2>Ranges &amp; Logical Operators</h2>
+  </div>
+
+  <!-- P1 -->
+  <div class="problem">
+    <div class="problem-q">
+      <span class="prob-num green">P1</span>
+      <p><strong>Fix the bug:</strong> This code never prints <code>"Teenager"</code>. Find and fix it.</p>
+    </div>
+    <div class="problem-answer">
+      <span class="answer-label">▸ Buggy code</span>
+      <pre><span class="var">input_val</span> <span class="op">=</span> <span class="fn">int</span>(<span class="fn">input</span>())
+<span class="kw">if</span> (<span class="var">input_val</span> <span class="op">&lt;</span> <span class="num">13</span>) <span class="kw">and</span> (<span class="var">input_val</span> <span class="op">&gt;</span> <span class="num">19</span>):  <span class="cm"># ← BUG: can never be True</span>
+    <span class="fn">print</span>(<span class="str">"Teenager"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Not a teenager"</span>)</pre>
+
+      <span class="answer-label" style="margin-top:16px;">▸ Fixed code</span>
+      <pre><span class="var">input_val</span> <span class="op">=</span> <span class="fn">int</span>(<span class="fn">input</span>())
+<span class="kw">if</span> (<span class="var">input_val</span> <span class="op">&gt;=</span> <span class="num">13</span>) <span class="kw">and</span> (<span class="var">input_val</span> <span class="op">&lt;=</span> <span class="num">19</span>):  <span class="cm"># ← FIXED</span>
+    <span class="fn">print</span>(<span class="str">"Teenager"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Not a teenager"</span>)</pre>
+      <div class="output-box">
+        <span class="out-label">Test cases</span>
+        Input <code>15</code> → <span class="out">Teenager</span><br>
+        Input <code>13</code> → <span class="out">Teenager</span><br>
+        Input <code>19</code> → <span class="out">Teenager</span><br>
+        Input <code>12</code> → <span class="out">Not a teenager</span><br>
+        Input <code>25</code> → <span class="out">Not a teenager</span>
+      </div>
+      <div class="explanation">
+        <strong>The bug:</strong> <code>(input_val &lt; 13) and (input_val &gt; 19)</code> asks for a number that is simultaneously less than 13 <em>and</em> greater than 19 — <span class="hl-orange">mathematically impossible</span>. No number satisfies both, so the condition is always False.<br><br>
+        <strong>The fix:</strong> To detect a range, the operators need to <em>close in</em> on the value from both sides: <code>&gt;= 13</code> (lower bound) <code>and</code> <code>&lt;= 19</code> (upper bound). Use <code>and</code> to require both conditions to be True at the same time.
+      </div>
+    </div>
+  </div>
+
+  <!-- P2 -->
+  <div class="problem">
+    <div class="problem-q">
+      <span class="prob-num blue">P2</span>
+      <p><strong>Trace:</strong> What range of <code>num_passengers</code> values triggers each branch?</p>
+    </div>
+    <div class="problem-answer">
+      <span class="answer-label">▸ Solution</span>
+      <pre><span class="var">num_passengers</span> <span class="op">=</span> <span class="fn">int</span>(<span class="fn">input</span>())
+<span class="kw">if</span> <span class="var">num_passengers</span> <span class="op">&lt;=</span> <span class="num">8</span>:       <span class="cm"># range: 8 or fewer</span>
+    <span class="fn">print</span>(<span class="str">"Compact van"</span>)
+<span class="kw">elif</span> <span class="var">num_passengers</span> <span class="op">&lt;</span> <span class="num">15</span>:    <span class="cm"># range: 9 – 14  (lower bound implied: > 8)</span>
+    <span class="fn">print</span>(<span class="str">"Medium van"</span>)
+<span class="kw">else</span>:                          <span class="cm"># range: 15 or more</span>
+    <span class="fn">print</span>(<span class="str">"Group too large"</span>)</pre>
+      <div class="range-grid">
+        <div class="range-card rc-green">
+          <span class="branch-name">Compact van</span>
+          <span class="range-val">num_passengers &lt;= 8</span><br>
+          <span style="font-size:12px;color:var(--muted);">i.e., 8 or fewer</span>
+        </div>
+        <div class="range-card rc-blue">
+          <span class="branch-name">Medium van</span>
+          <span class="range-val">9 – 14</span><br>
+          <span style="font-size:12px;color:var(--muted);">implied lower: &gt; 8; explicit upper: &lt; 15</span>
+        </div>
+        <div class="range-card rc-orange">
+          <span class="branch-name">Group too large</span>
+          <span class="range-val">15 or more</span><br>
+          <span style="font-size:12px;color:var(--muted);">catches everything else</span>
+        </div>
+      </div>
+      <div class="explanation">
+        <strong>Key concept:</strong> In a sequential <code>if-elif-else</code>, the <span class="hl-green">lower bound of each branch is implicit</span> — when Python reaches an <code>elif</code>, it already knows all previous conditions were False. So <code>elif num_passengers &lt; 15</code> doesn't need to also say <code>num_passengers &gt; 8</code>; that's guaranteed by the first condition being False.
+      </div>
+    </div>
+  </div>
+
+  <!-- P3 -->
+  <div class="problem">
+    <div class="problem-q">
+      <span class="prob-num orange">P3</span>
+      <p><strong>Write:</strong> Read an integer into <code>lemon_amount</code>. Print <code>"Unrespectable supply"</code> if the amount is fewer than 15 or 25 or more. Otherwise print <code>"Acceptable supply"</code>.</p>
+    </div>
+    <div class="problem-answer">
+      <span class="answer-label">▸ Solution</span>
+      <pre><span class="var">lemon_amount</span> <span class="op">=</span> <span class="fn">int</span>(<span class="fn">input</span>())
+
+<span class="kw">if</span> <span class="var">lemon_amount</span> <span class="op">&lt;</span> <span class="num">15</span> <span class="kw">or</span> <span class="var">lemon_amount</span> <span class="op">&gt;=</span> <span class="num">25</span>:
+    <span class="fn">print</span>(<span class="str">"Unrespectable supply"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Acceptable supply"</span>)</pre>
+      <div class="output-box">
+        <span class="out-label">Test cases</span>
+        Input <code>10</code>  → <span class="out">Unrespectable supply</span>  <span style="color:var(--muted);font-size:12px;">(10 &lt; 15 → True)</span><br>
+        Input <code>14</code>  → <span class="out">Unrespectable supply</span>  <span style="color:var(--muted);font-size:12px;">(14 &lt; 15 → True)</span><br>
+        Input <code>15</code>  → <span class="out">Acceptable supply</span>     <span style="color:var(--muted);font-size:12px;">(neither condition True)</span><br>
+        Input <code>20</code>  → <span class="out">Acceptable supply</span>     <span style="color:var(--muted);font-size:12px;">(neither condition True)</span><br>
+        Input <code>24</code>  → <span class="out">Acceptable supply</span>     <span style="color:var(--muted);font-size:12px;">(neither condition True)</span><br>
+        Input <code>25</code>  → <span class="out">Unrespectable supply</span>  <span style="color:var(--muted);font-size:12px;">(25 &gt;= 25 → True)</span><br>
+        Input <code>100</code> → <span class="out">Unrespectable supply</span>  <span style="color:var(--muted);font-size:12px;">(100 &gt;= 25 → True)</span>
+      </div>
+      <div class="explanation">
+        <strong>Key concept:</strong> This is a <span class="hl-orange">range with a gap</span>. The acceptable range (15–24) sits between two unacceptable regions. Use <code>or</code> to trigger when <em>either</em> boundary is violated — if the amount is too low <em>or</em> too high, it's unrespectable. The <code>else</code> catches the acceptable middle.<br><br>
+        <strong>Common mistake:</strong> Students often try <code>and</code> here. <code>lemon_amount &lt; 15 and lemon_amount &gt;= 25</code> is mathematically impossible (same bug as Problem 1). When detecting two separate regions, always use <code>or</code>.
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<div class="page-footer">
+  <span>COP 1047C · Introduction to Python Programming · Summer 2026</span>
+  <span>Miami Dade College — West Campus · Instructor: John Masseria</span>
+</div>
+
+</body>
+</html>
