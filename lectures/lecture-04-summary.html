@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COP 1047C – Lecture 4 Summary: Chapter 4 Branching</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:       #080c14; --surface:  #0f1724; --surface2: #16202e;
+    --border:   #1e2d42; --border2:  #253347; --accent:   #f59e0b;
+    --text:     #e2e8f0; --muted:    #7d93af;
+    --green-bg: #071510; --green-bdr:#0d3322; --green-txt:#34d399;
+    --warn-bg:  rgba(239,68,68,0.07); --warn-bdr: rgba(239,68,68,0.25); --warn-txt:#fca5a5;
+    --info-bg:  rgba(96,165,250,0.07); --info-bdr: rgba(96,165,250,0.2); --info-txt:#93c5fd;
+    --tag-bg:   #1a2a3a; --tag-txt:  #60a5fa;
+    --mono: 'JetBrains Mono','Courier New',monospace;
+    --sans: 'Outfit',system-ui,sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background:var(--bg); color:var(--text); font-family:var(--sans); font-size:16px; line-height:1.7; min-height:100vh; }
+
+  header { background:var(--surface); border-bottom:1px solid var(--border); padding:1.5rem 0 0; position:sticky; top:0; z-index:100; }
+  .header-top { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:.5rem; margin:0 auto 1.1rem; max-width:860px; padding:0 1.5rem; }
+  .course-tag { font-family:var(--mono); font-size:.7rem; font-weight:500; color:var(--accent); background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.3); border-radius:4px; padding:3px 10px; display:inline-block; margin-bottom:.35rem; }
+  header h1 { font-size:1.35rem; font-weight:700; color:var(--text); line-height:1.2; }
+  .header-meta { font-size:.82rem; color:var(--muted); margin-top:.2rem; }
+  .header-badge { background:var(--surface2); border:1px solid var(--border2); border-radius:8px; padding:.5rem .9rem; font-size:.78rem; color:var(--muted); text-align:right; white-space:nowrap; }
+  .header-badge strong { color:var(--text); display:block; font-size:.9rem; }
+  nav.sections { display:flex; gap:0; overflow-x:auto; scrollbar-width:none; max-width:860px; margin:0 auto; padding:0 .5rem; }
+  nav.sections::-webkit-scrollbar { display:none; }
+  nav.sections a { color:var(--muted); text-decoration:none; font-size:.83rem; font-weight:500; padding:.65rem 1.1rem; border-bottom:3px solid transparent; transition:color .15s,border-color .15s; white-space:nowrap; }
+  nav.sections a:hover { color:var(--text); border-bottom-color:var(--border2); }
+
+  main { max-width:860px; margin:0 auto; padding:2.5rem 1.5rem 5rem; }
+  .section { margin-bottom:3rem; scroll-margin-top:120px; }
+  .section-eyebrow { font-family:var(--mono); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:.35rem; }
+  .section > h2 { font-size:1.4rem; font-weight:700; color:var(--text); margin-bottom:1rem; padding-bottom:.6rem; border-bottom:1px solid var(--border); }
+  .topic { margin-bottom:2rem; scroll-margin-top:120px; }
+  .topic h3 { font-size:1.05rem; font-weight:600; color:var(--text); margin-bottom:.75rem; display:flex; align-items:center; gap:.6rem; }
+  .topic-num { background:rgba(245,158,11,.15); color:var(--accent); border-radius:100px; font-size:.72rem; font-weight:700; font-family:var(--mono); padding:2px 9px; flex-shrink:0; }
+
+  p { margin-bottom:.85rem; color:var(--text); }
+  p:last-child { margin-bottom:0; }
+  ul,ol { padding-left:1.5rem; margin-bottom:.85rem; }
+  li { margin-bottom:.3rem; line-height:1.6; }
+  strong { color:var(--text); font-weight:600; }
+  em { color:var(--muted); font-style:italic; }
+  code { font-family:var(--mono); font-size:.83em; background:rgba(255,255,255,.07); border-radius:4px; padding:2px 6px; color:#93c5fd; }
+  h4 { font-size:.9rem; font-weight:600; color:var(--muted); text-transform:uppercase; margin:1.25rem 0 .6rem; }
+
+  .code-wrap { border-radius:10px; border:1px solid var(--border); overflow:hidden; margin:.75rem 0 1.25rem; }
+  .code-bar { background:var(--surface2); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:.5rem; padding:.4rem .9rem; font-family:var(--mono); font-size:.72rem; color:var(--muted); }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .dot-r{background:#ff5f57;} .dot-y{background:#febc2e;} .dot-g{background:#28c840;}
+  pre[class*="language-"] { margin:0!important; border-radius:0!important; background:#0d1117!important; font-family:var(--mono)!important; font-size:.83rem!important; line-height:1.65!important; padding:1rem 1.25rem!important; font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+  pre[class*="language-"] > code { padding:0!important; background:transparent!important; }
+
+  .table-wrap { overflow-x:auto; margin:.75rem 0 1.25rem; border-radius:10px; border:1px solid var(--border); }
+  table { width:100%; border-collapse:collapse; font-size:.88rem; }
+  thead tr { background:var(--surface2); border-bottom:1px solid var(--border2); }
+  thead th { padding:.65rem 1rem; text-align:left; font-weight:600; font-size:.78rem; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+  tbody tr { border-bottom:1px solid var(--border); }
+  tbody tr:last-child { border-bottom:none; }
+  tbody tr:hover { background:rgba(255,255,255,.02); }
+  tbody td { padding:.6rem 1rem; vertical-align:top; line-height:1.5; }
+  tbody td:first-child code { color:var(--accent); }
+  .tick{color:#34d399;} .cross{color:#f87171;}
+
+  .callout { border-radius:8px; padding:.85rem 1.1rem; margin:.75rem 0 1.25rem; font-size:.9rem; line-height:1.6; }
+  .callout-warn { background:var(--warn-bg); border:1px solid var(--warn-bdr); color:var(--warn-txt); }
+  .callout-warn strong { color:#fca5a5; }
+  .callout-info { background:var(--info-bg); border:1px solid var(--info-bdr); color:var(--info-txt); }
+  .callout-info strong { color:#93c5fd; }
+  .callout-note { background:rgba(245,158,11,.07); border:1px solid rgba(245,158,11,.2); color:var(--muted); }
+  .callout-note strong { color:var(--accent); }
+
+  .reminder-list { list-style:none; padding:0; display:flex; flex-direction:column; gap:.6rem; }
+  .reminder-list li { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:0 8px 8px 0; padding:.65rem 1rem; font-size:.92rem; margin:0; line-height:1.5; }
+
+  .activity { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.1rem 1.25rem; margin-bottom:1rem; }
+  .activity h4 { font-size:.82rem; font-weight:700; color:var(--accent); text-transform:uppercase; margin:0 0 .6rem; }
+  .activity ol { padding-left:1.3rem; margin:0; }
+  .activity li { font-size:.9rem; margin-bottom:.3rem; }
+  .challenge-pill { display:inline-block; background:rgba(245,158,11,.15); color:var(--accent); font-size:.68rem; font-weight:700; text-transform:uppercase; border-radius:4px; padding:1px 7px; margin-right:5px; vertical-align:middle; }
+
+  .truth-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:.75rem 0 1.25rem; }
+  @media(max-width:580px){.truth-grid{grid-template-columns:1fr;}}
+
+  hr { border:none; border-top:1px solid var(--border); margin:2rem 0; }
+  footer { text-align:center; padding:2rem; font-size:.82rem; color:var(--muted); border-top:1px solid var(--border); }
+  footer a { color:var(--accent); text-decoration:none; }
+  @media(max-width:600px){
+    header{padding:1rem 0 0;}
+    header h1{font-size:1.15rem;}
+    main{padding:1.5rem 1rem 3rem;}
+    nav.sections a{padding:.55rem .8rem;font-size:.78rem;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <div class="course-tag">COP 1047C &nbsp;·&nbsp; West Campus</div>
+      <h1>Lecture 4 Summary — Chapter 4: Branching</h1>
+      <div class="header-meta">June 2, 2026 &nbsp;·&nbsp; Prof. John Masseria &nbsp;·&nbsp; MDC Live</div>
+    </div>
+    <div class="header-badge"><strong>Chapter 4</strong>Branching</div>
+  </div>
+  <nav class="sections" aria-label="Page sections">
+    <a href="#admin">Admin</a>
+    <a href="#if">if / else</a>
+    <a href="#elif">elif Chains</a>
+    <a href="#comparison">Comparison Ops</a>
+    <a href="#boolean">Boolean Ops</a>
+    <a href="#membership">in / not in</a>
+    <a href="#identity">is / is not</a>
+    <a href="#continuation">Line Continuation</a>
+    <a href="#activities">Activities</a>
+    <a href="#upcoming">Coming Up</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ADMIN -->
+<section class="section" id="admin">
+  <div class="section-eyebrow">Administrative</div>
+  <h2>📋 Reminders</h2>
+  <ul class="reminder-list">
+    <li><strong>Chapter 3</strong> readings and labs were due tonight. The course website now has direct links to slides, lecture notes, and breakout solutions for Lectures 1–3.</li>
+    <li><strong>Chapter 4</strong> readings and labs are due <strong>June 9, 2026</strong>.</li>
+    <li><strong>Midterm Exam:</strong> Available after class on <strong>June 16</strong>; due <strong>June 23</strong> before class. 50 multiple-choice questions, 2-hour time limit, Chapters 1–5. Requires Lockdown Browser with webcam. A 10-question ungraded practice test will be released first — use it to test your setup.</li>
+    <li><strong>Late work:</strong> Zeroes have been entered for Chapters 1 &amp; 2 non-submissions, but late submissions are accepted. Don't fall too far behind — the material builds on itself.</li>
+    <li><strong>June 16 class</strong> will be a midterm review session including an in-class group project. Attendance is especially important.</li>
+    <li><strong>Next lecture:</strong> Live Raspberry Pi Pico demo — Python running on embedded hardware. A practical real-world example of Python in action.</li>
+  </ul>
+</section>
+
+<!-- IF / ELSE -->
+<section class="section" id="if">
+  <div class="section-eyebrow">Topic 1</div>
+  <h2>🔀 The <code>if</code> Statement</h2>
+
+  <p>Until now, every Python program we've written executes line by line from top to bottom. <strong>Branching</strong> lets the program choose between paths based on a condition — like a railroad switch that routes a train onto one track or another.</p>
+
+  <div class="topic">
+    <h3><span class="topic-num">1a</span> Simple <code>if</code></h3>
+    <p>If the condition is true, the indented block executes. If false, it's skipped entirely. The colon at the end of the <code>if</code> line is required — it signals that an indented block follows.</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <pre><code class="language-python">age = 15
+
+if age < 16:
+    print("Too young to drive")
+    insurance = 0
+
+print("Program continues here regardless")</code></pre>
+    </div>
+    <div class="callout callout-warn">
+      <strong>Indentation is not optional in Python.</strong> The indented block under an <code>if</code> must be consistently indented (4 spaces is the standard). A wrong indent is a syntax error.
+    </div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">1b</span> <code>if</code> / <code>else</code></h3>
+    <p>Add an <code>else</code> clause to handle the case when the condition is false. Exactly one of the two blocks will always execute.</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <pre><code class="language-python">number = int(input("Enter a number: "))
+
+if number % 2 == 0:
+    print("Even")
+else:
+    print("Odd")</code></pre>
+    </div>
+    <div class="callout callout-note">
+      <strong>Note:</strong> The <code>else</code> clause is optional. If you don't need to do anything when the condition is false, you can omit it entirely. A bare <code>else</code> without a body can use <code>pass</code> as a placeholder.
+    </div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">1c</span> <code>if</code> / <code>elif</code> / <code>else</code></h3>
+    <p>Use <code>elif</code> (short for "else if") to test multiple conditions in sequence. As soon as one branch is true, its block executes and the rest of the <code>elif</code>/<code>else</code> chain is skipped entirely.</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <pre><code class="language-python">years = 25
+
+if years == 1:
+    print("Paper anniversary")
+elif years == 25:
+    print("Silver anniversary")
+elif years == 50:
+    print("Golden anniversary")
+else:
+    print("Nothing special this year")</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ELIF CHAINS FOR RANGES -->
+<section class="section" id="elif">
+  <div class="section-eyebrow">Topic 2</div>
+  <h2>📊 Range Checking with <code>elif</code> Chains</h2>
+
+  <p>A powerful pattern: by checking ascending threshold values with <code>elif</code>, you can classify a number into a range without using <code>and</code>. Once an earlier condition is false, Python already knows the value is above that threshold.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">age = int(input("Enter your age: "))
+
+if age < 16:
+    print("Too young")
+    insurance = 0
+elif age < 25:
+    # We know age >= 16 because the first condition failed
+    insurance = 4800
+elif age < 40:
+    # We know age >= 25
+    insurance = 2200
+else:
+    # We know age >= 40
+    insurance = 2100
+
+print(f"Annual insurance: ${insurance:,.2f}")</code></pre>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>Key rule:</strong> For this pattern to work correctly, the threshold values must be in ascending order. If they're not, the ranges will overlap or have gaps and produce wrong results.
+  </div>
+
+  <p><strong>Chaining:</strong> Python also supports a cleaner way to test if a value falls within a range in a single expression:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">age = 16
+if 13 <= age <= 19:
+    print("Teenager")         # True when 13 <= age <= 19</code></pre>
+  </div>
+</section>
+
+<!-- COMPARISON OPERATORS -->
+<section class="section" id="comparison">
+  <div class="section-eyebrow">Topic 3</div>
+  <h2>⚖️ Comparison Operators</h2>
+
+  <p>All comparison operators return a Boolean value: either <code>True</code> or <code>False</code>. Python evaluates them using a <strong>substitution method</strong> — it replaces the variable with its value, then evaluates the expression.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Operator</th><th>Meaning</th><th>Example (x = 3)</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td><code>==</code></td><td>Equal to</td><td><code>x == 3</code></td><td><span class="tick">True</span></td></tr>
+        <tr><td><code>!=</code></td><td>Not equal to</td><td><code>x != 4</code></td><td><span class="tick">True</span></td></tr>
+        <tr><td><code>&lt;</code></td><td>Less than</td><td><code>x &lt; 4</code></td><td><span class="tick">True</span></td></tr>
+        <tr><td><code>&gt;</code></td><td>Greater than</td><td><code>x &gt; 2</code></td><td><span class="tick">True</span></td></tr>
+        <tr><td><code>&lt;=</code></td><td>Less than or equal to</td><td><code>x &lt;= 3</code></td><td><span class="tick">True</span></td></tr>
+        <tr><td><code>&gt;=</code></td><td>Greater than or equal to</td><td><code>x &gt;= 3</code></td><td><span class="tick">True</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>Common mistake:</strong> Using <code>=</code> (assignment) instead of <code>==</code> (comparison) inside an <code>if</code> condition. These are completely different operations. Python is case-sensitive — variable names must match exactly.
+  </div>
+</section>
+
+<!-- BOOLEAN OPERATORS -->
+<section class="section" id="boolean">
+  <div class="section-eyebrow">Topic 4</div>
+  <h2>🔗 Boolean Operators</h2>
+
+  <p>Named after mathematician George Boole, Boolean operators combine two conditions into a single expression. They operate on <code>True</code>/<code>False</code> values — in Python, any zero value is treated as <code>False</code>; any non-zero value is <code>True</code>.</p>
+
+  <div class="truth-grid">
+    <div>
+      <h4>AND Truth Table</h4>
+      <div class="table-wrap" style="margin:0;">
+        <table>
+          <thead><tr><th>A</th><th>B</th><th>A and B</th></tr></thead>
+          <tbody>
+            <tr><td>False</td><td>False</td><td><span class="cross">False</span></td></tr>
+            <tr><td>False</td><td>True</td><td><span class="cross">False</span></td></tr>
+            <tr><td>True</td><td>False</td><td><span class="cross">False</span></td></tr>
+            <tr><td>True</td><td>True</td><td><span class="tick">True</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h4>OR Truth Table</h4>
+      <div class="table-wrap" style="margin:0;">
+        <table>
+          <thead><tr><th>A</th><th>B</th><th>A or B</th></tr></thead>
+          <tbody>
+            <tr><td>False</td><td>False</td><td><span class="cross">False</span></td></tr>
+            <tr><td>False</td><td>True</td><td><span class="tick">True</span></td></tr>
+            <tr><td>True</td><td>False</td><td><span class="tick">True</span></td></tr>
+            <tr><td>True</td><td>True</td><td><span class="tick">True</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">4a</span> <code>and</code> — Both must be true</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <pre><code class="language-python">user_grade = 10
+
+if 9 <= user_grade and user_grade <= 12:
+    print("You are in high school")</code></pre>
+    </div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">4b</span> <code>or</code> — At least one must be true</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <pre><code class="language-python">lemon_amount = int(input("How many crates? "))
+
+if lemon_amount < 15 or lemon_amount >= 25:
+    print("Unrespectable supply")</code></pre>
+    </div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">4c</span> <code>not</code> — Flips the boolean value</h3>
+    <p>A unary operator (takes only one operand) that inverts <code>True</code> to <code>False</code> and vice versa.</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <pre><code class="language-python">days = 7
+
+if not days > 10:
+    print("Less than 11 days")   # days > 10 is False; not False → True</code></pre>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>Short-circuit evaluation</strong> — Python is smart about Boolean expressions:<br><br>
+    <strong>AND:</strong> If the first operand is <code>False</code>, the result must be <code>False</code> regardless of the second — Python skips evaluating it.<br>
+    <strong>OR:</strong> If the first operand is <code>True</code>, the result must be <code>True</code> regardless of the second — Python skips evaluating it.<br><br>
+    This matters for compound expressions with many conditions: Python stops as soon as the outcome is determined.
+  </div>
+
+  <h4>Grouping with Parentheses</h4>
+  <p>Use parentheses to make the grouping of conditions explicit and control operator precedence:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">office_num = 1285
+
+# Parentheses group the two AND expressions before the OR
+if (office_num >= 100 and office_num <= 500
+    or office_num >= 800 and office_num <= 900):
+    print("Valid office number")</code></pre>
+  </div>
+</section>
+
+<!-- IN / NOT IN -->
+<section class="section" id="membership">
+  <div class="section-eyebrow">Topic 5</div>
+  <h2>🔍 Membership Operators: <code>in</code> and <code>not in</code></h2>
+
+  <p>Test whether a value belongs to a collection (list, tuple, set, or string). For dictionaries, <code>in</code> tests for a <strong>key</strong>, not a value.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">prices = ["apple", 15, 20]
+
+if 15 in prices:
+    print("Found 15")               # True
+
+if 44 not in prices:
+    print("44 is not in the list")  # True
+
+# Works on strings too — tests for a substring
+if "abc" in "123abcd":
+    print("Substring found")        # True (case-sensitive!)
+
+# Inside an if statement
+special_list = [0, 7, 42, 99]
+special_num = 7
+if special_num in special_list:
+    print("Special number!")</code></pre>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>Strings are case-sensitive.</strong> <code>"ABC" in "123abcd"</code> is <code>False</code> because uppercase A, B, C do not match lowercase a, b, c.
+  </div>
+</section>
+
+<!-- IS / IS NOT -->
+<section class="section" id="identity">
+  <div class="section-eyebrow">Topic 6</div>
+  <h2>🪞 Identity Operators: <code>is</code> and <code>is not</code></h2>
+
+  <p><code>is</code> checks whether two variables point to the <strong>exact same object in memory</strong> — not just whether their values are equal. Use the <code>id()</code> function to see an object's memory address.</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python">s1 = "hello"
+s2 = s1            # s2 points to the SAME object as s1
+
+print(s1 is s2)    # True  — same object in memory
+print(id(s1))      # e.g. 140234567890
+print(id(s2))      # same number
+
+s2 = "world"       # s2 now points to a DIFFERENT object
+print(s1 is s2)    # False</code></pre>
+  </div>
+
+  <div class="callout callout-note">
+    <strong>Rule of thumb:</strong> Use <code>==</code> to compare <em>values</em> (almost always what you want). Use <code>is</code> only when you need to confirm two variables literally point to the same object — this is rare in beginner programs but important to understand.
+  </div>
+</section>
+
+<!-- LINE CONTINUATION -->
+<section class="section" id="continuation">
+  <div class="section-eyebrow">Topic 7</div>
+  <h2>↩️ Line Continuation</h2>
+
+  <p>Long conditions can be split across multiple lines. Python provides two ways to do this:</p>
+
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+    <pre><code class="language-python"># Method 1: backslash continuation character
+if office_num >= 100 and office_num <= 500 \
+   or office_num >= 800 and office_num <= 900:
+    print("Valid office")
+
+# Method 2 (preferred): wrap the whole condition in parentheses
+# Python knows the statement continues until the closing parenthesis
+if (office_num >= 100 and office_num <= 500
+    or office_num >= 800 and office_num <= 900):
+    print("Valid office")</code></pre>
+  </div>
+
+  <p>Method 2 is preferred — parentheses are cleaner, and Python automatically handles the continuation by counting open vs. closed parentheses. The statement continues until the count reaches zero.</p>
+</section>
+
+<!-- ACTIVITIES -->
+<section class="section" id="activities">
+  <div class="section-eyebrow">Practice</div>
+  <h2>🛠️ Hands-On Activities</h2>
+
+  <div class="activity">
+    <h4>Breakout 1 — Basic Branching</h4>
+    <ol>
+      <li><strong>Play computer:</strong> Given <code>number_of_apples = 3.14</code>, trace through <code>if number_of_apples &lt; 7: print("A") else: print("E")</code> followed by <code>print("K")</code>. What prints and why?</li>
+      <li><strong>Write from scratch:</strong> Ask for a <code>barcode_check_id</code>. If it equals <code>7</code>, set <code>group_id = 1</code>; otherwise set <code>group_id = barcode_check_id</code>. Print the result. Test with both <code>7</code> and another number.</li>
+      <li><strong>Trace the output:</strong> Given <code>number_of_sales = 7</code> and the rules: if sales == 0 → bonus = 0; elif sales == 1 → bonus = 2; elif sales == 2 → bonus = 5; else → bonus = 10. What is <code>employee_bonus</code>?</li>
+    </ol>
+  </div>
+
+  <div class="activity">
+    <h4>Breakout 2 — Compound Conditions &amp; Debugging</h4>
+    <ol>
+      <li><strong>Write from scratch:</strong> Ask for <code>lemon_amount</code>. Print <code>"Unrespectable supply"</code> if the amount is fewer than <code>15</code> or <code>25</code> or more. Test with: 10, 15, 20, 25.</li>
+      <li><strong>Predict the ranges:</strong> Given an <code>if / elif / else</code> block, determine what values of <code>num_passengers</code> will print <code>"Compact Van"</code>, <code>"Medium Van"</code>, or <code>"Group too large"</code>.</li>
+      <li><span class="challenge-pill">Debug</span> The following code is supposed to print <code>"Teenager"</code> for anyone aged 13–19, but it never prints anything. Find and fix the bug:<br>
+        <code>if age &lt; 13 and age &gt; 19: print("Teenager")</code><br>
+        <em>Hint: Is there any number that is simultaneously less than 13 AND greater than 19?</em></li>
+    </ol>
+  </div>
+</section>
+
+<!-- UPCOMING -->
+<section class="section" id="upcoming">
+  <div class="section-eyebrow">Schedule</div>
+  <h2>📅 Coming Up</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Item</th></tr></thead>
+      <tbody>
+        <tr><td>June 9</td><td>Chapter 4 readings &amp; labs due · Chapter 5 — Loops</td></tr>
+        <tr><td>June 16</td><td>Midterm review + in-class group project (Chapters 1–5)</td></tr>
+        <tr><td>June 16 (after class)</td><td>Midterm becomes available (2-hour window, Lockdown Browser)</td></tr>
+        <tr><td>June 23</td><td>Midterm due before class · Chapter 7 — Strings</td></tr>
+        <tr><td>June 30</td><td>Last day to withdraw with W-grade</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Questions? Post on the <strong>Class Question Board</strong> in Canvas, email
+  <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>, or use the <strong>Circle In</strong> AI tutor.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

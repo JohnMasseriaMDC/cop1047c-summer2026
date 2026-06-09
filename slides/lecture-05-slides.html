@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COP 1047C · Chapter 5: Loops · Slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:       #080c14; --surface:  #0f1724; --surface2: #16202e;
+    --border:   #1e2d42; --border2:  #253347;
+    --accent:   #f59e0b; --accent2:  #38bdf8;
+    --text:     #e2e8f0; --muted:    #7d93af;
+    --green:    #34d399; --red:      #f87171;
+    --mono: 'JetBrains Mono','Courier New',monospace;
+    --sans: 'Outfit',system-ui,sans-serif;
+  }
+  html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:var(--sans); }
+
+  #progress-bar { position:fixed; top:0; left:0; height:3px; background:var(--accent); width:0%; transition:width .3s ease; z-index:200; }
+
+  .slide { display:none; position:fixed; inset:0; flex-direction:column; }
+  .slide.active { display:flex; }
+
+  /* ── HEADER ── */
+  .slide-header { display:flex; align-items:center; justify-content:space-between; padding:.55rem 1.5rem; background:var(--surface); border-bottom:1px solid var(--border); flex-shrink:0; gap:1rem; }
+  .chapter-tag { font-family:var(--mono); font-size:.68rem; font-weight:600; color:var(--accent); background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.3); border-radius:4px; padding:2px 10px; white-space:nowrap; }
+  .slide-title { font-size:.82rem; font-weight:500; color:var(--muted); text-align:center; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .mdc-badge { font-size:.72rem; color:var(--muted); white-space:nowrap; }
+
+  /* ── OPTIONAL BADGE ── */
+  .optional-tag { font-family:var(--mono); font-size:.68rem; font-weight:600; color:#a78bfa; background:rgba(167,139,250,.12); border:1px solid rgba(167,139,250,.3); border-radius:4px; padding:2px 10px; white-space:nowrap; }
+
+  /* ── SLIDE BODY ── */
+  .slide-body { flex:1; overflow-y:auto; padding:2rem 3rem; scrollbar-width:thin; scrollbar-color:var(--border2) transparent; display:flex; flex-direction:column; gap:1.1rem; }
+  .slide-body::-webkit-scrollbar { width:5px; }
+  .slide-body::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+
+  /* ── HERO ── */
+  .slide-body.hero { flex-direction:row; align-items:center; justify-content:space-between; gap:3rem; background:radial-gradient(ellipse at 70% 50%,rgba(245,158,11,.06) 0%,transparent 70%); }
+  .hero-eyebrow { font-family:var(--mono); font-size:.8rem; font-weight:500; color:var(--accent); margin-bottom:.75rem; }
+  .hero h1 { font-size:clamp(2.2rem,5vw,3.5rem); font-weight:700; color:var(--text); line-height:1.1; margin-bottom:.75rem; }
+  .hero-sub { font-size:1.05rem; color:var(--muted); max-width:520px; line-height:1.6; margin-bottom:1.5rem; }
+  .hero-meta { display:flex; gap:2rem; flex-wrap:wrap; }
+  .hero-meta-item { display:flex; flex-direction:column; gap:2px; }
+  .hero-meta-label { font-size:.68rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+  .hero-meta-value { font-size:.95rem; font-weight:600; color:var(--text); }
+  .corner-grid { width:260px; height:260px; flex-shrink:0; background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px); background-size:28px 28px; border-radius:12px; mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%); opacity:.5; }
+
+  /* ── TYPE ── */
+  h2 { font-size:clamp(1.4rem,2.5vw,1.9rem); font-weight:700; color:var(--text); }
+  h2 .accent  { color:var(--accent); }
+  h2 .accent2 { color:var(--accent2); }
+  h3 { font-size:1rem; font-weight:600; color:var(--text); margin-bottom:.3rem; }
+  p  { font-size:.9rem; color:var(--text); line-height:1.6; }
+  p.muted { color:var(--muted); font-size:.85rem; }
+  strong { color:var(--text); font-weight:600; }
+  code { font-family:var(--mono); font-size:.83em; background:rgba(255,255,255,.07); border-radius:4px; padding:2px 6px; color:#93c5fd; font-variant-ligatures:none; font-feature-settings:"liga" 0,"calt" 0; }
+  .accent  { color:var(--accent); }
+  .accent2 { color:var(--accent2); }
+  .section-label { font-family:var(--mono); font-size:.7rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; }
+
+  /* ── BULLETS ── */
+  ul.bullets, ol.bullets { padding-left:1.4rem; display:flex; flex-direction:column; gap:.5rem; }
+  ul.bullets li, ol.bullets li { font-size:.9rem; line-height:1.55; color:var(--text); }
+  ul.bullets li::marker { color:var(--accent); }
+
+  /* ── COLS ── */
+  .cols { display:grid; gap:1.25rem; align-items:start; }
+  .cols-2 { grid-template-columns:1fr 1fr; }
+  .cols-3 { grid-template-columns:1fr 1fr 1fr; }
+  .cols-60-40 { grid-template-columns:3fr 2fr; }
+
+  /* ── CARDS ── */
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:.8rem 1rem; display:flex; flex-direction:column; gap:.3rem; }
+  .card-num { font-family:var(--mono); font-size:.68rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.08em; }
+  .card-title { font-size:.88rem; font-weight:600; color:var(--text); }
+  .card-body  { font-size:.8rem; color:var(--muted); line-height:1.5; }
+  .card.accent-left  { border-left:3px solid var(--accent); }
+  .card.accent2-left { border-left:3px solid var(--accent2); }
+  .card.green-left   { border-left:3px solid var(--green); }
+  .card.red-left     { border-left:3px solid var(--red); }
+
+  /* ── CODE BLOCKS ── */
+  .code-wrap { border-radius:10px; border:1px solid var(--border); overflow:hidden; }
+  .code-bar  { background:var(--surface2); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:.5rem; padding:.4rem .9rem; font-family:var(--mono); font-size:.72rem; color:var(--muted); }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .dot-r{background:#ff5f57;} .dot-y{background:#febc2e;} .dot-g{background:#28c840;}
+  pre[class*="language-"] {
+    margin:0!important; border-radius:0!important; background:#0d1117!important;
+    font-family:var(--mono)!important; font-size:.82rem!important; line-height:1.65!important;
+    padding:1rem 1.25rem!important; max-height:360px; overflow-y:auto;
+    font-variant-ligatures:none; font-feature-settings:"liga" 0,"calt" 0;
+  }
+  pre[class*="language-"] > code { padding:0!important; background:transparent!important; }
+
+  /* ── CALLOUTS ── */
+  .callout { border-radius:8px; padding:.75rem 1rem; font-size:.87rem; line-height:1.6; }
+  .callout-warn { background:rgba(239,68,68,.07); border:1px solid rgba(239,68,68,.25); color:#fca5a5; }
+  .callout-warn strong { color:#fca5a5; }
+  .callout-info { background:rgba(96,165,250,.07); border:1px solid rgba(96,165,250,.2); color:#93c5fd; }
+  .callout-info strong { color:#93c5fd; }
+  .callout-note { background:rgba(245,158,11,.07); border:1px solid rgba(245,158,11,.2); color:var(--muted); }
+  .callout-note strong { color:var(--accent); }
+  .callout-optional { background:rgba(167,139,250,.07); border:1px solid rgba(167,139,250,.25); color:#c4b5fd; }
+  .callout-optional strong { color:#a78bfa; }
+
+  /* ── TABLE ── */
+  .table-wrap { border-radius:8px; border:1px solid var(--border); overflow:hidden; }
+  table { width:100%; border-collapse:collapse; font-size:.84rem; }
+  thead tr { background:var(--surface2); }
+  thead th { padding:.5rem .9rem; text-align:left; font-weight:600; font-size:.74rem; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+  tbody tr { border-top:1px solid var(--border); }
+  tbody tr:hover { background:rgba(255,255,255,.02); }
+  tbody td { padding:.45rem .9rem; line-height:1.4; font-size:.84rem; }
+  tbody td:first-child code { color:var(--accent); }
+  .tick{color:var(--green);} .cross{color:var(--red);}
+
+  /* ── ACTIVITY ── */
+  .activity-header { background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.2); border-radius:8px; padding:.6rem 1rem; font-size:.78rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.08em; }
+  ol.activity-steps { padding-left:1.4rem; display:flex; flex-direction:column; gap:.55rem; }
+  ol.activity-steps li { font-size:.9rem; line-height:1.55; color:var(--text); }
+  .challenge-pill { display:inline-block; background:rgba(245,158,11,.15); color:var(--accent); font-size:.68rem; font-weight:700; text-transform:uppercase; border-radius:4px; padding:1px 7px; margin-right:5px; vertical-align:middle; }
+
+  /* ── QUIZ ── */
+  .quiz-opts { display:flex; flex-direction:column; gap:.45rem; }
+  .quiz-opt { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:.6rem .9rem; cursor:pointer; font-size:.86rem; display:flex; align-items:center; gap:.7rem; transition:border-color .15s,background .15s; }
+  .quiz-opt:hover { border-color:var(--border2); background:var(--surface2); }
+  .quiz-opt.correct { border-color:var(--green); background:rgba(52,211,153,.08); color:var(--green); }
+  .quiz-opt.wrong   { border-color:var(--red);   background:rgba(248,113,113,.08); color:var(--red); }
+  .badge { width:22px; height:22px; border-radius:50%; border:1px solid currentColor; display:flex; align-items:center; justify-content:center; font-size:.7rem; flex-shrink:0; }
+
+  /* ── SUMMARY ── */
+  .summary-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:.7rem; }
+  .summary-item { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:.7rem .9rem; display:flex; align-items:flex-start; gap:.7rem; }
+  .summary-icon { font-size:1.2rem; flex-shrink:0; }
+  .summary-text { font-size:.82rem; color:var(--muted); line-height:1.5; }
+  .summary-text strong { color:var(--text); display:block; margin-bottom:2px; }
+
+  /* ── NAV ── */
+  #nav { display:flex; align-items:center; justify-content:center; gap:.75rem; padding:.6rem 1.5rem; background:var(--surface); border-top:1px solid var(--border); flex-shrink:0; }
+  #nav button { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; color:var(--muted); cursor:pointer; font-family:var(--sans); font-size:.8rem; font-weight:500; padding:.35rem .9rem; transition:all .15s; }
+  #nav button:hover:not(:disabled) { background:rgba(245,158,11,.1); color:var(--accent); border-color:rgba(245,158,11,.35); }
+  #nav button:disabled { opacity:.3; cursor:default; }
+  #slide-counter { font-family:var(--mono); font-size:.8rem; color:var(--muted); min-width:4.5rem; text-align:center; }
+
+  @media(max-width:900px){
+    .slide-body { padding:1.5rem 1.5rem; }
+    .cols-2,.cols-60-40 { grid-template-columns:1fr; }
+    .corner-grid { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- ═══════════════════════════════════════════
+     S1 — TITLE
+══════════════════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5</span>
+    <span class="slide-title">COP 1047C · Introduction to Python Programming</span>
+    <span class="mdc-badge">Miami Dade College · Summer 2026</span>
+  </div>
+  <div class="slide-body hero">
+    <div>
+      <p class="hero-eyebrow">Chapter 5 · Sections 5.1 – 5.12</p>
+      <h1>Loops</h1>
+      <p class="hero-sub">while loops · for loops · range() · nested loops · break · continue · enumerate()</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">Instructor</span>
+          <span class="hero-meta-value">John Masseria</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">Date</span>
+          <span class="hero-meta-value">June 9, 2026</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">zyBook Due</span>
+          <span class="hero-meta-value">June 16, 2026</span>
+        </div>
+      </div>
+    </div>
+    <div class="corner-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S2 — AGENDA / LEARNING OBJECTIVES
+══════════════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5</span>
+    <span class="slide-title">Tonight's Agenda</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Learning Objectives</p>
+    <h2>By the End of Class You'll Be Able To… <span class="accent2"></span></h2>
+    <div class="cols cols-2">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="card accent-left">
+          <span class="card-num">5.1 – 5.3</span>
+          <span class="card-title">Write while loops</span>
+          <span class="card-body">Use conditions, sentinel values, and loop variables to control iteration</span>
+        </div>
+        <div class="card accent-left">
+          <span class="card-num">5.4</span>
+          <span class="card-title">Count with loops</span>
+          <span class="card-body">Use compound operators (+=, -=, *=) and loop variables for counting and accumulation</span>
+        </div>
+        <div class="card accent-left">
+          <span class="card-num">5.5 – 5.6</span>
+          <span class="card-title">Write for loops</span>
+          <span class="card-body">Iterate over lists, strings, and dictionaries; use range() to generate sequences</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="card accent2-left">
+          <span class="card-num">5.7 – 5.8</span>
+          <span class="card-title">Choose the right loop</span>
+          <span class="card-body">Decide between while and for; build nested loops for multi-dimensional problems</span>
+        </div>
+        <div class="card accent2-left">
+          <span class="card-num">5.9 – 5.10</span>
+          <span class="card-title">Control loop flow</span>
+          <span class="card-body">Develop programs incrementally; use break and continue strategically</span>
+        </div>
+        <div class="card accent2-left">
+          <span class="card-num">5.11</span>
+          <span class="card-title">Use enumerate()</span>
+          <span class="card-body">Get both index and value when looping — no manual index tracking needed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S3 — WHAT IS A LOOP? (5.1)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5 · §5.1</span>
+    <span class="slide-title">Loops (general)</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">The Core Idea</p>
+    <h2>A Loop <span class="accent">Repeats</span> Until a Condition Is False</h2>
+    <div class="cols cols-60-40">
+      <div>
+        <p>A <strong>loop</strong> is a program construct that repeatedly executes a block of code (the <strong>loop body</strong>) while the loop's expression is <code>True</code>. When the expression is <code>False</code>, execution continues past the loop.</p>
+        <p style="margin-top:.75rem;">Each complete execution of the loop body is called an <strong>iteration</strong>.</p>
+        <ul class="bullets" style="margin-top:.75rem;">
+          <li>Loops let you process lists of data without writing the same code repeatedly</li>
+          <li>The loop <em>condition</em> is checked before each iteration</li>
+          <li>If the condition starts as <code>False</code>, the loop body never runs</li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.75rem;">
+        <div class="card accent-left">
+          <span class="card-num">Everyday analogy</span>
+          <span class="card-title">🚗 Driving the baby</span>
+          <span class="card-body">Parents loop around the block <em>while</em> the baby is awake. When the baby falls asleep → stop looping, go home.</span>
+        </div>
+        <div class="card accent2-left">
+          <span class="card-num">Programming example</span>
+          <span class="card-title">📋 Process a list</span>
+          <span class="card-body">Print every name in a list of 1,000 students — one loop, not 1,000 print statements.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S4 — WHILE LOOPS (5.2)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5 · §5.2</span>
+    <span class="slide-title">While Loops</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Syntax &amp; Mechanics</p>
+    <h2>The <span class="accent">while</span> Loop</h2>
+    <div class="cols cols-2">
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; while loop syntax</div>
+          <pre><code class="language-python">while expression:      # condition checked first
+    # loop body — runs if True
+    # must eventually make expression False
+
+# runs after loop ends</code></pre>
+        </div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; example</div>
+          <pre><code class="language-python">value = 1
+
+while value < 6:
+    print(value)          # 1  2  4
+    value = value * 2     # double each time
+
+print("Done")             # runs once after loop</code></pre>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.75rem;">
+        <div class="callout callout-warn">
+          <strong>Infinite loop risk:</strong> If the loop body never makes the condition <code>False</code>, the loop runs forever. Always ensure your loop variable gets updated!
+        </div>
+        <div class="callout callout-note">
+          <strong>Sentinel value:</strong> A special value that signals the loop to stop. Ex: loop until the user types <code>"quit"</code>.
+        </div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; sentinel example</div>
+          <pre><code class="language-python">user = input("Type 'quit' to exit: ")
+
+while user != "quit":
+    print(f"You said: {user}")
+    user = input("Type 'quit' to exit: ")
+
+print("Goodbye!")</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S5 — COUNTING & COMPOUND OPERATORS (5.4)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5 · §5.4</span>
+    <span class="slide-title">Counting</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Loop Variables &amp; Compound Operators</p>
+    <h2>Counting <span class="accent">Up, Down,</span> and in Steps</h2>
+    <div class="cols cols-2">
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; count up</div>
+          <pre><code class="language-python">count = 1
+while count <= 5:
+    print(count)     # 1 2 3 4 5
+    count += 1       # same as count = count + 1</code></pre>
+        </div>
+        <div class="code-wrap" style="margin-top:.6rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; count down in steps</div>
+          <pre><code class="language-python">variation = 10
+while variation >= 0:
+    print(variation)   # 10  5  0
+    variation -= 5     # subtract 5 each time</code></pre>
+        </div>
+      </div>
+      <div>
+        <h3>Compound Operators</h3>
+        <div class="table-wrap" style="margin-top:.4rem;">
+          <table>
+            <thead><tr><th>Shorthand</th><th>Equivalent</th></tr></thead>
+            <tbody>
+              <tr><td><code>x += 5</code></td><td><code>x = x + 5</code></td></tr>
+              <tr><td><code>x -= 3</code></td><td><code>x = x - 3</code></td></tr>
+              <tr><td><code>x *= 2</code></td><td><code>x = x * 2</code></td></tr>
+              <tr><td><code>x //= 4</code></td><td><code>x = x // 4</code></td></tr>
+              <tr><td><code>x /= 5</code></td><td><code>x = x / 5</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-note" style="margin-top:.6rem;">
+          <strong>Real-world use:</strong> Factorial, Fibonacci, savings with compound interest — all computed with a counting loop.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S6 — FOR LOOPS (5.5)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5 · §5.5</span>
+    <span class="slide-title">For Loops</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Iterating Over Containers</p>
+    <h2>The <span class="accent">for</span> Loop</h2>
+    <div class="cols cols-2">
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; list</div>
+          <pre><code class="language-python">names = ["Kai", "Sam", "Alex"]
+for name in names:
+    print(f"Hi {name}!")
+print("Done")
+# Hi Kai!  Hi Sam!  Hi Alex!  Done</code></pre>
+        </div>
+        <div class="code-wrap" style="margin-top:.6rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; string</div>
+          <pre><code class="language-python">for char in "Yes":
+    print(char)
+# Y   e   s</code></pre>
+        </div>
+        <div class="code-wrap" style="margin-top:.6rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; dictionary (iterates over keys)</div>
+          <pre><code class="language-python">channels = {"MTV": 35, "CNN": 28}
+for channel_name in channels:
+    print(f"{channel_name}: {channels[channel_name]}")</code></pre>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.7rem;">
+        <div class="callout callout-info">
+          <strong>How it works:</strong> Each iteration assigns the loop variable to the <em>next element</em> in the container. The loop ends automatically when all elements are exhausted — no condition to manage.
+        </div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; reversed()</div>
+          <pre><code class="language-python">scores = [75, 80, 95, 88]
+for s in reversed(scores):
+    print(s, end=" ")
+# 88 95 80 75</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S7 — range() FUNCTION (5.6)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s7">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5 · §5.6</span>
+    <span class="slide-title">The range() Function</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Counting with for Loops</p>
+    <h2>Generating Sequences with <span class="accent">range()</span></h2>
+    <div class="cols cols-2">
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Call</th><th>Sequence generated</th></tr></thead>
+            <tbody>
+              <tr><td><code>range(5)</code></td><td>0 1 2 3 4</td></tr>
+              <tr><td><code>range(0, 5)</code></td><td>0 1 2 3 4</td></tr>
+              <tr><td><code>range(3, 7)</code></td><td>3 4 5 6</td></tr>
+              <tr><td><code>range(0, 10, 2)</code></td><td>0 2 4 6 8 &nbsp;(step +2)</td></tr>
+              <tr><td><code>range(5, 0, -1)</code></td><td>5 4 3 2 1 &nbsp;(count down)</td></tr>
+              <tr><td><code>range(5, 0, -2)</code></td><td>5 3 1 &nbsp;(step -2)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-note" style="margin-top:.6rem;">
+          <strong>Rule:</strong> The end value is <em>never included</em>. <code>range(5)</code> gives 0–4, not 0–5.
+        </div>
+      </div>
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; examples</div>
+          <pre><code class="language-python"># Print 0 through 4
+for i in range(5):
+    print(i, end=" ")   # 0 1 2 3 4
+
+# Sum 1 to 10
+total = 0
+for i in range(1, 11):
+    total += i
+print(total)            # 55
+
+# Countdown from 10
+for i in range(10, 0, -1):
+    print(i, end=" ")   # 10 9 8 7 6 5 4 3 2 1</code></pre>
+        </div>
+        <div class="callout callout-info" style="margin-top:.6rem;">
+          <strong>Tip:</strong> Use <code>range(len(my_list))</code> to iterate by index, or just <code>for item in my_list</code> to iterate by value.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S8 — BREAKOUT 1
+══════════════════════════════════════════════ -->
+<div class="slide" id="s8">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5</span>
+    <span class="slide-title">Hands-On Activity</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <div class="activity-header">✏️ Breakout 1 — While Loops, For Loops &amp; range() · 15 minutes</div>
+    <ol class="activity-steps">
+      <li><strong>While loop counter:</strong> Write a while loop that prints all multiples of 3 from 3 to 30. Then rewrite it using a for loop with <code>range()</code>.</li>
+      <li><strong>For loop over a list:</strong> Create a list of 5 of your favorite foods. Use a for loop to print each one along with its index position (e.g., <code>1: Pizza</code>). Start numbering from 1.</li>
+      <li><strong>Accumulator:</strong> Ask the user to enter 5 numbers one at a time using a loop. After all entries, print the total and the average.</li>
+      <li><span class="challenge-pill">Challenge</span> Use a while loop with a sentinel value of <code>-1</code> to keep accepting numbers until the user enters <code>-1</code>, then print the count and average of valid numbers entered.</li>
+    </ol>
+    <div class="code-wrap" style="margin-top:.5rem;">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; Starter code — Problems 2 &amp; 3</div>
+      <pre><code class="language-python"># Problem 2
+foods = ["Pizza", "Sushi", "Tacos", "Pasta", "Ramen"]
+for i in range(len(foods)):
+    """ Your code here """
+
+# Problem 3
+total = 0
+for i in range(5):
+    """ Your code here """</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S9 — WHILE VS. FOR (5.7)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s9">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5 · §5.7</span>
+    <span class="slide-title">While vs. For Loops</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Choosing the Right Tool</p>
+    <h2>When to Use <span class="accent">while</span> vs. <span class="accent2">for</span></h2>
+    <div class="cols cols-2">
+      <div class="card accent-left">
+        <span class="card-num">Use while when…</span>
+        <span class="card-title" style="color:var(--accent);">Number of iterations is unknown</span>
+        <div class="code-wrap" style="margin-top:.5rem;">
+          <div class="code-bar" style="font-size:.68rem;"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python"># Loop until user enters correct password
+password = ""
+while password != "secret":
+    password = input("Password: ")
+
+# Loop until values converge
+while num_a != num_b:
+    if num_a > num_b:
+        num_a -= num_b
+    else:
+        num_b -= num_a</code></pre>
+        </div>
+      </div>
+      <div class="card accent2-left">
+        <span class="card-num">Use for when…</span>
+        <span class="card-title" style="color:var(--accent2);">Count is known or iterating a container</span>
+        <div class="code-wrap" style="margin-top:.5rem;">
+          <div class="code-bar" style="font-size:.68rem;"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python"># Iterate over every item in a list
+for fruit in fruits:
+    print(fruit)
+
+# Repeat exactly N times
+for i in range(100):
+    print("Hello")</code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="callout callout-note">
+      <strong>For loops are safer:</strong> A for loop over a container or range() is guaranteed to finish. While loops can accidentally become infinite if you forget to update the loop variable.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S10 — NESTED LOOPS (5.8)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s10">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5 · §5.8</span>
+    <span class="slide-title">Nested Loops</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Loops Inside Loops</p>
+    <h2>Nested Loops — <span class="accent">Outer</span> &amp; <span class="accent2">Inner</span></h2>
+    <div class="cols cols-60-40">
+      <div>
+        <p>A nested loop is a loop inside another loop. The <strong>inner loop</strong> runs to completion on every single iteration of the <strong>outer loop</strong>.</p>
+        <p style="margin-top:.5rem;"><strong>Total iterations</strong> = outer iterations × inner iterations</p>
+        <div class="code-wrap" style="margin-top:.6rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; multiplication table</div>
+          <pre><code class="language-python">for i in range(1, 4):          # outer: 1, 2, 3
+    for j in range(1, 4):      # inner: 1, 2, 3
+        print(f"{i}x{j}={i*j}", end="  ")
+    print()                    # newline after each row
+
+# 1x1=1  1x2=2  1x3=3
+# 2x1=2  2x2=4  2x3=6
+# 3x1=3  3x2=6  3x3=9</code></pre>
+        </div>
+        <div class="code-wrap" style="margin-top:.6rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; two-letter domain names</div>
+          <pre><code class="language-python">letter1 = "a"
+while letter1 <= "z":
+    letter2 = "a"
+    while letter2 <= "z":
+        print(f"{letter1}{letter2}.com")
+        letter2 = chr(ord(letter2) + 1)
+    letter1 = chr(ord(letter1) + 1)
+# aa.com  ab.com ... zz.com  (676 total)</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="callout callout-note">
+          <strong>chr() and ord():</strong><br>
+          <code>ord("a")</code> → <code>97</code> (the integer encoding of 'a')<br>
+          <code>chr(98)</code> → <code>"b"</code> (integer back to character)
+        </div>
+        <div class="callout callout-warn" style="margin-top:.6rem;">
+          <strong>Watch your indentation!</strong> Code at the outer loop level runs once per outer iteration. Code at the inner loop level runs once per inner iteration. Getting this wrong is a very common bug.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S11 — INCREMENTAL PROGRAMMING (5.9)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s11">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5 · §5.9</span>
+    <span class="slide-title">Developing Programs Incrementally</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Professional Development Habit</p>
+    <h2>Build a Little, <span class="accent">Test a Little</span></h2>
+    <div class="cols cols-60-40">
+      <div>
+        <p><strong>Incremental programming</strong> means starting with a simple working version and growing it step by step. Never write the whole program and run it for the first time hoping it works.</p>
+        <div class="code-wrap" style="margin-top:.6rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; Version 1 — verify the loop works</div>
+          <pre><code class="language-python">user_input = input("Enter phone number: ")
+index = 0
+for character in user_input:
+    print(f"Element {index} is: {character}")
+    index += 1</code></pre>
+        </div>
+        <div class="code-wrap" style="margin-top:.6rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; Version 2 — handle digits; use FIXME for the rest</div>
+          <pre><code class="language-python">phone_number = ""
+for character in user_input:
+    if "0" <= character <= "9":
+        phone_number += character
+    else:
+        phone_number += "?"   # FIXME: decode letters
+print(f"Numbers only: {phone_number}")</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="callout callout-info">
+          <strong>FIXME comments</strong> mark places that still need work. Many editors highlight them automatically. Use <code># FIXME: Add elif for letters A-C</code> to track what's missing.
+        </div>
+        <div class="callout callout-note" style="margin-top:.6rem;">
+          <strong>The incremental habit in 3 steps:</strong><br>
+          1. Write a tiny version that does <em>one thing</em><br>
+          2. Run it and confirm it works<br>
+          3. Add the next feature — repeat
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S12 — BREAKOUT 2
+══════════════════════════════════════════════ -->
+<div class="slide" id="s12">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5</span>
+    <span class="slide-title">Hands-On Activity</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <div class="activity-header">✏️ Breakout 2 — Nested Loops &amp; Incremental Development · 15 minutes</div>
+    <ol class="activity-steps">
+      <li><strong>Nested loop — seating chart:</strong> Ask for <code>num_rows</code> and <code>num_cols</code>. Use nested loops to print seat labels like <code>1A  1B  1C</code> (row number + column letter). Hint: use <code>chr(ord("A") + col_index)</code> to get letters.</li>
+      <li><strong>Incrementally build a sum program:</strong>
+        <br>Version 1: Loop 5 times and just <code>print(i)</code> to verify the loop works.
+        <br>Version 2: Replace <code>print(i)</code> with an accumulator that sums <code>1</code> through <code>5</code>.
+        <br>Version 3: Read the upper limit from input instead of hardcoding <code>5</code>.
+      </li>
+      <li><span class="challenge-pill">Challenge</span> Extend the seating chart so only <em>even</em> row numbers are printed. Use an <code>if</code> statement inside the outer loop — or try a step value in <code>range()</code>.</li>
+    </ol>
+    <div class="code-wrap" style="margin-top:.5rem;">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; Starter code — Problem 1</div>
+      <pre><code class="language-python">num_rows = int(input("Rows: "))
+num_cols = int(input("Cols: "))
+
+for row in range(1, num_rows + 1):
+    for col in range(num_cols):
+        letter = chr(ord("A") + col)
+        print(f"{row}{letter}", end="  ")
+    print()</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S13 — BREAK & CONTINUE (5.10)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s13">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5 · §5.10</span>
+    <span class="slide-title">Break and Continue</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Controlling Loop Flow</p>
+    <h2><span class="accent">break</span> Exits · <span class="accent2">continue</span> Skips</h2>
+    <div class="cols cols-2">
+      <div>
+        <h3 style="color:var(--accent);">break — exit immediately</h3>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">for n in range(3, 8):
+    print(n)           # 3  4  5
+    if n > 4:
+        print("stop")
+        break          # exits the loop entirely
+# Output: 3  4  5  stop</code></pre>
+        </div>
+        <div class="callout callout-note" style="margin-top:.6rem;">
+          In <strong>nested loops</strong>, <code>break</code> only exits the innermost loop it's in. You may need a second <code>break</code> in the outer loop.
+        </div>
+      </div>
+      <div>
+        <h3 style="color:var(--accent2);">continue — skip to next iteration</h3>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">for i in range(5):
+    if i % 2 == 0:
+        continue       # skip even numbers
+    print(i)           # 1  3
+# Prints only odd numbers</code></pre>
+        </div>
+        <div class="callout callout-warn" style="margin-top:.6rem;">
+          <strong>Use sparingly.</strong> A reader can easily overlook a <code>break</code> or <code>continue</code> deep inside a loop. Use them only when the code is clearly more readable with them than without.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S14 — QUIZ
+══════════════════════════════════════════════ -->
+<div class="slide" id="s14">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5</span>
+    <span class="slide-title">Check Your Understanding</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Quick Check</p>
+    <h2>What does this code <span class="accent">output?</span></h2>
+    <div class="cols cols-2">
+      <div>
+        <div class="code-wrap" style="margin-bottom:.75rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; Question 1</div>
+          <pre><code class="language-python">result = 0
+n = 2
+while n < 6:
+    print(n, end=" ")
+    result -= 3
+    n += 1
+else:
+    print(f"/ {result}")</code></pre>
+        </div>
+        <div class="quiz-opts">
+          <div class="quiz-opt" onclick="checkAnswer(this,true)"><span class="badge">A</span> <code>2 3 4 5 / -12</code></div>
+          <div class="quiz-opt" onclick="checkAnswer(this,false)"><span class="badge">B</span> <code>2 3 4 5 / -9</code></div>
+          <div class="quiz-opt" onclick="checkAnswer(this,false)"><span class="badge">C</span> <code>2 3 4 / -12</code></div>
+        </div>
+      </div>
+      <div>
+        <div class="code-wrap" style="margin-bottom:.75rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; Question 2</div>
+          <pre><code class="language-python">stop = int(input())  # user enters 4
+for n in range(3, 8):
+    print(n)
+    if n > stop:
+        print("stop")
+        break</code></pre>
+        </div>
+        <div class="quiz-opts">
+          <div class="quiz-opt" onclick="checkAnswer(this,false)"><span class="badge">A</span> <code>3 4</code></div>
+          <div class="quiz-opt" onclick="checkAnswer(this,true)"><span class="badge">B</span> <code>3 4 5 stop</code></div>
+          <div class="quiz-opt" onclick="checkAnswer(this,false)"><span class="badge">C</span> <code>3 4 5 6 7</code></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S15 — ENUMERATE() (5.11)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s15">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5 · §5.11</span>
+    <span class="slide-title">enumerate()</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Index + Value Together</p>
+    <h2>Getting Both with <span class="accent">enumerate()</span></h2>
+    <div class="cols cols-60-40">
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; the hard way (before enumerate)</div>
+          <pre><code class="language-python">origins = [4, 8, 10]
+
+# Option 1: range + len (index only, must look up value)
+for index in range(len(origins)):
+    value = origins[index]
+    print(f"Element {index}: {value}")
+
+# Option 2: direct iteration (value only, must look up index)
+for value in origins:
+    index = origins.index(value)
+    print(f"Element {index}: {value}")</code></pre>
+        </div>
+        <div class="code-wrap" style="margin-top:.6rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; the clean way — enumerate()</div>
+          <pre><code class="language-python">origins = [4, 8, 10]
+
+for (index, value) in enumerate(origins):
+    print(f"Element {index}: {value}")
+
+# Element 0: 4
+# Element 1: 8
+# Element 2: 10</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="callout callout-info">
+          <strong>Tuple unpacking:</strong> <code>enumerate()</code> yields a <em>tuple</em> <code>(index, value)</code> each iteration. The <code>(index, value)</code> on the left unpacks it into two separate variables simultaneously.
+        </div>
+        <div class="callout callout-note" style="margin-top:.6rem;">
+          <strong>Real-world use:</strong> Printing numbered lists, finding the position of a specific value, comparing adjacent elements — any time you need to know <em>where</em> you are in a list as well as <em>what</em> is there.
+        </div>
+        <div class="code-wrap" style="margin-top:.6rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; numbered queue</div>
+          <pre><code class="language-python">orders = ["Latte", "Espresso", "Mocha"]
+for (j, item) in enumerate(orders):
+    print(f"#{j + 1}: {item}")
+# #1: Latte  #2: Espresso  #3: Mocha</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S16 — LOOP ELSE [OPTIONAL] (5.12)
+══════════════════════════════════════════════ -->
+<div class="slide" id="s16">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5 · §5.12</span>
+    <span class="slide-title">Loop else</span>
+    <span class="optional-tag">⭐ OPTIONAL — not required for exam</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Optional Section</p>
+    <h2>The Loop <span class="accent">else</span> Clause</h2>
+    <div class="callout callout-optional" style="margin-bottom:.75rem;">
+      <strong>Section 5.12 is marked Optional by your instructor.</strong> This content will not appear on the midterm. It is presented here as enrichment for students who want to go deeper.
+    </div>
+    <div class="cols cols-2">
+      <div>
+        <p>A loop's <code>else</code> clause runs <em>only if</em> the loop completed normally — i.e., it was never exited by a <code>break</code> statement.</p>
+        <div class="code-wrap" style="margin-top:.5rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; for / else</div>
+          <pre><code class="language-python">names = ["Janice", "Clarice", "Martin"]
+num = int(input("How many to print? "))
+
+for i in range(len(names)):
+    if i == num:
+        break
+    print(names[i], end=" ")
+else:
+    print("All names printed.")
+
+# Input 2: Janice Clarice
+# Input 8: Janice Clarice Martin  All names printed.</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="callout callout-note">
+          <strong>When is this useful?</strong> When searching a list — if you get through the entire list without finding what you're looking for (no <code>break</code>), the <code>else</code> clause tells you the search failed cleanly.
+        </div>
+        <div class="code-wrap" style="margin-top:.6rem;">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp; while / else</div>
+          <pre><code class="language-python">result = 0
+n = 2
+while n < 6:
+    print(n, end=" ")
+    result -= 3
+    n += 1
+else:
+    print(f"/ {result}")
+print("done")
+# 2 3 4 5 / -12
+# done</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     S17 — SUMMARY
+══════════════════════════════════════════════ -->
+<div class="slide" id="s17">
+  <div class="slide-header">
+    <span class="chapter-tag">Chapter 5</span>
+    <span class="slide-title">Summary</span>
+    <span class="mdc-badge">COP 1047C · MDC</span>
+  </div>
+  <div class="slide-body">
+    <p class="section-label">Key Takeaways</p>
+    <h2>What We <span class="accent">Covered</span> Tonight</h2>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <span class="summary-icon">🔁</span>
+        <div class="summary-text">
+          <strong>while loop</strong>
+          Repeats while a condition is True. Use when iteration count is unknown.
+        </div>
+      </div>
+      <div class="summary-item">
+        <span class="summary-icon">🔢</span>
+        <div class="summary-text">
+          <strong>Counting &amp; compound ops</strong>
+          <code>+=</code>, <code>-=</code>, <code>*=</code> update loop variables cleanly.
+        </div>
+      </div>
+      <div class="summary-item">
+        <span class="summary-icon">📋</span>
+        <div class="summary-text">
+          <strong>for loop</strong>
+          Iterates over lists, strings, dicts. Safer than while — guaranteed to end.
+        </div>
+      </div>
+      <div class="summary-item">
+        <span class="summary-icon">⚙️</span>
+        <div class="summary-text">
+          <strong>range()</strong>
+          Generates integer sequences. One, two, or three arguments control start, stop, step.
+        </div>
+      </div>
+      <div class="summary-item">
+        <span class="summary-icon">🪆</span>
+        <div class="summary-text">
+          <strong>Nested loops</strong>
+          Inner loop runs fully for each outer iteration. Use for grids, tables, combinations.
+        </div>
+      </div>
+      <div class="summary-item">
+        <span class="summary-icon">🏗️</span>
+        <div class="summary-text">
+          <strong>Incremental programming</strong>
+          Build a tiny version, test it, add one feature at a time. Use FIXME comments.
+        </div>
+      </div>
+      <div class="summary-item">
+        <span class="summary-icon">⛔</span>
+        <div class="summary-text">
+          <strong>break &amp; continue</strong>
+          <code>break</code> exits the loop; <code>continue</code> skips to the next iteration.
+        </div>
+      </div>
+      <div class="summary-item">
+        <span class="summary-icon">🔍</span>
+        <div class="summary-text">
+          <strong>enumerate()</strong>
+          Get index + value together: <code>for (i, v) in enumerate(my_list)</code>
+        </div>
+      </div>
+    </div>
+    <div class="callout callout-note" style="margin-top:.5rem;">
+      <strong>Due:</strong> zyBook Chapter 5 Readings &amp; Labs — <strong>June 16, 2026</strong> &nbsp;·&nbsp;
+      <strong>Up next:</strong> Chapter 6 – Functions &nbsp;·&nbsp;
+      <strong>Midterm:</strong> Available June 16 after class · Due June 23 before class (Ch 1–5)
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     NAV
+══════════════════════════════════════════════ -->
+<div id="nav">
+  <button id="btn-first" onclick="goTo(0)">⟪ First</button>
+  <button id="btn-prev"  onclick="prev()">‹ Prev</button>
+  <span id="slide-counter">1 / 17</span>
+  <button id="btn-next"  onclick="next()">Next ›</button>
+  <button id="btn-last"  onclick="goTo(slides.length-1)">Last ⟫</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let cur = 0;
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(n, slides.length - 1));
+    slides[cur].classList.add('active');
+    document.getElementById('slide-counter').textContent = `${cur + 1} / ${slides.length}`;
+    document.getElementById('btn-prev').disabled  = cur === 0;
+    document.getElementById('btn-first').disabled = cur === 0;
+    document.getElementById('btn-next').disabled  = cur === slides.length - 1;
+    document.getElementById('btn-last').disabled  = cur === slides.length - 1;
+    document.getElementById('progress-bar').style.width = ((cur + 1) / slides.length * 100) + '%';
+    const body = slides[cur].querySelector('.slide-body');
+    if (body) body.scrollTop = 0;
+  }
+
+  function next() { goTo(cur + 1); }
+  function prev() { goTo(cur - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                     { e.preventDefault(); prev(); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End')  goTo(slides.length - 1);
+  });
+
+  function checkAnswer(el, correct) {
+    const opts = el.parentElement.querySelectorAll('.quiz-opt');
+    opts.forEach(o => { o.classList.remove('correct','wrong'); o.querySelector('.badge').textContent = o.querySelector('.badge').textContent.replace('✓','').replace('✗','').trim(); });
+    el.classList.add(correct ? 'correct' : 'wrong');
+    el.querySelector('.badge').textContent = correct ? '✓' : '✗';
+  }
+
+  goTo(0);
+</script>
+</body>
+</html>
