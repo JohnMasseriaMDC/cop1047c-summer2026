@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COP 1047C – Lecture 5 Breakout Solutions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080c14; --surface: #0f1724; --surface2: #16202e;
+    --border: #1e2d42; --border2: #253347; --accent: #f59e0b;
+    --text: #e2e8f0; --muted: #7d93af;
+    --green-bg: #071510; --green-bdr: #0d3322; --green-txt: #34d399;
+    --tag-bg: #1a2a3a; --tag-txt: #60a5fa;
+    --mono: 'JetBrains Mono','Courier New',monospace;
+    --sans: 'Outfit',system-ui,sans-serif;
+  }
+  html, body { background:var(--bg); color:var(--text); font-family:var(--sans); font-size:16px; line-height:1.6; min-height:100vh; }
+
+  header { background:var(--surface); border-bottom:1px solid var(--border); padding:1.5rem 0 0; position:sticky; top:0; z-index:100; }
+  .header-top { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:.5rem; margin:0 auto 1.25rem; max-width:900px; padding:0 1.5rem; }
+  .course-tag { font-family:var(--mono); font-size:.7rem; font-weight:500; color:var(--accent); background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.3); border-radius:4px; padding:3px 10px; display:inline-block; margin-bottom:.4rem; }
+  header h1 { font-size:1.35rem; font-weight:700; color:var(--text); line-height:1.2; }
+  .header-meta { font-size:.82rem; color:var(--muted); margin-top:.2rem; }
+  .header-badge { background:var(--surface2); border:1px solid var(--border2); border-radius:8px; padding:.5rem .9rem; font-size:.78rem; color:var(--muted); text-align:right; white-space:nowrap; }
+  .header-badge strong { color:var(--text); display:block; font-size:.9rem; }
+
+  nav.tabs { display:flex; gap:0; overflow-x:auto; scrollbar-width:none; max-width:900px; margin:0 auto; padding:0 .5rem; }
+  nav.tabs::-webkit-scrollbar { display:none; }
+  .tab-btn { background:none; border:none; border-bottom:3px solid transparent; color:var(--muted); cursor:pointer; font-family:var(--sans); font-size:.88rem; font-weight:500; padding:.75rem 1.4rem; transition:color .15s,border-color .15s; white-space:nowrap; display:flex; align-items:center; gap:.5rem; }
+  .tab-btn:hover { color:var(--text); }
+  .tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+  .tab-num { background:var(--tag-bg); color:var(--tag-txt); border-radius:100px; font-size:.7rem; font-weight:600; padding:1px 7px; font-family:var(--mono); }
+  .tab-btn.active .tab-num { background:rgba(245,158,11,.15); color:var(--accent); }
+
+  main { max-width:900px; margin:0 auto; padding:2rem 1.5rem 4rem; }
+  .panel { display:none; }
+  .panel.active { display:block; }
+
+  .panel-header { margin-bottom:1.5rem; }
+  .panel-eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:.35rem; }
+  .panel-title { font-size:1.6rem; font-weight:700; color:var(--text); line-height:1.2; }
+  .panel-desc { font-size:.9rem; color:var(--muted); margin-top:.4rem; max-width:620px; }
+
+  .concepts { display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1.5rem; }
+  .concept-pill { background:var(--tag-bg); color:var(--tag-txt); border-radius:100px; font-size:.72rem; font-family:var(--mono); padding:3px 10px; }
+
+  .task-card { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:1.1rem 1.3rem; margin-bottom:1.5rem; }
+  .task-card h3 { font-size:.78rem; font-weight:600; text-transform:uppercase; letter-spacing:.1em; color:var(--accent); margin-bottom:.65rem; }
+  .task-card ol { padding-left:1.4rem; }
+  .task-card li { font-size:.92rem; color:var(--text); margin-bottom:.35rem; line-height:1.5; }
+  .task-card li code { font-family:var(--mono); font-size:.82em; background:rgba(255,255,255,.07); border-radius:4px; padding:1px 6px; color:#93c5fd; font-variant-ligatures:none; font-feature-settings:"liga" 0,"calt" 0; }
+  .challenge-pill { display:inline-block; background:rgba(245,158,11,.15); color:var(--accent); font-size:.72rem; font-weight:600; text-transform:uppercase; border-radius:4px; padding:2px 8px; margin-right:6px; vertical-align:middle; }
+
+  .note { background:rgba(245,158,11,.07); border:1px solid rgba(245,158,11,.2); border-radius:8px; padding:.8rem 1rem; font-size:.85rem; color:var(--muted); margin-bottom:1.5rem; line-height:1.6; }
+  .note strong { color:var(--accent); }
+
+  .code-wrap { position:relative; margin-bottom:1.5rem; border-radius:10px; border:1px solid var(--border); overflow:hidden; }
+  .code-bar { background:var(--surface2); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:.45rem 1rem; }
+  .code-bar-left { display:flex; align-items:center; gap:.5rem; font-family:var(--mono); font-size:.75rem; color:var(--muted); }
+  .dot { width:11px; height:11px; border-radius:50%; display:inline-block; }
+  .dot-red{background:#ff5f57;} .dot-yel{background:#febc2e;} .dot-grn{background:#28c840;}
+  .copy-btn { background:rgba(255,255,255,.05); border:1px solid var(--border2); border-radius:6px; color:var(--muted); cursor:pointer; font-family:var(--sans); font-size:.75rem; padding:4px 12px; transition:all .15s; display:flex; align-items:center; gap:5px; }
+  .copy-btn:hover { background:rgba(255,255,255,.1); color:var(--text); }
+  .copy-btn.copied { background:rgba(52,211,153,.12); border-color:rgba(52,211,153,.3); color:#34d399; }
+  pre[class*="language-"] {
+    margin:0!important; border-radius:0!important; background:#0d1117!important;
+    font-family:var(--mono)!important; font-size:.83rem!important; line-height:1.65!important;
+    padding:1rem 1.25rem!important; max-height:520px; overflow-y:auto;
+    scrollbar-width:thin; scrollbar-color:var(--border2) transparent;
+    font-variant-ligatures:none; font-feature-settings:"liga" 0,"calt" 0;
+  }
+  pre[class*="language-"]::-webkit-scrollbar { width:6px; }
+  pre[class*="language-"]::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+  pre[class*="language-"] > code { padding:0!important; background:transparent!important; font-variant-ligatures:none; font-feature-settings:"liga" 0,"calt" 0; }
+
+  .output-wrap { background:var(--green-bg); border:1px solid var(--green-bdr); border-radius:10px; overflow:hidden; margin-bottom:2.5rem; }
+  .output-bar { background:rgba(52,211,153,.07); border-bottom:1px solid var(--green-bdr); padding:.45rem 1rem; display:flex; align-items:center; gap:.5rem; font-size:.75rem; font-family:var(--mono); color:var(--green-txt); opacity:.8; }
+  .output-bar::before { content:'▶'; font-size:.65rem; }
+  .output-wrap pre { padding:1rem 1.25rem; font-family:var(--mono); font-size:.8rem; line-height:1.7; color:var(--green-txt); white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; font-feature-settings:"liga" 0,"calt" 0; }
+
+  @media(max-width:600px){
+    header { padding:1rem 0 0; }
+    main { padding:1.25rem 1rem 3rem; }
+    .panel-title { font-size:1.3rem; }
+    .tab-btn { padding:.65rem .9rem; font-size:.82rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <div class="course-tag">COP 1047C &nbsp;·&nbsp; West Campus</div>
+      <h1>Lecture 5 — Breakout Solutions</h1>
+      <div class="header-meta">Chapter 5: Loops &nbsp;·&nbsp; June 9, 2026 &nbsp;·&nbsp; Prof. John Masseria</div>
+    </div>
+    <div class="header-badge">
+      <strong>2 Breakouts</strong>
+      Loops · Nested · Incremental
+    </div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn active" role="tab" data-panel="p1" onclick="switchTab(this)">
+      <span class="tab-num">01</span> While, For &amp; range()
+    </button>
+    <button class="tab-btn" role="tab" data-panel="p2" onclick="switchTab(this)">
+      <span class="tab-num">02</span> Nested Loops &amp; Incremental
+    </button>
+  </nav>
+</header>
+
+<main>
+
+<!-- PANEL 1 -->
+<section id="p1" class="panel active">
+  <div class="panel-header">
+    <div class="panel-eyebrow">Breakout 1</div>
+    <div class="panel-title">While Loops, For Loops &amp; range()</div>
+    <div class="panel-desc">Counting, iterating over containers, accumulating values, and sentinel-controlled loops.</div>
+  </div>
+
+  <div class="concepts">
+    <span class="concept-pill">while</span>
+    <span class="concept-pill">for</span>
+    <span class="concept-pill">range()</span>
+    <span class="concept-pill">+=</span>
+    <span class="concept-pill">sentinel value</span>
+    <span class="concept-pill">f-strings</span>
+    <span class="concept-pill">:.2f</span>
+  </div>
+
+  <div class="task-card">
+    <h3>Your Tasks</h3>
+    <ol>
+      <li>Write a <code>while</code> loop that prints all multiples of 3 from 3 to 30. Then rewrite it using <code>for</code> and <code>range()</code>.</li>
+      <li>Create a list of 5 foods. Use a <code>for</code> loop to print each with its position starting from 1 (e.g., <code>1: Pizza</code>).</li>
+      <li>Ask the user to enter 5 numbers one at a time. Print the total and average after all entries.</li>
+      <li><span class="challenge-pill">Challenge</span> Use a <code>while</code> loop with a sentinel value of <code>-1</code>. Keep accepting numbers until <code>-1</code> is entered, then print the count and average.</li>
+    </ol>
+  </div>
+
+  <div class="note">
+    <strong>Key pattern — accumulator:</strong> Initialize a variable to <code>0</code> before the loop, then use <code>+=</code> inside the loop to add each value. After the loop, divide by the count for the average.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="code-bar-left">
+        <span class="dot dot-red"></span><span class="dot dot-yel"></span><span class="dot dot-grn"></span>
+        &nbsp; breakout1_loops.py
+      </div>
+      <button class="copy-btn" onclick="copyCode(this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+    <pre><code class="language-python"># ============================================================
+# COP 1047C - Lecture 5 Breakout 1
+# While Loops, For Loops &amp; range()
+# ============================================================
+
+# ----------------------------------------------------------
+# PROBLEM 1: Multiples of 3 from 3 to 30
+# Write it two ways.
+# ----------------------------------------------------------
+
+print(&quot;--- Problem 1: Multiples of 3 ---&quot;)
+
+# While loop version
+num = 3
+while num &lt;= 30:
+    print(num, end=&quot; &quot;)
+    num += 3
+print()   # newline after the row
+
+# For loop + range() version — cleaner!
+for num in range(3, 31, 3):   # start=3, stop=31 (not included), step=3
+    print(num, end=&quot; &quot;)
+print()
+
+# Sample output (both produce the same result):
+# 3 6 9 12 15 18 21 24 27 30
+
+
+# ----------------------------------------------------------
+# PROBLEM 2: List of foods with numbered index
+# Start numbering from 1, not 0.
+# ----------------------------------------------------------
+
+print(&quot;\n--- Problem 2: Food list ---&quot;)
+
+foods = [&quot;Pizza&quot;, &quot;Sushi&quot;, &quot;Tacos&quot;, &quot;Pasta&quot;, &quot;Ramen&quot;]
+
+for i in range(len(foods)):
+    print(f&quot;{i + 1}: {foods[i]}&quot;)
+
+# Sample output:
+# 1: Pizza
+# 2: Sushi
+# 3: Tacos
+# 4: Pasta
+# 5: Ramen
+
+
+# ----------------------------------------------------------
+# PROBLEM 3: Enter 5 numbers, print total and average
+# ----------------------------------------------------------
+
+print(&quot;\n--- Problem 3: Running total ---&quot;)
+
+total = 0
+
+for i in range(5):
+    num = float(input(f&quot;Enter number {i + 1}: &quot;))
+    total += num
+
+average = total / 5
+print(f&quot;Total:   {total:.2f}&quot;)
+print(f&quot;Average: {average:.2f}&quot;)
+
+# Sample interaction:
+# Enter number 1: 10
+# Enter number 2: 20
+# Enter number 3: 30
+# Enter number 4: 40
+# Enter number 5: 50
+# Total:   150.00
+# Average: 30.00
+
+
+# ----------------------------------------------------------
+# CHALLENGE: Sentinel value — keep accepting numbers
+#            until the user enters -1
+# ----------------------------------------------------------
+
+print(&quot;\n--- Challenge: Sentinel loop ---&quot;)
+
+count = 0
+total = 0
+num = float(input(&quot;Enter a number (-1 to stop): &quot;))
+
+while num != -1:
+    total += num
+    count += 1
+    num = float(input(&quot;Enter a number (-1 to stop): &quot;))
+
+if count &gt; 0:
+    print(f&quot;Numbers entered: {count}&quot;)
+    print(f&quot;Average: {total / count:.2f}&quot;)
+else:
+    print(&quot;No numbers entered.&quot;)
+
+# Sample interaction (input: 10, 20, 30, -1):
+# Numbers entered: 3
+# Average: 20.00
+</code></pre>
+  </div>
+
+  <div class="output-wrap">
+    <div class="output-bar">Sample Output — Problems 1 &amp; 2</div>
+    <pre>--- Problem 1: Multiples of 3 ---
+3 6 9 12 15 18 21 24 27 30
+3 6 9 12 15 18 21 24 27 30
+
+--- Problem 2: Food list ---
+1: Pizza
+2: Sushi
+3: Tacos
+4: Pasta
+5: Ramen</pre>
+  </div>
+
+  <div class="output-wrap">
+    <div class="output-bar">Sample Output — Problem 3 (inputs: 10, 20, 30, 40, 50)</div>
+    <pre>Enter number 1: 10
+Enter number 2: 20
+Enter number 3: 30
+Enter number 4: 40
+Enter number 5: 50
+Total:   150.00
+Average: 30.00</pre>
+  </div>
+
+  <div class="output-wrap">
+    <div class="output-bar">Sample Output — Challenge (inputs: 10, 20, 30, -1)</div>
+    <pre>Enter a number (-1 to stop): 10
+Enter a number (-1 to stop): 20
+Enter a number (-1 to stop): 30
+Enter a number (-1 to stop): -1
+Numbers entered: 3
+Average: 20.00</pre>
+  </div>
+</section>
+
+<!-- PANEL 2 -->
+<section id="p2" class="panel">
+  <div class="panel-header">
+    <div class="panel-eyebrow">Breakout 2</div>
+    <div class="panel-title">Nested Loops &amp; Incremental Development</div>
+    <div class="panel-desc">Building a seating chart with nested loops, and growing a sum program step by step using FIXME-driven development.</div>
+  </div>
+
+  <div class="concepts">
+    <span class="concept-pill">nested for</span>
+    <span class="concept-pill">range() step</span>
+    <span class="concept-pill">chr() / ord()</span>
+    <span class="concept-pill">incremental programming</span>
+    <span class="concept-pill">% (modulo)</span>
+    <span class="concept-pill">end=""</span>
+  </div>
+
+  <div class="task-card">
+    <h3>Your Tasks</h3>
+    <ol>
+      <li>Use nested <code>for</code> loops to print a seating chart. Rows are numbered; columns use letters A, B, C… Use <code>chr(ord("A") + col)</code> to get letters from a column index.</li>
+      <li>Build a sum program in three versions:
+        Version 1 — just <code>print(i)</code> to verify the loop runs.
+        Version 2 — add an accumulator to sum 1 through 5.
+        Version 3 — read the upper limit from <code>input()</code>.</li>
+      <li><span class="challenge-pill">Challenge</span> Modify the seating chart to print only even-numbered rows. Show both approaches: an <code>if</code> statement inside the loop, and a <code>range()</code> step value.</li>
+    </ol>
+  </div>
+
+  <div class="note">
+    <strong>chr() and ord():</strong> <code>ord("A")</code> gives the integer <code>65</code>. Adding a column index (0, 1, 2…) and passing the result to <code>chr()</code> gives the corresponding letter: <code>chr(65)</code> → <code>"A"</code>, <code>chr(66)</code> → <code>"B"</code>, and so on.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="code-bar-left">
+        <span class="dot dot-red"></span><span class="dot dot-yel"></span><span class="dot dot-grn"></span>
+        &nbsp; breakout2_nested_incremental.py
+      </div>
+      <button class="copy-btn" onclick="copyCode(this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+    <pre><code class="language-python"># ============================================================
+# COP 1047C - Lecture 5 Breakout 2
+# Nested Loops &amp; Incremental Development
+# ============================================================
+
+# ----------------------------------------------------------
+# PROBLEM 1: Seating chart with nested loops
+# Format: row number + column letter (1A, 1B, 2A, ...)
+# ----------------------------------------------------------
+
+print(&quot;--- Problem 1: Seating Chart ---&quot;)
+
+num_rows = int(input(&quot;Enter number of rows: &quot;))
+num_cols = int(input(&quot;Enter number of cols: &quot;))
+
+for row in range(1, num_rows + 1):          # outer: row numbers 1, 2, 3...
+    for col in range(num_cols):              # inner: column index 0, 1, 2...
+        letter = chr(ord(&quot;A&quot;) + col)         # 0-&gt;&quot;A&quot;, 1-&gt;&quot;B&quot;, 2-&gt;&quot;C&quot;...
+        print(f&quot;{row}{letter}&quot;, end=&quot;  &quot;)    # print seat label
+    print()                                  # newline at end of each row
+
+# Sample output (input: 3 rows, 4 cols):
+# 1A  1B  1C  1D
+# 2A  2B  2C  2D
+# 3A  3B  3C  3D
+
+
+# ----------------------------------------------------------
+# PROBLEM 2: Incremental sum program — 3 versions
+# Build a little, test a little!
+# ----------------------------------------------------------
+
+# Version 1: Verify the loop iterates correctly
+print(&quot;\n--- Problem 2a: Version 1 (loop check) ---&quot;)
+for i in range(1, 6):
+    print(i, end=&quot; &quot;)
+print()
+# Output: 1 2 3 4 5
+
+# Version 2: Add an accumulator to sum the values
+print(&quot;\n--- Problem 2b: Version 2 (sum 1-5) ---&quot;)
+total = 0
+for i in range(1, 6):
+    total += i
+print(f&quot;Sum: {total}&quot;)
+# Output: Sum: 15
+
+# Version 3: Read the upper limit from input
+print(&quot;\n--- Problem 2c: Version 3 (user-defined limit) ---&quot;)
+limit = int(input(&quot;Enter upper limit: &quot;))
+total = 0
+for i in range(1, limit + 1):
+    total += i
+print(f&quot;Sum 1 to {limit}: {total}&quot;)
+
+# Sample interaction (input: 10):
+# Sum 1 to 10: 55
+
+
+# ----------------------------------------------------------
+# CHALLENGE: Print only even-numbered rows
+# Two approaches shown — pick the one that makes more sense!
+# ----------------------------------------------------------
+
+print(&quot;\n--- Challenge: Even rows only ---&quot;)
+
+num_rows = int(input(&quot;Enter number of rows: &quot;))
+num_cols = int(input(&quot;Enter number of cols: &quot;))
+
+# Approach 1: if statement inside the outer loop
+print(&quot;\nApproach 1 — if statement:&quot;)
+for row in range(1, num_rows + 1):
+    if row % 2 == 0:                         # only process even rows
+        for col in range(num_cols):
+            letter = chr(ord(&quot;A&quot;) + col)
+            print(f&quot;{row}{letter}&quot;, end=&quot;  &quot;)
+        print()
+
+# Approach 2: range() with a step of 2 (starts at 2, skips odd rows entirely)
+print(&quot;\nApproach 2 — range() step:&quot;)
+for row in range(2, num_rows + 1, 2):        # 2, 4, 6...
+    for col in range(num_cols):
+        letter = chr(ord(&quot;A&quot;) + col)
+        print(f&quot;{row}{letter}&quot;, end=&quot;  &quot;)
+    print()
+
+# Sample output (4 rows, 3 cols):
+# 2A  2B  2C
+# 4A  4B  4C
+</code></pre>
+  </div>
+
+  <div class="output-wrap">
+    <div class="output-bar">Sample Output — Problem 1 (3 rows, 4 cols)</div>
+    <pre>1A  1B  1C  1D
+2A  2B  2C  2D
+3A  3B  3C  3D</pre>
+  </div>
+
+  <div class="output-wrap">
+    <div class="output-bar">Sample Output — Problem 2 (all three versions, limit = 10)</div>
+    <pre>Version 1 (loop check):
+1 2 3 4 5
+
+Version 2 (sum 1-5):
+Sum: 15
+
+Version 3 (user-defined limit):
+Enter upper limit: 10
+Sum 1 to 10: 55</pre>
+  </div>
+
+  <div class="output-wrap">
+    <div class="output-bar">Sample Output — Challenge (4 rows, 3 cols)</div>
+    <pre>Approach 1 — if statement:
+2A  2B  2C
+4A  4B  4C
+
+Approach 2 — range() step:
+2A  2B  2C
+4A  4B  4C</pre>
+  </div>
+</section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+function switchTab(btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(btn.dataset.panel).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-wrap').querySelector('code');
+  navigator.clipboard.writeText(code.textContent).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy';
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
