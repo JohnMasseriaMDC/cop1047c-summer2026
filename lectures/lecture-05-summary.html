@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COP 1047C – Lecture 5 Summary: Loops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #080c14;
+    --surface:   #0f1724;
+    --surface2:  #16202e;
+    --border:    #1e2d42;
+    --border2:   #253347;
+    --accent:    #f59e0b;
+    --accent-dk: #d97706;
+    --text:      #e2e8f0;
+    --muted:     #7d93af;
+    --green-bg:  #071510;
+    --green-bdr: #0d3322;
+    --green-txt: #34d399;
+    --tag-bg:    #1a2a3a;
+    --tag-txt:   #60a5fa;
+    --mono:      'JetBrains Mono', 'Courier New', monospace;
+    --sans:      'Outfit', system-ui, sans-serif;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* JetBrains Mono ligature fix — keeps <=, >=, ==, != as typed characters */
+  pre, code, kbd {
+    font-family: var(--mono) !important;
+    font-variant-ligatures: none !important;
+    font-feature-settings: "liga" 0, "calt" 0 !important;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .course-tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 4px;
+    padding: 3px 10px;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+  header h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .header-meta {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: right;
+  }
+  .header-meta div { margin-bottom: 2px; }
+  header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding-bottom: 0.75rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  header nav a {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: color .15s, background .15s;
+  }
+  header nav a:hover { color: var(--accent); background: var(--surface2); }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  .section { margin-bottom: 3rem; }
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.35rem;
+  }
+  .section h2 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section p { margin-bottom: 1rem; color: var(--text); }
+  .section ul { margin: 0 0 1rem 1.4rem; }
+  .section ul li { margin-bottom: 0.45rem; }
+
+  .topic { margin: 1.75rem 0; }
+  .topic h3 {
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .topic-num {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--accent);
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 4px;
+    padding: 2px 8px;
+    flex-shrink: 0;
+  }
+
+  /* ── CODE BLOCKS ── */
+  .code-wrap {
+    background: #0a0f1a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1rem 0;
+  }
+  .code-bar {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot-r { background: #ef4444; } .dot-y { background: #f59e0b; } .dot-g { background: #22c55e; }
+  .code-bar .code-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+  .code-wrap pre {
+    margin: 0 !important;
+    padding: 1rem 1.25rem !important;
+    background: transparent !important;
+    font-size: 0.85rem !important;
+    line-height: 1.55 !important;
+    overflow-x: auto;
+  }
+  code:not(pre code) {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.84em;
+    color: #fbbf24;
+  }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+  .callout strong { display: inline; }
+  .callout-warn { background: #190b0b; border: 1px solid #3d1515; color: #fca5a5; }
+  .callout-info { background: #0a1322; border: 1px solid #1b3a5c; color: #93c5fd; }
+  .callout-note { background: #1a1304; border: 1px solid #4a3408; color: #fcd34d; }
+
+  /* ── TABLES ── */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th {
+    background: var(--surface2);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  td code { white-space: nowrap; }
+
+  /* ── ACTIVITY BLOCKS ── */
+  .activity {
+    background: var(--green-bg);
+    border: 1px solid var(--green-bdr);
+    border-radius: 10px;
+    padding: 1.25rem 1.4rem;
+    margin: 1.25rem 0;
+  }
+  .activity-tag {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--green-txt);
+    margin-bottom: 0.5rem;
+  }
+  .activity h4 { font-size: 1rem; margin-bottom: 0.5rem; }
+  .activity ol { margin: 0.5rem 0 0 1.3rem; }
+  .activity ol li { margin-bottom: 0.5rem; font-size: 0.93rem; }
+
+  /* ── REMINDERS ── */
+  .reminder-list { list-style: none; margin-left: 0 !important; }
+  .reminder-list li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.93rem;
+  }
+  .reminder-list li strong { color: var(--accent); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.75rem 1.5rem 2.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted);
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .header-meta { text-align: left; }
+    header { padding: 1.25rem 1.25rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <span class="course-tag">COP 1047C · Intro to Python · Summer 2026</span>
+      <h1>Lecture 5 Summary — Loops</h1>
+    </div>
+    <div class="header-meta">
+      <div>Tuesday, June 9, 2026</div>
+      <div>zyBook Chapter 5</div>
+      <div>Prof. John Masseria · MDC West</div>
+    </div>
+  </div>
+  <nav>
+    <a href="#objectives">Objectives</a>
+    <a href="#admin">Reminders</a>
+    <a href="#topic1">while</a>
+    <a href="#topic2">Infinite Loops</a>
+    <a href="#topic3">Sentinels</a>
+    <a href="#topic4">Counting</a>
+    <a href="#topic5">for</a>
+    <a href="#topic6">range()</a>
+    <a href="#topic7">Nested Loops</a>
+    <a href="#topic8">break / continue</a>
+    <a href="#topic9">enumerate()</a>
+    <a href="#breakouts">Breakouts</a>
+    <a href="#midterm">Midterm Prep</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ═══ LEARNING OBJECTIVES ═══ -->
+<section class="section" id="objectives">
+  <div class="section-eyebrow">Tonight's Agenda</div>
+  <h2>🎯 By the End of Class You'll Be Able To…</h2>
+  <ul>
+    <li>Write a <code>while</code> loop and explain when its body executes, repeats, and stops</li>
+    <li>Use loops to count — up, down, and in steps — and predict a counter's value <em>after</em> the loop ends</li>
+    <li>Write a <code>for</code> loop that iterates over lists, strings, dictionaries, and other containers</li>
+    <li>Use the <code>range()</code> function with start, stop, and step values</li>
+    <li>Choose correctly between a <code>while</code> loop and a <code>for</code> loop for a given problem</li>
+    <li>Develop programs incrementally using the divide-and-conquer technique</li>
+    <li>Use <code>break</code>, <code>continue</code>, and <code>enumerate()</code></li>
+  </ul>
+</section>
+
+<!-- ═══ ADMIN REMINDERS ═══ -->
+<section class="section" id="admin">
+  <div class="section-eyebrow">Administrative</div>
+  <h2>📋 Reminders</h2>
+  <ul class="reminder-list">
+    <li><strong>Due Tue 6/16:</strong> zyBook Chapter 5 — Readings and Labs (complete before next class).</li>
+    <li><strong>Next week (6/16):</strong> Midterm review + <strong>in-class group project</strong>. You'll be broken into groups, build a program together (the temperature-conversion program will use this week's sentinel-loop pattern), and one member submits for the team. <strong>If you can't attend, you must complete and submit the project on your own</strong> — so be there.</li>
+    <li><strong>Midterm:</strong> becomes available after next week's lecture and is <strong>due Tue 6/23 before class begins</strong>. 50 multiple-choice questions covering <strong>Chapters 1–5 only</strong>. No code writing — you'll read code samples and predict their output, exactly like the practice problems we traced tonight. We'll review the midterm together in class on 6/23.</li>
+    <li><strong>Practice midterm:</strong> a 10-question sample will be posted this week under <em>Practice Quizzes</em> in Canvas Modules. It requires the <strong>Respondus LockDown Browser</strong> (as does the real midterm) — take it early so you know your setup works. Email me if you have install problems.</li>
+    <li><strong>Last day to withdraw with a W grade:</strong> June 30.</li>
+    <li>Falling behind on zyBook assignments? Catch up now — the weekly chapters build on each other, and the midterm covers all of them.</li>
+  </ul>
+</section>
+
+<!-- ═══ TOPIC 1: WHILE ═══ -->
+<section class="section" id="topic1">
+  <div class="section-eyebrow">Topic 1</div>
+  <h2>🔁 The <code>while</code> Loop</h2>
+
+  <p>A loop executes a block of code repeatedly. Think of the textbook's example: driving a child around the block until they fall asleep — <em>while the child is awake, keep driving; once asleep, continue on home</em>. That test-then-repeat structure is exactly what a <code>while</code> statement does.</p>
+
+  <div class="topic">
+    <h3><span class="topic-num">1a</span> Syntax: just like <code>if</code>, but it repeats</h3>
+    <p>A <code>while</code> statement is the reserved word <code>while</code>, an expression, a colon, and an indented block — the same anatomy as last week's <code>if</code> statement. The indented block is called the <strong>body of the loop</strong>.</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">while_basics.py</span></div>
+      <pre><code class="language-python"># Doubles value each pass: prints 1, 2, 4 (one per line), then Done
+value = 1
+while value < 6:
+    print(value)
+    value = value * 2
+print("Done")</code></pre>
+    </div>
+    <div class="callout-info callout">
+      <strong>Key idea:</strong> An <code>if</code> block runs <em>at most once</em>. A <code>while</code> body runs <em>as long as the expression is true</em> — the expression is re-tested at the top of every pass. When it's false, Python skips the whole body and continues with the first statement after the loop.
+    </div>
+    <p>Anything that works as an <code>if</code> expression works here too: comparisons, compound conditions with <code>and</code> / <code>or</code> / <code>not</code>, and so on. Python also <strong>short-circuits</strong>: in <code>a and b</code>, if <code>a</code> is false it never evaluates <code>b</code> (false <code>and</code> anything is false); in <code>a or b</code>, if <code>a</code> is true it never evaluates <code>b</code> (true <code>or</code> anything is true).</p>
+    <div class="callout-warn callout">
+      <strong>Common mistake:</strong> The body does <em>not</em> stop mid-pass the instant the condition becomes false. The whole body finishes, control loops back to the top, and <em>then</em> the expression is re-tested.
+    </div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">1b</span> Side trip: <code>print()</code> and its <code>end=</code> parameter</h3>
+    <p>By default, <code>print()</code> ends every line with a newline (<code>\n</code>) because the <strong>named parameter</strong> <code>end</code> defaults to <code>"\n"</code>. Override it to keep output on one line:</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">print_end.py</span></div>
+      <pre><code class="language-python">print("hello")            # hello, then a newline
+print("hello", end="")    # hello, no newline
+print(value, end=" ")     # value followed by a space, same line</code></pre>
+    </div>
+    <p>We'll learn more about named vs. positional parameters when we cover functions, but <code>end=</code> is worth knowing now — it shows up constantly when printing inside loops.</p>
+  </div>
+</section>
+
+<!-- ═══ TOPIC 2: INFINITE LOOPS ═══ -->
+<section class="section" id="topic2">
+  <div class="section-eyebrow">Topic 2</div>
+  <h2>♾️ Infinite Loops</h2>
+  <p>If the loop's condition can <em>never</em> become false, the loop runs forever — an <strong>infinite loop</strong>. (Apple's old headquarters address was literally <em>One Infinite Loop</em> — programmer humor.) The symptom is a program that just keeps running.</p>
+  <ul>
+    <li><strong>To stop one:</strong> you need something <em>external</em> to the program — usually <kbd>Ctrl</kbd>+<kbd>C</kbd> at the keyboard, which sends an interrupt.</li>
+    <li><strong>To debug one:</strong> add temporary <code>print()</code> statements inside the loop to see what the variables are actually doing. You can't fix what you can't see.</li>
+    <li><strong>They're not always bugs:</strong> programs reading from sensors or communication links may intentionally loop forever, waiting for data. But in the programs we write for this class, an endless run almost always means your condition never goes false.</li>
+  </ul>
+</section>
+
+<!-- ═══ TOPIC 3: SENTINELS ═══ -->
+<section class="section" id="topic3">
+  <div class="section-eyebrow">Topic 3</div>
+  <h2>🚦 The Sentinel Pattern: Loop Until the User Says Stop</h2>
+  <p>A <strong>sentinel value</strong> is a special input that signals "stop looping." This pattern — input once <em>before</em> the loop, then repeat the same input as the <em>last statement in the body</em> — is one you'll use over and over, including in next week's temperature-conversion group project:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">sentinel_quit.py</span></div>
+    <pre><code class="language-python"># Echo what the user types until they type quit
+user = input("Type quit to exit: ")
+while user != "quit":
+    print(f"You said {user}")
+    user = input("Type quit to exit: ")   # repeated at the bottom
+print("Goodbye")</code></pre>
+  </div>
+  <div class="callout-note callout">
+    <strong>Note:</strong> Python is case-sensitive — typing <code>Quit</code>, <code>QUIT</code>, or <code>q</code> will <em>not</em> end this loop. Only an exact <code>quit</code> matches.
+  </div>
+  <div class="callout-info callout">
+    <strong>Why the duplicated input line?</strong> Some languages have a <em>do-while</em> loop that always runs the body at least once. Python doesn't — so the standard pattern is to repeat the input statement: once before the loop to get the first value, and again at the bottom of the body to get the next one.
+  </div>
+  <p>This little program is essentially the front end of a chatbot: replace the <code>print</code> with a call to an AI API and you'd have a working chat loop. Also note the <strong>f-string</strong> — <code>f"You said {user}"</code> evaluates the variable (or any expression!) inside the curly braces and inserts its value.</p>
+</section>
+
+<!-- ═══ TOPIC 4: COUNTING ═══ -->
+<section class="section" id="topic4">
+  <div class="section-eyebrow">Topic 4</div>
+  <h2>🔢 Counting with Loops</h2>
+
+  <div class="topic">
+    <h3><span class="topic-num">4a</span> The counter pattern</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">counter.py</span></div>
+      <pre><code class="language-python">count = 1
+while count <= 5:
+    print(f"count is {count}")
+    count += 1          # same as: count = count + 1
+print(f"after the loop, count is {count}")</code></pre>
+    </div>
+    <div class="callout-warn callout">
+      <strong>Midterm alert:</strong> What's the value of <code>count</code> <em>after</em> this loop? It's <strong>6</strong>, not 5. The body runs with <code>count</code> at 5, increments it to 6, loops back, the test <code>6 <= 5</code> fails, and the loop exits with <code>count == 6</code>. "What's the variable's value when the loop completes?" is a classic exam question — trace it on paper.
+    </div>
+    <p>Counting down works the same way. Starting at 10, testing <code>count >= 0</code>, and doing <code>count -= 5</code> prints <code>10 5 0</code> — and leaves <code>count</code> at <strong>-5</strong> after the loop.</p>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">4b</span> Compound operators (review)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Shortcut</th><th>Equivalent to</th></tr></thead>
+        <tbody>
+          <tr><td><code>x += 5</code></td><td><code>x = x + 5</code></td></tr>
+          <tr><td><code>x -= 3</code></td><td><code>x = x - 3</code></td></tr>
+          <tr><td><code>x *= 2</code></td><td><code>x = x * 2</code></td></tr>
+          <tr><td><code>x /= 4</code></td><td><code>x = x / 4</code> (regular division)</td></tr>
+          <tr><td><code>x //= 4</code></td><td><code>x = x // 4</code> (floor division)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TOPIC 5: FOR ═══ -->
+<section class="section" id="topic5">
+  <div class="section-eyebrow">Topic 5</div>
+  <h2>📦 The <code>for</code> Loop: Iterating Over Containers</h2>
+
+  <div class="topic">
+    <h3><span class="topic-num">5a</span> <code>for ... in</code> with a list</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">for_basics.py</span></div>
+      <pre><code class="language-python">names = ["Kai", "Sam", "Alex"]
+for name in names:          # name takes each item, in order
+    print(f"Hi {name}")
+print("Done")</code></pre>
+    </div>
+    <p>The <code>for ... in</code> statement pulls each item out of the container, one per pass, and assigns it to the loop variable. Naming convention: the container is plural (<code>names</code>), the loop variable is singular (<code>name</code>). The language doesn't care — but humans reading your code do.</p>
+    <p>This works with any <strong>container</strong>:</p>
+    <ul>
+      <li><strong>Lists</strong> — items in order</li>
+      <li><strong>Strings</strong> — character by character (<code>for ch in "abcdefg":</code>) — remember, a string is essentially a list of characters</li>
+      <li><strong>Dictionaries</strong> — you iterate over the <strong>keys</strong>, then use each key to look up its value (this lookup is guaranteed safe, since the keys came from the dictionary itself)</li>
+      <li><strong>Tuples</strong> — same as lists</li>
+      <li><strong>Sets</strong> — works, but order is <em>not</em> guaranteed; sets are unordered (their advantage is automatic de-duplication)</li>
+    </ul>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">for_dict.py</span></div>
+      <pre><code class="language-python">channels = {"MTV": 35, "CNN": 28}
+for name in channels:                 # iterates over the KEYS
+    print(f"{name}: {channels[name]}")
+# MTV: 35
+# CNN: 28</code></pre>
+    </div>
+    <p>The <code>reversed()</code> function gives you the items of a list in reverse order — <code>for name in reversed(names):</code> — far cleaner than managing a count-down index by hand.</p>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">5b</span> Why <code>for</code> beats a manual index</h3>
+    <p>You <em>can</em> walk a list with a <code>while</code> loop and an index variable — but it takes more lines and gives you more ways to make a mistake (initialize wrong, test wrong, increment wrong, index out of range):</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">manual_index.py</span></div>
+      <pre><code class="language-python"># The hard way — 3 extra things to get right
+index = 0
+while index < len(names):
+    print(f"Hi {names[index]}")
+    index += 1
+
+# The Python way — nothing to get wrong
+for name in names:
+    print(f"Hi {name}")</code></pre>
+    </div>
+    <div class="callout-info callout">
+      <strong>Key idea:</strong> Take advantage of the features of the language so you don't accidentally introduce errors doing things the manual way. A lot of Python programming is just: put your items in a list, then <code>for ... in</code> over it.
+    </div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">5c</span> <code>while</code> vs. <code>for</code> — which one when?</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Use a <code>while</code> loop when…</th><th>Use a <code>for</code> loop when…</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>You don't know how many times you'll iterate — e.g., reading user input until a sentinel like <code>quit</code> or <code>-1</code></td>
+            <td>You're iterating over a container (list, string, dictionary, tuple, set)</td>
+          </tr>
+          <tr>
+            <td>The loop runs "until something happens"</td>
+            <td>You want to run something an exact number of times — <code>for i in range(100):</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TOPIC 6: RANGE ═══ -->
+<section class="section" id="topic6">
+  <div class="section-eyebrow">Topic 6</div>
+  <h2>📏 The <code>range()</code> Function</h2>
+  <p><code>range()</code> returns an <strong>iterator</strong> that produces a sequence of integers — perfect fuel for a <code>for</code> loop. It takes up to three values: <code>range(start, stop, step)</code>.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Call</th><th>Produces</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td><code>range(5)</code></td><td>0, 1, 2, 3, 4</td><td>start defaults to 0, step defaults to 1</td></tr>
+        <tr><td><code>range(5, 10)</code></td><td>5, 6, 7, 8, 9</td><td>start at 5; stop value not included</td></tr>
+        <tr><td><code>range(0, 10, 2)</code></td><td>0, 2, 4, 6, 8</td><td>all the even numbers below 10</td></tr>
+        <tr><td><code>range(5, 10, 3)</code></td><td>5, 8</td><td>8 + 3 = 11 is past the stop, so it ends</td></tr>
+        <tr><td><code>range(10, 0, -1)</code></td><td>10, 9, … , 1</td><td>negative step counts down; stops before 0</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout-warn callout">
+    <strong>The #1 thing to remember:</strong> the <strong>stop value is never included</strong>. <code>range(5)</code> runs a loop 5 times with values 0–4. To print multiples of 3 from 3 through 30, you need <code>range(3, 31, 3)</code> — the 31 is what lets the 30 through.
+  </div>
+  <div class="topic">
+    <h3><span class="topic-num">6a</span> <code>range(len(...))</code> — when you need the index</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">range_len.py</span></div>
+      <pre><code class="language-python">foods = ["pizza", "sushi", "tacos", "pasta", "ice cream"]
+for i in range(len(foods)):
+    print(f"{i + 1}: {foods[i]}")
+# 1: pizza
+# 2: sushi  ... and so on</code></pre>
+    </div>
+    <p>Why <code>i + 1</code>? List indexes start at <strong>0</strong>, but humans count from 1. We use <code>i</code> to index into the list and <code>i + 1</code> only for display. And because we used <code>len(foods)</code> instead of hard-coding a number, this code works for a list of any size — including an empty one. <strong>Never hard-code what the language can figure out for you.</strong></p>
+  </div>
+</section>
+
+<!-- ═══ TOPIC 7: NESTED LOOPS ═══ -->
+<section class="section" id="topic7">
+  <div class="section-eyebrow">Topic 7</div>
+  <h2>🪆 Nested Loops</h2>
+  <p>Just like nested <code>if</code> statements, loops can contain loops (and <code>if</code>s can be inside loops, and vice versa). Terminology: the enclosing loop is the <strong>outer loop</strong>, the enclosed one is the <strong>inner loop</strong>. The inner loop runs <em>completely</em> for every single pass of the outer loop.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">times_table.py</span></div>
+    <pre><code class="language-python"># A multiplication table, using \t (tab) to line up the columns
+for i in range(1, 10):
+    for j in range(1, 10):
+        print(f"{i} x {j} = {i * j}", end="\t")
+    print()        # end the row
+</code></pre>
+  </div>
+  <p>The <code>\t</code> tab character advances to a fixed tab stop, so columns line up even when products grow from one digit to two. The inner <code>print()</code> with no arguments just emits the newline that ends each row — notice its indentation puts it in the <em>outer</em> loop's body, so it runs 9 times, while the f-string print runs 81 times. <strong>Watch your indentation levels</strong> — they decide which loop a statement belongs to.</p>
+  <p>The textbook's two-letter <code>.com</code> domain generator nests two <code>while</code> loops over the alphabet using <code>ord()</code> (letter → number, <code>ord("a")</code> is 97) and <code>chr()</code> (number → letter) to step from <code>a</code> to <code>z</code> — producing all 26 × 26 = 676 combinations.</p>
+</section>
+
+<!-- ═══ TOPIC 8: BREAK / CONTINUE ═══ -->
+<section class="section" id="topic8">
+  <div class="section-eyebrow">Topic 8</div>
+  <h2>⏭️ <code>break</code> and <code>continue</code></h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Statement</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>break</code></td><td>Exits the loop immediately and completely. In nested loops, it only exits the <strong>innermost</strong> loop it's in — to leave the outer loop too, set a flag (sentinel) variable, break, then test the flag in the outer loop.</td></tr>
+        <tr><td><code>continue</code></td><td>Skips the rest of the current pass and jumps to the loop's next iteration (the condition is re-tested as usual).</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">continue_odds.py</span></div>
+    <pre><code class="language-python"># Prints only the odd numbers 1 and 3
+for i in range(5):
+    if i % 2 == 0:
+        continue        # skip the evens
+    print(i)</code></pre>
+  </div>
+  <div class="callout-note callout">
+    <strong>Use them sparingly.</strong> Someone reading your code may not notice a buried <code>break</code> or <code>continue</code>. Often you can restructure the condition instead (e.g., test for odd and print, rather than test for even and skip). There are valid use cases — just make them obvious.
+  </div>
+</section>
+
+<!-- ═══ TOPIC 9: ENUMERATE ═══ -->
+<section class="section" id="topic9">
+  <div class="section-eyebrow">Topic 9</div>
+  <h2>🔖 <code>enumerate()</code>: Index <em>and</em> Value Together</h2>
+  <p>Like <code>range()</code>, <code>enumerate()</code> returns an iterator — but it yields a <strong>tuple</strong> of <code>(index, value)</code> for each item. The two loop variables are filled in by <strong>unpacking</strong> that tuple:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">enumerate_demo.py</span></div>
+    <pre><code class="language-python">scores = [4, 8, 10]
+for index, value in enumerate(scores):
+    print(f"Index {index} holds {value}")
+# Index 0 holds 4
+# Index 1 holds 8
+# Index 2 holds 10</code></pre>
+  </div>
+  <p>This is the <em>Pythonic</em> way to get an item's position while iterating. It beats calling <code>list.index(value)</code>, which returns only the <strong>first</strong> match and silently fails you when the list has duplicates. Knowing the index matters because lists are <strong>mutable</strong> — you can use the index to change an item in place. (You can't do that with strings; strings are immutable.)</p>
+  <div class="callout-note callout">
+    <strong>Optional (not on the midterm):</strong> loops can have an <code>else</code> clause that runs only if the loop finished <em>without</em> hitting a <code>break</code>. It's from Chapter 12 and included tonight just for completeness.
+  </div>
+</section>
+
+<!-- ═══ BREAKOUTS ═══ -->
+<section class="section" id="breakouts">
+  <div class="section-eyebrow">In-Class Practice</div>
+  <h2>🧪 Breakout Exercises</h2>
+
+  <div class="activity">
+    <div class="activity-tag">Breakout 1 · While &amp; For Fundamentals</div>
+    <h4>Three challenges</h4>
+    <ol>
+      <li><strong>Multiples of 3:</strong> Print all multiples of 3 from 3 to 30 — first with a <code>while</code> loop (no <code>range()</code>), then again with <code>for ... in range()</code>. <em>Hint: the stop value isn't included, so you need 31.</em></li>
+      <li><strong>Favorite foods:</strong> Create a list of your 5 favorite foods. Print each item; then print each as a numbered line (<code>1: pizza</code>, <code>2: hot dogs</code>, …) using <code>range(len(...))</code> and <code>i + 1</code> for display.</li>
+      <li><strong>Sum and average:</strong> Loop exactly 5 times asking the user for a number; print the total and average. Then write the variation: a <code>while</code> loop that keeps reading numbers until the user enters <code>-1</code>, then prints how many numbers were entered and their average. <em>Defensive bonus: guard against dividing by zero if the user enters <code>-1</code> immediately.</em></li>
+    </ol>
+  </div>
+
+  <div class="activity">
+    <div class="activity-tag">Breakout 2 · Nested Loops &amp; Incremental Development</div>
+    <h4>Three challenges</h4>
+    <ol>
+      <li><strong>Seating chart:</strong> Ask the user for a number of rows and columns; print a chart with numbered rows and lettered columns using a nested loop.</li>
+      <li><strong>Incremental sum:</strong> Build it in stages — (1) loop 5 times printing <code>i</code>; (2) replace the print with an accumulator that sums the numbers; (3) instead of hard-coding 5, ask the user for the upper limit. This is <strong>incremental development</strong>: get a small piece working, then extend it.</li>
+      <li><strong>Challenge:</strong> Extend the seating chart so only the <em>even-numbered</em> rows print. Two ways: test <code>row % 2 == 0</code> inside the loop, or adjust the range to start at 2 and step by 2.</li>
+    </ol>
+  </div>
+
+  <p>Full worked solutions are posted in the course repo under <code>solutions/</code>.</p>
+</section>
+
+<!-- ═══ MIDTERM PREP ═══ -->
+<section class="section" id="midterm">
+  <div class="section-eyebrow">Exam Skills</div>
+  <h2>📝 Midterm-Style Practice: Trace the Code</h2>
+  <p>We worked two exam-style questions in class. The skill being tested: read a loop, trace the variables on paper, and predict the exact output. Try these again cold before the midterm:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">trace_1.py</span></div>
+    <pre><code class="language-python">result = 0
+n = 2
+while n < 6:
+    print(n)
+    result -= 3
+    n += 1
+print(result)
+# Output: 2 3 4 5 (one per line), then -12</code></pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">trace_2.py</span></div>
+    <pre><code class="language-python">stop = int(input())   # user enters 4
+n = 3
+while True:
+    print(n)
+    if n > stop:
+        print("Stop")
+        break
+    n += 1
+# Output: 3 4 5 Stop</code></pre>
+  </div>
+  <div class="callout-info callout">
+    <strong>Technique:</strong> write the variables down on paper and update them pass by pass — "play computer." Pay special attention to the value of the counter <em>after</em> the loop and to whether the stop value of a <code>range()</code> is included (it isn't).
+  </div>
+</section>
+
+<!-- ═══ UP NEXT ═══ -->
+<section class="section" id="next">
+  <div class="section-eyebrow">Up Next</div>
+  <h2>⏭️ June 16 — Midterm Review &amp; In-Class Group Project</h2>
+  <p>Come ready to code with your group — the project uses tonight's sentinel-loop pattern. The midterm opens after class and is due <strong>June 23 before class</strong> (Chapters 1–5, 50 multiple-choice questions, LockDown Browser required). Take the 10-question practice quiz this week to verify your setup.</p>
+</section>
+
+</main>
+
+<footer>
+  Questions? Post on the <strong>Class Question Board</strong> in Canvas or email
+  <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>
