@@ -31,8 +31,7 @@
   .header-meta { font-size:.82rem; color:var(--muted); margin-top:.2rem; }
   .header-badge { background:var(--surface2); border:1px solid var(--border2); border-radius:8px; padding:.5rem .9rem; font-size:.78rem; color:var(--muted); text-align:right; white-space:nowrap; }
   .header-badge strong { color:var(--text); display:block; font-size:.9rem; }
-  nav.sections { display:flex; gap:0; overflow-x:auto; scrollbar-width:none; max-width:860px; margin:0 auto; padding:0 .5rem; }
-  nav.sections::-webkit-scrollbar { display:none; }
+  nav.sections { display:flex; flex-wrap:wrap; gap:0; max-width:860px; margin:0 auto; padding:0 .5rem; }
   nav.sections a { color:var(--muted); text-decoration:none; font-size:.83rem; font-weight:500; padding:.65rem 1.1rem; border-bottom:3px solid transparent; transition:color .15s,border-color .15s; white-space:nowrap; }
   nav.sections a:hover { color:var(--text); border-bottom-color:var(--border2); }
 

@@ -93,14 +93,12 @@
   /* ── SECTION NAV ── */
   nav.sections {
     display: flex;
+    flex-wrap: wrap;
     gap: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
     max-width: 860px;
     margin: 0 auto;
     padding: 0 0.5rem;
   }
-  nav.sections::-webkit-scrollbar { display: none; }
   nav.sections a {
     color: var(--muted);
     text-decoration: none;
