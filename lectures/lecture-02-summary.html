@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>COP 1047C — Lecture 2 Recap | lecture-transcripts</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="COP 1047C — Lecture 2 Recap" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:site_name" content="lecture-transcripts" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="COP 1047C — Lecture 2 Recap" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","headline":"COP 1047C — Lecture 2 Recap","url":"https://mdc-cop1047c-summer2026.github.io/lecture-transcripts/transcripts/week-02.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="lecture-02-summary.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/lecture-transcripts/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      <h1 id="cop-1047c--lecture-2-recap">COP 1047C — Lecture 2 Recap</h1>
+<p><strong>MDC Live | Summer 2026 | May 19, 2026</strong></p>
+
+<p>Tonight covered Chapter 2 (Variables and Expressions), delivered a closer look at floating-point arithmetic, and wrapped up with a guided Python and VS Code installation. The recording is in <strong>Canvas → Class for Teams → Recordings</strong> as usual.</p>
+
+<hr />
+
+<h2 id="1-extra-resources-worth-bookmarking">1. Extra resources worth bookmarking</h2>
+
+<p>Tyler asked a great opening question — here are three resources mentioned in class.</p>
+
+<p><strong>OpenStax: Introduction to Python Programming (free)</strong>
+Rice University’s free, open-source Python textbook. Search for <em>OpenStax Python</em> or go to openstax.org. It covers the same chapter sequence as zyBook, in a more traditional textbook format — useful for a second read on any topic you want re-explained differently. <a href="https://openstax.org/details/books/introduction-python-programming">Here’s the link to the OpenStax textbook.</a></p>
+
+<p><strong>MDC Circle In (AI tutor)</strong>
+Access through Canvas. It’s designed to help you think through problems rather than hand you answers — more like a tutor guiding you than a search engine. Good for when you’re stuck and want a hint on your approach before you look at a full solution.</p>
+
+<p><strong>CodeWars (codewars.com)</strong>
+A community site of short programming challenges ranked by difficulty. Once we’re a few weeks in, working through beginner-level Python challenges there is one of the best ways to build fluency. Programming is a skill; it takes repetition.</p>
+
+<hr />
+
+<h2 id="2-quick-course-reminders">2. Quick course reminders</h2>
+
+<ul>
+  <li>Chapter 1 assignments (reading + labs) were due tonight. If you haven’t submitted, do so — the gradebook will show a zero tomorrow, but zyBook remains open through the end of the semester.</li>
+  <li>Python 3.14 and Visual Studio Code installation links were posted in the chat. See Section 7 below if you still need to set these up.</li>
+  <li>Attendance is being tracked through Class for Teams automatically.</li>
+</ul>
+
+<hr />
+
+<h2 id="3-brief-recap-interpreted-vs-compiled">3. Brief recap: interpreted vs. compiled</h2>
+
+<p>Python is an <strong>interpreted</strong> language. When you run a Python file, the Python interpreter reads each statement and executes it directly. Files you write end in <code class="language-plaintext highlighter-rouge">.py</code>; Python sometimes generates a compiled bytecode cache (<code class="language-plaintext highlighter-rouge">.pyc</code>) to speed up repeated runs, but you’ll rarely interact with those directly.</p>
+
+<p>Languages like C++, Java, and Swift are <strong>compiled</strong>: a compiler translates the entire source file into machine instructions ahead of time, which is why those programs tend to run faster. As an illustration: the simple assignment <code class="language-plaintext highlighter-rouge">c = a + b</code> compiles down to several machine-level operations — load value from one memory address into a register, load another value into a second register, add them, store the result at a third address. Python’s interpreter handles all of that for you under the hood.</p>
+
+<hr />
+
+<h2 id="4-variables-and-identifiers">4. Variables and identifiers</h2>
+
+<p>A <strong>variable</strong> is a named container for a value. In Python you create one simply by assigning to it:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">wage</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">hours</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">salary</span> <span class="o">=</span> <span class="n">wage</span> <span class="o">*</span> <span class="n">hours</span> <span class="o">*</span> <span class="mi">52</span>
+</code></pre></div></div>
+
+<p>The name part is called an <strong>identifier</strong>. Rules:</p>
+<ul>
+  <li>Letters, digits, and underscores only — no spaces, no dollar signs.</li>
+  <li>Cannot start with a digit (<code class="language-plaintext highlighter-rouge">1a</code> is invalid; <code class="language-plaintext highlighter-rouge">a1</code> is fine).</li>
+  <li>Python is <strong>case-sensitive</strong>: <code class="language-plaintext highlighter-rouge">salary</code>, <code class="language-plaintext highlighter-rouge">Salary</code>, and <code class="language-plaintext highlighter-rouge">SALARY</code> are three different variables.</li>
+</ul>
+
+<p>The case-sensitivity rule is a common source of silent bugs. If you accidentally write <code class="language-plaintext highlighter-rouge">Wage</code> when you meant <code class="language-plaintext highlighter-rouge">wage</code>, Python creates a brand-new variable instead of updating the one you intended. Unlike Java or C++, Python won’t warn you — it just silently does something different. Keep your naming consistent, and if a value isn’t updating the way you expect during debugging, check for case mismatches.</p>
+
+<hr />
+
+<h2 id="5-types--integers-floats-and-strings">5. Types — integers, floats, and strings</h2>
+
+<p>Even though Python doesn’t require you to declare a type, every value has one.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="mi">10</span>        <span class="c1"># int   — whole number
+</span><span class="n">b</span> <span class="o">=</span> <span class="mf">3.14</span>      <span class="c1"># float — fractional / decimal
+</span><span class="n">c</span> <span class="o">=</span> <span class="s">"hello"</span>   <span class="c1"># str   — text
+</span></code></pre></div></div>
+
+<p>Use <code class="language-plaintext highlighter-rouge">type(x)</code> to inspect what Python thinks a variable is. Because Python is dynamically typed, a variable’s type can change when you reassign it — which can be a source of surprises.</p>
+
+<p><strong>Integers</strong> hold whole numbers (positive, negative, zero). No fractional part.</p>
+
+<p><strong>Floats</strong> hold decimal values. Use them for any calculation that might produce a fraction. One important caveat — see the next section.</p>
+
+<p><strong>Strings</strong> hold text. You’ll use them constantly; we’ll cover string operations in depth in Chapter 7.</p>
+
+<hr />
+
+<h2 id="6-floating-point-arithmetic--the-essential-warning">6. Floating-point arithmetic — the essential warning</h2>
+
+<p>This is worth paying close attention to because it trips up working developers, not just students.</p>
+
+<p>Open your Python interpreter and try this:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="mf">0.1</span> <span class="o">+</span> <span class="mf">0.2</span>
+<span class="mf">0.30000000000000004</span>
+</code></pre></div></div>
+
+<p>That is not a Python bug. It is a fundamental property of how computers represent decimal fractions in binary. Some decimal fractions (like 1/3) cannot be expressed exactly in any finite number of bits, just as 1/3 cannot be written as a finite decimal. The result is a tiny rounding error that accumulates.</p>
+
+<p><strong>Two practical consequences:</strong></p>
+
+<p><strong>Never test float equality with <code class="language-plaintext highlighter-rouge">==</code>:</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="mf">0.1</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">==</span> <span class="mf">0.3</span>
+<span class="bp">False</span>      <span class="c1"># This will bite you
+</span></code></pre></div></div>
+
+<p>Instead, test whether two floats are <em>close enough</em>:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">abs</span><span class="p">((</span><span class="mf">0.1</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.3</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-9</span>
+<span class="bp">True</span>
+
+<span class="c1"># More pragmatically, if you need to test if two float variables (a, b)
+# are equal you would use:
+</span>
+<span class="nb">abs</span><span class="p">(</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-9</span>
+
+</code></pre></div></div>
+
+<p><strong>Format floats before displaying them to users</strong>, especially for money:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">check</span> <span class="o">=</span> <span class="mf">123.33</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Total with 20% tip: $</span><span class="si">{</span><span class="n">check</span> <span class="o">*</span> <span class="mf">1.20</span><span class="si">:</span><span class="p">.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+<span class="c1"># Output: Total with 20% tip: $147.99
+</span></code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">f"..."</code> syntax is called an <strong>f-string</strong>. The <code class="language-plaintext highlighter-rouge">:.2f</code> inside the curly braces means “format as a float with exactly 2 decimal places.” This doesn’t change the internal value — it only affects what’s printed. Do all your calculations with full precision; only round at the moment of display.</p>
+
+<hr />
+
+<h2 id="7-the-assignment-operator-vs-the-equality-operator">7. The assignment operator vs. the equality operator</h2>
+
+<p>This confuses every beginner at least once:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Symbol</th>
+      <th>Meaning</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">=</code></td>
+      <td>Assignment — store a value</td>
+      <td><code class="language-plaintext highlighter-rouge">x = 5</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">==</code></td>
+      <td>Equality test — is this true?</td>
+      <td><code class="language-plaintext highlighter-rouge">x == 5</code> → <code class="language-plaintext highlighter-rouge">True</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>       <span class="c1"># stores 5 in x
+</span><span class="n">x</span> <span class="o">==</span> <span class="mi">5</span>      <span class="c1"># asks "is x equal to 5?" — returns True
+</span><span class="n">x</span> <span class="o">==</span> <span class="mi">6</span>      <span class="c1"># returns False
+</span></code></pre></div></div>
+
+<p>We’ll use <code class="language-plaintext highlighter-rouge">==</code> extensively once we get to branching (Chapter 4).</p>
+
+<hr />
+
+<h2 id="8-pythons-object-model-a-mental-model-that-pays-off-later">8. Python’s object model (a mental model that pays off later)</h2>
+
+<p>In Python, <strong>everything is an object</strong> — integers, floats, strings, functions, all of it. When you write <code class="language-plaintext highlighter-rouge">x = 4</code>, Python creates a float object holding the value 4 and makes the label <code class="language-plaintext highlighter-rouge">x</code> point to it. If you then write <code class="language-plaintext highlighter-rouge">y = x</code>, both <code class="language-plaintext highlighter-rouge">x</code> and <code class="language-plaintext highlighter-rouge">y</code> point to the exact same object in memory.</p>
+
+<p>You can verify this with the built-in <code class="language-plaintext highlighter-rouge">id()</code> function, which returns a unique identifier for each object:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">x</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
+<span class="nb">id</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>   <span class="c1"># True — same object
+</span></code></pre></div></div>
+
+<p>Integers and strings in Python are <strong>immutable</strong> — when you “change” an integer variable, you’re actually creating a new object and re-pointing the label, not modifying the old one. This distinction matters when we get to lists and dictionaries later in the semester.</p>
+
+<hr />
+
+<h2 id="9-scientific-notation">9. Scientific notation</h2>
+
+<p>Python uses the letter <code class="language-plaintext highlighter-rouge">E</code> for scientific notation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">avogadro</span> <span class="o">=</span> <span class="mf">6.02e23</span>      <span class="c1"># 6.02 × 10²³
+</span><span class="n">tiny</span> <span class="o">=</span> <span class="mf">1.5e-10</span>          <span class="c1"># 1.5 × 10⁻¹⁰
+</span></code></pre></div></div>
+
+<p>This is the same format you’ll see on the midterm and final when questions involve very large or very small values. If you type <code class="language-plaintext highlighter-rouge">import sys; sys.float_info</code> in the interpreter you’ll see Python’s float limits.</p>
+
+<hr />
+
+<h2 id="10-strings--characters-unicode-and-escape-sequences">10. Strings — characters, Unicode, and escape sequences</h2>
+
+<p>Every character is stored internally as a number following the <strong>Unicode</strong> standard. You can inspect this with two built-in functions:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ord</span><span class="p">(</span><span class="s">'A'</span><span class="p">)</span>    <span class="c1"># → 65
+</span><span class="nb">ord</span><span class="p">(</span><span class="s">'a'</span><span class="p">)</span>    <span class="c1"># → 97
+</span><span class="nb">chr</span><span class="p">(</span><span class="mi">65</span><span class="p">)</span>     <span class="c1"># → 'A'
+</span></code></pre></div></div>
+
+<p>Notice that uppercase letters have lower numbers than lowercase. This matters for sorting — Python’s default sort puts <code class="language-plaintext highlighter-rouge">'Z'</code> before <code class="language-plaintext highlighter-rouge">'a'</code> because 90 &lt; 97. Keep this in mind when you write comparison programs.</p>
+
+<p><strong>Escape sequences</strong> (review from Week 1):</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Sequence</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">\n</code></td>
+      <td>newline</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">\t</code></td>
+      <td>tab</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">\\</code></td>
+      <td>literal backslash</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">\"</code></td>
+      <td>literal double-quote inside a <code class="language-plaintext highlighter-rouge">"..."</code> string</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">\'</code></td>
+      <td>literal single-quote inside a <code class="language-plaintext highlighter-rouge">'...'</code> string</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Each escape sequence counts as <strong>one character</strong>, not two. So <code class="language-plaintext highlighter-rouge">len("a\\b")</code> is 3, not 4.</p>
+
+<p>If you want a string where backslashes are treated literally (common for Windows file paths), prefix with <code class="language-plaintext highlighter-rouge">r</code>:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">path</span> <span class="o">=</span> <span class="sa">r</span><span class="s">"C:\Users\student\Documents"</span>   <span class="c1"># raw string — no escaping
+</span></code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">len()</code> function returns the number of characters in a string:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">len</span><span class="p">(</span><span class="s">"hello"</span><span class="p">)</span>    <span class="c1"># → 5
+</span></code></pre></div></div>
+
+<hr />
+
+<h2 id="11-random-numbers">11. Random numbers</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">random</span>
+<span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">()</span>         <span class="c1"># float between 0.0 and 1.0
+</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>    <span class="c1"># integer from 1 to 6 inclusive (a die roll)
+</span><span class="n">random</span><span class="p">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>         <span class="c1"># fix the seed for reproducible results
+</span></code></pre></div></div>
+
+<p>Computers cannot generate truly random numbers — they use a mathematical algorithm that produces sequences that <em>look</em> random. The <code class="language-plaintext highlighter-rouge">seed</code> sets where in that sequence you start. With a fixed seed you get the same sequence every run, which is useful for testing and debugging.</p>
+
+<hr />
+
+<h2 id="12-python-style-guidelines-pep-8">12. Python style guidelines (PEP 8)</h2>
+
+<p>These are conventions, not syntax rules — Python won’t stop you from ignoring them. But following them makes your code readable to other programmers and to your future self.</p>
+
+<ul>
+  <li><strong>Variable names</strong>: <code class="language-plaintext highlighter-rouge">snake_case</code> — lowercase words joined by underscores (<code class="language-plaintext highlighter-rouge">monthly_salary</code>, <code class="language-plaintext highlighter-rouge">total_hours</code>)</li>
+  <li><strong>Constants</strong>: <code class="language-plaintext highlighter-rouge">ALL_CAPS</code> — tells readers this value shouldn’t change (<code class="language-plaintext highlighter-rouge">MAX_WEIGHT</code>, <code class="language-plaintext highlighter-rouge">PI</code>)</li>
+  <li><strong>Class names</strong>: <code class="language-plaintext highlighter-rouge">CamelCase</code> — capitalize each word, no underscores (we’ll use this in Chapter 10)</li>
+  <li><strong>Spaces around operators</strong>: <code class="language-plaintext highlighter-rouge">x = a + b</code>, not <code class="language-plaintext highlighter-rouge">x=a+b</code></li>
+  <li><strong>Indentation</strong>: 4 spaces per level (not tabs)</li>
+  <li><strong>One statement per line</strong> — Python allows semicolons to put two on one line, but don’t</li>
+  <li><strong>Line length</strong>: aim for under 100 characters; break long statements across lines if needed</li>
+  <li><strong>Strings</strong>: double quotes for string literals; single quotes for dictionary keys (more on this in Chapter 9)</li>
+</ul>
+
+<p>Good style is a professional habit. Start building it now.</p>
+
+<hr />
+
+<h2 id="13-installing-python-and-vs-code">13. Installing Python and VS Code</h2>
+
+<p>For students who still need to install these:</p>
+
+<p><strong>Python 3:</strong> Go to python.org, download the installer for your OS, and run it. Accept the defaults. On a Mac, open Terminal and type <code class="language-plaintext highlighter-rouge">python3</code> to confirm it’s working. On Windows, open Command Prompt and type <code class="language-plaintext highlighter-rouge">python --version</code>.</p>
+
+<p><strong>Visual Studio Code:</strong> Go to code.visualstudio.com and download the installer. After installing, add the Python extension (search for “Python” in the Extensions panel). VS Code will use the Python interpreter you installed above.</p>
+
+<p>You don’t need these for zyBook labs — zyBook has a built-in editor. You will need them for the larger programming assignment later in the semester.</p>
+
+<hr />
+
+<h2 id="14-this-week--action-items">14. This week — action items</h2>
+
+<ol>
+  <li>Complete <strong>zyBook Chapter 2 — Reading</strong> (participation + challenge activities) — due 6/17.</li>
+  <li>Complete <strong>zyBook Chapter 2 — Labs</strong> — due 6/17.</li>
+  <li>Catch up on any <strong>Chapter 1</strong> items if you haven’t submitted them yet.</li>
+  <li>Install Python 3 and VS Code if you haven’t already (Section 13 above).</li>
+</ol>
+
+<p><strong>Next time:</strong> Chapter 3 — Types in depth, including type conversion, casting, and more on strings.</p>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

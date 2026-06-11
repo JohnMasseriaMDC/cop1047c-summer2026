@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>COP 1047C — Lecture 1 Recap | lecture-transcripts</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="COP 1047C — Lecture 1 Recap" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:site_name" content="lecture-transcripts" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="COP 1047C — Lecture 1 Recap" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","headline":"COP 1047C — Lecture 1 Recap","url":"https://mdc-cop1047c-summer2026.github.io/lecture-transcripts/transcripts/week-01.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="lecture-01-summary.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/lecture-transcripts/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      <h1 id="cop-1047c--lecture-1-recap">COP 1047C — Lecture 1 Recap</h1>
+<p><strong>MDC Live | Summer 2026 | May 12, 2026</strong></p>
+
+<p>Welcome to Introduction to Python Programming! This recap captures the key points from our first session so you can review on your own and make sure nothing slipped past. The full recording is available in <strong>Canvas → Class for Teams → Recordings</strong> (it usually appears within an hour of class ending; you can speed it up, slow it down, and turn on captions).</p>
+
+<hr />
+
+<h2 id="1-course-logistics">1. Course logistics</h2>
+
+<ul>
+  <li><strong>Lectures</strong> are recorded automatically through Class for Teams. If you ever notice I forgot to record, please say so in chat.</li>
+  <li><strong>Attendance</strong> is captured automatically when you join the Teams session. You’re allowed up to 4 absences for the term; 3 consecutive missed classes can trigger an automatic withdrawal. If something comes up, email me before class — excused absences don’t extend deadlines, but they keep you on the roster.</li>
+  <li><strong>Communication</strong>: please use Canvas messages or my MDC email (jmasseri@mdc.edu). I aim to respond within 48 hours (longer on weekends). When you hit a bug, send a screenshot — it speeds things up significantly.</li>
+  <li><strong>Office hours</strong>: book a time through the link on the Instructor Information page. I’m also planning to host open drop-in office hours on weekday evenings; details to follow.</li>
+</ul>
+
+<h2 id="2-required-materials">2. Required materials</h2>
+
+<ul>
+  <li><strong>Textbook</strong>: zyBook — <em>COP 1047C: Introduction to Python Programming</em> (Miller, Lysecky, Vahid, Wheatland). Included via the MDC Shark Pack program — don’t opt out unless you’ve arranged an alternative, because the zyBook is where your reading and lab work lives.</li>
+  <li><strong>Python 3.8+</strong> installed on your home machine.</li>
+  <li><strong>Visual Studio Code</strong> (free) — we’ll use this for the bigger programming assignment after the midterm. Until then, the zyBook’s built-in editor is enough.</li>
+  <li><strong>Webcam + headset</strong> — required for exams (Respondus LockDown Browser) and helpful for office hours.</li>
+</ul>
+
+<h2 id="3-grading-at-a-glance">3. Grading at a glance</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Weight</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>zyBook reading assignments (participation + challenge activities)</td>
+      <td>25%</td>
+    </tr>
+    <tr>
+      <td>zyBook labs + programming assignment</td>
+      <td>30%</td>
+    </tr>
+    <tr>
+      <td>In-class project</td>
+      <td>5%</td>
+    </tr>
+    <tr>
+      <td>Attendance + background survey</td>
+      <td>5%</td>
+    </tr>
+    <tr>
+      <td>Midterm exam</td>
+      <td>15%</td>
+    </tr>
+    <tr>
+      <td>Final exam</td>
+      <td>20%</td>
+    </tr>
+    <tr>
+      <td>Chapter 11 reading (extra credit)</td>
+      <td>+5%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Both exams are taken at home using Respondus LockDown Browser with a webcam. You’ll have cheat sheets I provide, so don’t waste energy memorizing syntax — focus on understanding.</p>
+
+<h2 id="4-using-ai-in-this-course">4. Using AI in this course</h2>
+
+<p>You are <strong>encouraged</strong> to use AI tools (ChatGPT, Claude, Gemini, GitHub Copilot, and MDC’s Circle In AI tutor) as study aids — for explanations, debugging hints, alternative wordings, and tutoring. You <strong>must not</strong> submit code that was generated end-to-end by AI, and you must cite AI assistance when you use it.</p>
+
+<p>The reason for the line isn’t ceremony. Programming is a skill, like a musical instrument — you build it by writing code, hitting errors, reading the error messages, and reasoning your way out. If you outsource that loop to a model, the class will feel fine while you’re in it and the job market won’t. Use AI the way you’d use a tutor sitting next to you: ask it to explain, not to do the work.</p>
+
+<h2 id="5-concepts-we-covered">5. Concepts we covered</h2>
+
+<h3 id="the-universal-program-model-input--process--output">The universal program model: input → process → output</h3>
+<p>Every program follows this pattern, whether it’s a five-line script on your laptop or an AWS Lambda function handling millions of requests. Get comfortable seeing it everywhere.</p>
+
+<h3 id="pseudocode-and-playing-computer">Pseudocode and “playing computer”</h3>
+<p>Before writing code, sketch the steps in plain language. When reading code, trace through it line by line with a pencil and a table of variables. This is exactly the skill the midterm and final test — you’ll be shown a short program and asked what it outputs.</p>
+
+<h3 id="algorithms">Algorithms</h3>
+<p>A program is an algorithm — a recipe — expressed in a language a computer understands. The word comes from al-Khwarizmi, a 9th-century Persian mathematician.</p>
+
+<h3 id="determinism-and-randomness">Determinism (and randomness)</h3>
+<p>Given the same inputs, a deterministic program produces the same outputs every time. When we want non-deterministic behavior (games, simulations), we’ll import Python’s <code class="language-plaintext highlighter-rouge">random</code> module — but even those numbers are produced by an algorithm.</p>
+
+<h3 id="metric-prefixes--you-need-these-cold">Metric prefixes — you need these cold</h3>
+<p>| Prefix | Multiplier |
+| — | — |
+| kilo (k) | 10^3 |
+| mega (M) | 10^6 |
+| giga (G) | 10^9 |
+| tera (T) | 10^12 |
+| milli (m) | 10^-3 |
+| micro (µ) | 10^-6 |
+| nano (n) | 10^-9 |</p>
+
+<p>These show up constantly: file sizes, RAM, clock speeds, network latency.</p>
+
+<h2 id="6-python-in-action">6. Python in action</h2>
+
+<p>We worked at the interactive interpreter (the <code class="language-plaintext highlighter-rouge">&gt;&gt;&gt;</code> prompt) and walked through these constructs.</p>
+
+<p><strong>Variables and assignment</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">y</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+<span class="k">print</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>   <span class="c1"># 3
+</span></code></pre></div></div>
+
+<p><strong>Built-in functions we used</strong></p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">print(...)</code> — keyword arguments <code class="language-plaintext highlighter-rouge">sep</code> (default <code class="language-plaintext highlighter-rouge">' '</code>) and <code class="language-plaintext highlighter-rouge">end</code> (default <code class="language-plaintext highlighter-rouge">'\n'</code>).</li>
+  <li><code class="language-plaintext highlighter-rouge">input(prompt)</code> — pauses, then returns whatever the user types <strong>as a string</strong>. If you need a number, convert it.</li>
+  <li><code class="language-plaintext highlighter-rouge">type(obj)</code> — shows the type.</li>
+  <li><code class="language-plaintext highlighter-rouge">help(obj)</code> — shows the docstring.</li>
+</ul>
+
+<p><strong>Types</strong>: <code class="language-plaintext highlighter-rouge">int</code>, <code class="language-plaintext highlighter-rouge">float</code>, <code class="language-plaintext highlighter-rouge">str</code>. Python is <strong>dynamically typed</strong> — you don’t declare a variable’s type, and reassigning a different type is legal (sometimes too legal). Compare with C++, Java, and Swift, which are statically typed.</p>
+
+<p><strong>Strings</strong> use either single or double quotes. Common escape characters:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Sequence</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">\n</code></td>
+      <td>newline</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">\t</code></td>
+      <td>tab</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">\"</code></td>
+      <td>literal double quote</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">\'</code></td>
+      <td>literal single quote</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">\\</code></td>
+      <td>literal backslash</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Type conversion</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">wage_str</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">"Enter wage: "</span><span class="p">)</span>
+<span class="n">wage</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">wage_str</span><span class="p">)</span>   <span class="c1"># use int() for whole numbers
+</span></code></pre></div></div>
+
+<p><strong>Comments</strong> start with <code class="language-plaintext highlighter-rouge">#</code>. Triple-quoted strings at the top of a function become its <strong>docstring</strong> and are what <code class="language-plaintext highlighter-rouge">help()</code> displays.</p>
+
+<p><strong>Identifiers (variable names)</strong>: letters, digits, and underscores; cannot start with a digit. Names like <code class="language-plaintext highlighter-rouge">__init__</code> and <code class="language-plaintext highlighter-rouge">__name__</code> are reserved for Python’s internals — leave them alone. Reserved words (<code class="language-plaintext highlighter-rouge">if</code>, <code class="language-plaintext highlighter-rouge">def</code>, <code class="language-plaintext highlighter-rouge">class</code>, etc.) can’t be used as variable names. Built-in names like <code class="language-plaintext highlighter-rouge">print</code> <em>can</em> be overwritten, but if you reassign <code class="language-plaintext highlighter-rouge">print = 0</code>, you’ve just broken <code class="language-plaintext highlighter-rouge">print</code> for the rest of that session.</p>
+
+<h3 id="two-kinds-of-errors">Two kinds of errors</h3>
+<ul>
+  <li><strong>Syntax errors</strong> — the code doesn’t parse. A real IDE flags these as you type.</li>
+  <li><strong>Runtime errors</strong> — the code parses but blows up when it runs (e.g., <code class="language-plaintext highlighter-rouge">x / d</code> where <code class="language-plaintext highlighter-rouge">d</code> happens to be <code class="language-plaintext highlighter-rouge">0</code>).</li>
+</ul>
+
+<p>Rule of thumb: catch errors as early as you can. A bug caught while typing is free; the same bug shipped to a million customers is expensive.</p>
+
+<h2 id="7-a-bit-of-history-worth-knowing">7. A bit of history (worth knowing)</h2>
+
+<ul>
+  <li>The first recorded <strong>computer bug</strong> was a literal moth pulled from a relay in the Harvard Mark II in 1947 — Grace Hopper taped it into the logbook. The artifact lives at the Smithsonian.</li>
+  <li>In 1940, “computer” was a job title for a human who performed calculations. The film <em>Hidden Figures</em> (2016) tells the story of three of them at NASA. Worth watching.</li>
+  <li><strong>Python</strong> was created in the late 1980s by Guido van Rossum. It’s open source and community-governed. <strong>Python 3 is not backward-compatible with Python 2</strong> — <code class="language-plaintext highlighter-rouge">print</code> is the most famous change. We’re now on Python 3.14.</li>
+</ul>
+
+<h2 id="8-this-week--action-items">8. This week — action items</h2>
+
+<ol>
+  <li><strong>Student Background and Expectation Survey</strong> in Canvas — due 5/20.</li>
+  <li><strong>zyBook Chapter 1 — Reading</strong> (all participation + challenge activities count) — due 5/27.</li>
+  <li><strong>zyBook Chapter 1 — Labs</strong>: three short labs, starting with “Hello, World!” You have <strong>unlimited submission attempts</strong> — due 5/27.</li>
+  <li>Install <strong>Python 3</strong> and (optionally) <strong>VS Code</strong> on your home machine.</li>
+  <li>If you’ve never used Respondus LockDown Browser, install it before the practice midterm so you don’t hit surprises on exam day.</li>
+</ol>
+
+<p><strong>Next time</strong>: why floating-point numbers in Python are a “necessary evil” — and what to do about it.</p>
+
+<p>See you next week. Email me anytime.</p>
+
+<p>— John</p>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>
