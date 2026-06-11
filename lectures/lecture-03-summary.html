@@ -32,7 +32,7 @@
     --sans:      'Outfit', system-ui, sans-serif;
   }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; scroll-padding-top: 150px; /* fallback; JS measures real header height */ }
 
   body {
     background: var(--bg);
@@ -123,7 +123,6 @@
   /* ── SECTION BLOCKS ── */
   .section {
     margin-bottom: 3rem;
-    scroll-margin-top: 120px;
   }
   .section-eyebrow {
     font-family: var(--mono);
@@ -145,7 +144,6 @@
   /* ── TOPIC BLOCKS ── */
   .topic {
     margin-bottom: 2rem;
-    scroll-margin-top: 120px;
   }
   .topic h3 {
     font-size: 1.05rem;
@@ -773,5 +771,17 @@ print(f"{n:X}")    # → D         (hexadecimal uppercase)</code></pre>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+// Keep anchor targets clear of the sticky header, whatever its
+// current height (the nav wraps to extra rows on narrow screens).
+(function () {
+  const header = document.querySelector('header');
+  function setScrollOffset() {
+    document.documentElement.style.scrollPaddingTop = (header.offsetHeight + 12) + 'px';
+  }
+  setScrollOffset();
+  window.addEventListener('resize', setScrollOffset);
+})();
+</script>
 </body>
 </html>

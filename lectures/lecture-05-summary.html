@@ -39,6 +39,13 @@
     min-height: 100vh;
   }
 
+  /* Anchor links must land below the sticky header.
+     150px is a fallback; JS below measures the real height. */
+  html {
+    scroll-padding-top: 150px;
+    scroll-behavior: smooth;
+  }
+
   /* JetBrains Mono ligature fix — keeps <=, >=, ==, != as typed characters */
   pre, code, kbd {
     font-family: var(--mono) !important;
@@ -719,5 +726,17 @@ while True:
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+// Keep anchor targets clear of the sticky header, whatever its
+// current height (the nav wraps to extra rows on narrow screens).
+(function () {
+  const header = document.querySelector('header');
+  function setScrollOffset() {
+    document.documentElement.style.scrollPaddingTop = (header.offsetHeight + 12) + 'px';
+  }
+  setScrollOffset();
+  window.addEventListener('resize', setScrollOffset);
+})();
+</script>
 </body>
 </html>
