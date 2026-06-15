@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COP 1047C – Lecture 6: Midterm Review (Chapters 1–5)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #080c14;
+    --surface:   #0f1724;
+    --surface2:  #16202e;
+    --border:    #1e2d42;
+    --border2:   #253347;
+    --accent:    #f59e0b;
+    --accent-dk: #d97706;
+    --text:      #e2e8f0;
+    --muted:     #7d93af;
+    --green:     #34d399;
+    --red:       #f87171;
+    --blue:      #60a5fa;
+    --mono:      'JetBrains Mono', 'Courier New', monospace;
+    --sans:      'Outfit', system-ui, sans-serif;
+    --nav-h:     58px;
+    --header-h:  56px;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* JetBrains Mono ligature fix — keeps <=, >=, ==, != as typed */
+  pre, code, kbd {
+    font-family: var(--mono) !important;
+    font-variant-ligatures: none !important;
+    font-feature-settings: "liga" 0, "calt" 0 !important;
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: var(--accent); width: 0%;
+    z-index: 300; transition: width .25s ease;
+  }
+
+  /* ── SLIDE HEADER ── */
+  .slide-header {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: var(--header-h);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 1.25rem;
+    z-index: 200;
+  }
+  .chapter-tag {
+    font-family: var(--mono); font-size: .68rem; font-weight: 500;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(245,158,11,.12);
+    border: 1px solid rgba(245,158,11,.3);
+    border-radius: 4px; padding: 3px 10px; white-space: nowrap;
+  }
+  .slide-title-bar {
+    font-size: .9rem; font-weight: 600; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    padding: 0 1rem;
+  }
+  .mdc-badge {
+    font-family: var(--mono); font-size: .68rem; color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* ── PLAYER ── */
+  .player {
+    position: relative;
+    height: 100%;
+    padding-top: var(--header-h);
+    padding-bottom: var(--nav-h);
+  }
+  .slides-container { position: relative; height: 100%; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    overflow-y: auto;
+    padding: 2rem 2.5rem 2.5rem;
+  }
+  .slide.active { display: block; }
+  .slide.hero.active { display: flex; }
+  .slide-inner { max-width: 980px; margin: 0 auto; }
+
+  /* ── SLIDE TYPES ── */
+  .hero { align-items: center; justify-content: center; text-align: center; }
+  .hero-inner { max-width: 820px; }
+  .hero h1 { font-size: 2.6rem; font-weight: 800; line-height: 1.15; margin-bottom: 1rem; }
+  .hero h1 .accent { color: var(--accent); }
+  .hero .subtitle { font-size: 1.15rem; color: var(--muted); margin-bottom: 1.5rem; }
+  .hero .meta { font-family: var(--mono); font-size: .8rem; color: var(--muted); }
+
+  h2.slide-h {
+    font-size: 1.7rem; font-weight: 700; margin-bottom: 1.1rem;
+    padding-bottom: .55rem; border-bottom: 1px solid var(--border);
+  }
+  h2.slide-h .eyebrow {
+    display: block; font-family: var(--mono); font-size: .66rem;
+    font-weight: 500; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: .3rem;
+  }
+  .slide p { margin-bottom: .9rem; line-height: 1.6; font-size: 1.02rem; }
+  .slide ul, .slide ol { margin: 0 0 1rem 1.4rem; line-height: 1.65; font-size: 1.02rem; }
+  .slide li { margin-bottom: .45rem; }
+  .slide li strong { color: var(--accent); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; align-items: start; }
+  @media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ── CODE ── */
+  .code-wrap {
+    background: #0a0f1a; border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden; margin: .9rem 0;
+  }
+  .code-bar {
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    padding: 7px 12px; display: flex; gap: 6px; align-items: center;
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .dot-r { background: #ef4444; } .dot-y { background: #f59e0b; } .dot-g { background: #22c55e; }
+  .code-label { font-family: var(--mono); font-size: .66rem; color: var(--muted); margin-left: 8px; }
+  .code-wrap pre {
+    margin: 0 !important; padding: .9rem 1.15rem !important;
+    background: transparent !important;
+    font-size: .92rem !important; line-height: 1.55 !important;
+    overflow-x: auto;
+  }
+  code:not(pre code) {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 6px; font-size: .85em; color: #fbbf24;
+  }
+
+  /* ── TABLES ── */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; margin: .9rem 0; }
+  table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+  th {
+    background: var(--surface2); font-family: var(--mono); font-size: .68rem;
+    font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); text-align: left; padding: 9px 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  td { padding: 8px 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── CALLOUTS ── */
+  .callout { border-radius: 8px; padding: .8rem 1.05rem; margin: .9rem 0; font-size: .95rem; }
+  .callout-warn { background: #190b0b; border: 1px solid #3d1515; color: #fca5a5; }
+  .callout-info { background: #0a1322; border: 1px solid #1b3a5c; color: #93c5fd; }
+  .callout-note { background: #1a1304; border: 1px solid #4a3408; color: #fcd34d; }
+
+  /* ── QUIZ ── */
+  .quiz-tag {
+    display: inline-block; font-family: var(--mono); font-size: .68rem;
+    font-weight: 500; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--green); background: rgba(52,211,153,.08);
+    border: 1px solid rgba(52,211,153,.3);
+    border-radius: 4px; padding: 3px 10px; margin-bottom: .8rem;
+  }
+  .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin: 1rem 0; }
+  @media (max-width: 700px) { .quiz-options { grid-template-columns: 1fr; } }
+  .quiz-opt {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 8px; padding: .75rem 1rem;
+    font-family: var(--mono); font-size: .92rem; color: var(--text);
+    cursor: pointer; text-align: left; transition: border-color .15s, background .15s;
+    white-space: pre-wrap;
+  }
+  .quiz-opt:hover { border-color: var(--accent); background: var(--surface2); }
+  .quiz-opt .opt-letter { color: var(--accent); font-weight: 500; margin-right: .6rem; }
+  .quiz-opt.correct { border-color: var(--green); background: rgba(52,211,153,.08); }
+  .quiz-opt.wrong { border-color: var(--red); background: rgba(248,113,113,.07); opacity: .75; }
+  .reveal-btn {
+    font-family: var(--sans); font-size: .9rem; font-weight: 600;
+    color: #0a0f1a; background: var(--accent);
+    border: none; border-radius: 6px; padding: .55rem 1.2rem;
+    cursor: pointer; transition: background .15s;
+  }
+  .reveal-btn:hover { background: var(--accent-dk); }
+  .quiz-answer { display: none; margin-top: 1rem; }
+  .quiz-answer.shown { display: block; }
+
+  /* ── SUMMARY GRID ── */
+  .trap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin-top: .5rem; }
+  @media (max-width: 760px) { .trap-grid { grid-template-columns: 1fr; } }
+  .trap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 6px;
+    padding: .65rem .9rem; font-size: .9rem; line-height: 1.5;
+  }
+  .trap b { color: var(--accent); }
+
+  /* ── NAV ── */
+  .deck-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: var(--nav-h);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    gap: .6rem; z-index: 200;
+  }
+  .deck-nav button {
+    font-family: var(--mono); font-size: .78rem; font-weight: 500;
+    color: var(--text); background: var(--surface2);
+    border: 1px solid var(--border2); border-radius: 6px;
+    padding: .45rem .95rem; cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .deck-nav button:hover { border-color: var(--accent); color: var(--accent); }
+  .deck-nav button:disabled { opacity: .35; cursor: default; }
+  .deck-nav button:disabled:hover { border-color: var(--border2); color: var(--text); }
+  #counter { font-family: var(--mono); font-size: .8rem; color: var(--muted); min-width: 72px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="slide-header">
+  <span class="chapter-tag">Lecture 6 · Midterm Review</span>
+  <span class="slide-title-bar" id="titlebar"></span>
+  <span class="mdc-badge">COP 1047C · MDC West · Summer 2026</span>
+</div>
+
+<div class="player">
+<div class="slides-container" id="slides">
+
+<!-- ════════ SLIDE 1: HERO ════════ -->
+<section class="slide hero" data-title="Welcome">
+  <div class="hero-inner">
+    <h1>Midterm Review<br><span class="accent">Chapters 1–5</span></h1>
+    <p class="subtitle">Everything on the exam, one trace drill at a time — then the in-class group project.</p>
+    <p class="meta">COP 1047C · Intro to Python · June 16, 2026 · Prof. John Masseria</p>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 2: AGENDA ════════ -->
+<section class="slide" data-title="Tonight's Agenda">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Agenda</span>🎯 Tonight, You Will…</h2>
+    <ul>
+      <li><strong>Review Chapters 1–5</strong> the way the exam tests them: read code, predict the output, then verify</li>
+      <li><strong>Practice trace drills</strong> for every chapter — same format as the 50 exam questions</li>
+      <li><strong>Recognize the classic traps</strong>: the ten mistakes that cost the most points</li>
+      <li><strong>Build a program with your group</strong> — in-class group project (5% of your grade)</li>
+    </ul>
+    <div class="callout callout-info">
+      <strong>How to use this deck while studying:</strong> for every quiz slide, commit to an answer <em>before</em> revealing. On paper, write the variable table and update it pass by pass — "play computer." That is the entire skill the midterm tests.
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 3: LOGISTICS ════════ -->
+<section class="slide" data-title="Midterm Logistics">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">The Exam</span>📝 Midterm Logistics</h2>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><td><strong>Opens</strong></td><td>After tonight's class</td></tr>
+          <tr><td><strong>Due</strong></td><td>Tuesday, June 23 — <strong>before class begins</strong></td></tr>
+          <tr><td><strong>Covers</strong></td><td>Chapters 1–5 only</td></tr>
+          <tr><td><strong>Format</strong></td><td>50 multiple-choice questions — read code, predict output. No code writing.</td></tr>
+          <tr><td><strong>Software</strong></td><td>Respondus LockDown Browser + webcam (required)</td></tr>
+          <tr><td><strong>Warm-up</strong></td><td>10-question practice quiz under <em>Practice Quizzes</em> in Canvas Modules — take it early to verify your LockDown Browser setup</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-warn">
+      <strong>Don't lose points to logistics.</strong> Install and test LockDown Browser <em>this week</em>. Email <strong>jmasseri@mdc.edu</strong> if it won't install — before exam day, not during it.
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 4: HOW TO TRACE ════════ -->
+<section class="slide" data-title="How to Attack a Trace Question">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Exam Technique</span>✏️ "Playing Computer"</h2>
+    <div class="two-col">
+      <div>
+        <p>Every output-prediction question yields to the same method:</p>
+        <ol>
+          <li><strong>Write the variables down</strong> in a table on your scratch paper</li>
+          <li><strong>Execute one line at a time</strong>, updating the table — never "eyeball" a loop</li>
+          <li><strong>Write each output</strong> the moment a <code>print()</code> runs</li>
+          <li><strong>Check the exit:</strong> what are the variables <em>after</em> the loop ends?</li>
+        </ol>
+      </div>
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">trace like this</span></div>
+          <pre><code class="language-python">count = 1
+while count <= 3:
+    print(count * 2)
+    count += 1
+
+#  count | test    | prints
+#  ------+---------+-------
+#    1   | 1<=3 T  |  2
+#    2   | 2<=3 T  |  4
+#    3   | 3<=3 T  |  6
+#    4   | 4<=3 F  |  (exit)
+# after the loop: count == 4</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 5: CH1 ANCHOR ════════ -->
+<section class="slide" data-title="Chapter 1 — Foundations">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Chapter 1</span>🧱 Foundations</h2>
+    <div class="two-col">
+      <div>
+        <ul>
+          <li><strong>Every program:</strong> input → process → output</li>
+          <li><strong>Python is interpreted</strong> — statements execute one at a time (C++/Java are compiled)</li>
+          <li><strong>input() always returns a string</strong> — convert with <code>int()</code> or <code>float()</code> before doing math</li>
+          <li><strong>Types:</strong> <code>int</code>, <code>float</code>, <code>str</code> — check with <code>type(x)</code></li>
+          <li><strong>Comments</strong> start with <code>#</code></li>
+          <li><strong>Identifiers:</strong> letters, digits, underscores; can't start with a digit; case-sensitive</li>
+          <li><strong>Errors:</strong> syntax (won't parse) vs. runtime (parses, then blows up)</li>
+        </ul>
+      </div>
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">ch1_essentials.py</span></div>
+          <pre><code class="language-python">name = input("Name: ")     # always a str
+age = int(input("Age: "))  # now an int
+
+print("Hi", name, sep="--")   # Hi--Ana
+print("A", end="")            # no newline
+print("B")                    # AB</code></pre>
+        </div>
+        <div class="callout callout-note">
+          <code>print()</code> named parameters: <code>sep</code> (between items, default space) and <code>end</code> (after the line, default <code>\n</code>).
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 6: CH1 QUIZ ════════ -->
+<section class="slide" data-title="Drill — Chapter 1">
+  <div class="slide-inner">
+    <span class="quiz-tag">Trace Drill · Chapter 1</span>
+    <h2 class="slide-h">What does this print?</h2>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill_1.py</span></div>
+      <pre><code class="language-python">x = input()        # user types: 4
+y = input()        # user types: 3
+print(x + y)</code></pre>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-q="q1"><span class="opt-letter">A</span>7</button>
+      <button class="quiz-opt" data-q="q1" data-correct><span class="opt-letter">B</span>43</button>
+      <button class="quiz-opt" data-q="q1"><span class="opt-letter">C</span>4 3</button>
+      <button class="quiz-opt" data-q="q1"><span class="opt-letter">D</span>Error</button>
+    </div>
+    <button class="reveal-btn" data-q="q1">Reveal Answer</button>
+    <div class="quiz-answer" id="ans-q1">
+      <div class="callout callout-info">
+        <strong>B — 43.</strong> <code>input()</code> returns <em>strings</em>, and <code>+</code> on strings is concatenation: <code>"4" + "3"</code> is <code>"43"</code>. To get 7, both inputs need <code>int()</code> around them. This single fact is worth multiple questions on the exam.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 7: CH2 ANCHOR ════════ -->
+<section class="slide" data-title="Chapter 2 — Variables & Expressions">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Chapter 2</span>🧮 Variables &amp; Expressions</h2>
+    <div class="two-col">
+      <div>
+        <ul>
+          <li><strong><code>=</code> assigns, <code>==</code> compares.</strong> <code>x = 5</code> stores; <code>x == 5</code> asks and returns <code>True</code>/<code>False</code></li>
+          <li><strong>Case sensitivity:</strong> <code>wage</code>, <code>Wage</code>, <code>WAGE</code> are three different variables — misspelling creates a <em>new</em> one, silently</li>
+          <li><strong>Floats are approximate:</strong> <code>0.1 + 0.2</code> is <code>0.30000000000000004</code> — never test float equality with <code>==</code>; use <code>abs(a - b) < 1e-9</code></li>
+          <li><strong>Scientific notation:</strong> <code>6.02e23</code>, <code>1.5e-10</code></li>
+          <li><strong>Unicode:</strong> <code>ord('A')</code> → 65, <code>chr(97)</code> → <code>'a'</code> — uppercase sorts before lowercase</li>
+        </ul>
+      </div>
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">ch2_essentials.py</span></div>
+          <pre><code class="language-python">check = 123.33
+total = check * 1.20
+print(f"Total: ${total:.2f}")
+# Total: $147.99
+
+# :.2f = format with exactly
+# 2 decimal places (display only —
+# the stored value keeps full precision)</code></pre>
+        </div>
+        <div class="callout callout-warn">
+          <strong>Exam trap:</strong> <code>0.1 + 0.2 == 0.3</code> evaluates to <strong><code>False</code></strong>. If you see float equality in a question, be suspicious.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 8: CH2 QUIZ ════════ -->
+<section class="slide" data-title="Drill — Chapter 2">
+  <div class="slide-inner">
+    <span class="quiz-tag">Trace Drill · Chapter 2</span>
+    <h2 class="slide-h">What does this print?</h2>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill_2.py</span></div>
+      <pre><code class="language-python">price = 19.999
+qty = 3
+print(f"Each: ${price:.2f}, count: {qty}")</code></pre>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-q="q2"><span class="opt-letter">A</span>Each: $19.99, count: 3</button>
+      <button class="quiz-opt" data-q="q2" data-correct><span class="opt-letter">B</span>Each: $20.00, count: 3</button>
+      <button class="quiz-opt" data-q="q2"><span class="opt-letter">C</span>Each: $19.999, count: 3</button>
+      <button class="quiz-opt" data-q="q2"><span class="opt-letter">D</span>Each: ${price:.2f}, count: {qty}</button>
+    </div>
+    <button class="reveal-btn" data-q="q2">Reveal Answer</button>
+    <div class="quiz-answer" id="ans-q2">
+      <div class="callout callout-info">
+        <strong>B.</strong> <code>:.2f</code> <em>rounds</em> to 2 decimal places — it doesn't truncate. 19.999 rounds to <strong>20.00</strong>. (Option D is what you'd get with a plain string missing the <code>f</code> prefix — also a favorite exam variation.)
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 9: CH3 ANCHOR — STRINGS ════════ -->
+<section class="slide" data-title="Chapter 3 — Strings">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Chapter 3</span>📘 Strings</h2>
+    <div class="two-col">
+      <div>
+        <ul>
+          <li><strong>Indexing starts at 0:</strong> in <code>"Python"</code>, <code>[0]</code> is <code>'P'</code>, <code>[5]</code> is <code>'n'</code></li>
+          <li><strong>Negative indexes</strong> count from the end: <code>[-1]</code> is the last character</li>
+          <li><strong><code>len(s)</code></strong> = number of characters; the last valid index is <code>len(s) - 1</code></li>
+          <li><strong>Concatenation:</strong> <code>+</code> joins strings; <code>*</code> repeats them (<code>"ab" * 3</code> → <code>"ababab"</code>)</li>
+          <li><strong>Strings are immutable</strong> — <code>s[0] = "x"</code> is a runtime error</li>
+          <li><strong>Escape sequences count as ONE character:</strong> <code>len("a\nb")</code> is 3</li>
+        </ul>
+      </div>
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">ch3_strings.py</span></div>
+          <pre><code class="language-python">word = "Python"
+print(word[0])        # P
+print(word[-1])       # n
+print(len(word))      # 6
+print(word + "!")     # Python!
+
+first = "Ana"
+print(f"Hi {first}, {2 + 3} things")
+# Hi Ana, 5 things  (any expression
+# works inside the braces)</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 10: CH3 ANCHOR — CONTAINERS ════════ -->
+<section class="slide" data-title="Chapter 3 — The Four Containers">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Chapter 3</span>📦 The Four Containers</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Container</th><th>Syntax</th><th>Ordered?</th><th>Changeable?</th><th>Duplicates?</th><th>Best for</th></tr></thead>
+        <tbody>
+          <tr><td><strong>List</strong></td><td><code>[1, 2, 3]</code></td><td>Yes</td><td>Mutable</td><td>Yes</td><td>Ordered data you'll modify</td></tr>
+          <tr><td><strong>Tuple</strong></td><td><code>(1, 2, 3)</code></td><td>Yes</td><td><strong>Immutable</strong></td><td>Yes</td><td>Fixed records</td></tr>
+          <tr><td><strong>Dictionary</strong></td><td><code>{"a": 1}</code></td><td>Keys → values</td><td>Mutable</td><td>Keys unique</td><td>Lookups by key</td></tr>
+          <tr><td><strong>Set</strong></td><td><code>{1, 2, 3}</code></td><td><strong>No</strong></td><td>Mutable</td><td><strong>No</strong></td><td>De-duplication, membership</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">containers.py</span></div>
+          <pre><code class="language-python">scores = [88, 92, 75]
+scores[1] = 95          # OK — mutable
+scores.append(60)       # [88, 95, 75, 60]
+
+point = (3, 4)
+point[0] = 5            # TypeError!</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">dict_set.py</span></div>
+          <pre><code class="language-python">ages = {"Ana": 20, "Li": 22}
+print(ages["Li"])       # 22
+
+nums = {1, 2, 2, 3, 3, 3}
+print(len(nums))        # 3 — dupes gone</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 11: CH3 ANCHOR — CASTING ════════ -->
+<section class="slide" data-title="Chapter 3 — Type Conversion">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Chapter 3</span>🔄 Type Conversion (Casting)</h2>
+    <div class="two-col">
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Expression</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><td><code>int("42")</code></td><td><code>42</code></td></tr>
+              <tr><td><code>int("3.5")</code></td><td><strong>ValueError!</strong></td></tr>
+              <tr><td><code>int(3.9)</code></td><td><code>3</code> — truncates, never rounds</td></tr>
+              <tr><td><code>float("3.5")</code></td><td><code>3.5</code></td></tr>
+              <tr><td><code>int(float("3.5"))</code></td><td><code>3</code> — two steps works</td></tr>
+              <tr><td><code>str(42)</code></td><td><code>"42"</code></td></tr>
+              <tr><td><code>10 / 5</code></td><td><code>2.0</code> — <code>/</code> always yields float</td></tr>
+              <tr><td><code>10 // 3</code></td><td><code>3</code> — floor division</td></tr>
+              <tr><td><code>10 % 3</code></td><td><code>1</code> — remainder (modulo)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="callout callout-warn">
+          <strong>Three favorite exam traps live on this slide:</strong>
+          <br>1. <code>int(3.9)</code> is 3 — truncation, not rounding.
+          <br>2. <code>int("3.5")</code> crashes — int() can't parse a string with a decimal point.
+          <br>3. <code>10 / 5</code> is <code>2.0</code>, not <code>2</code> — regular division always produces a float, even when it comes out even.
+        </div>
+        <p>Binary refresher: <code>f"{10:b}"</code> → <code>"1010"</code>, and <code>0b1010</code> is 10. Know how to convert a small number by hand (8 + 2 = 1010).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 12: CH3 QUIZ ════════ -->
+<section class="slide" data-title="Drill — Chapter 3">
+  <div class="slide-inner">
+    <span class="quiz-tag">Trace Drill · Chapter 3</span>
+    <h2 class="slide-h">What does this print?</h2>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill_3.py</span></div>
+      <pre><code class="language-python">foods = ["pizza", "tacos", "sushi"]
+foods.append("pasta")
+print(foods[1])
+print(foods[-1])
+print(len(foods))</code></pre>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-q="q3"><span class="opt-letter">A</span>pizza / pasta / 4</button>
+      <button class="quiz-opt" data-q="q3" data-correct><span class="opt-letter">B</span>tacos / pasta / 4</button>
+      <button class="quiz-opt" data-q="q3"><span class="opt-letter">C</span>tacos / sushi / 3</button>
+      <button class="quiz-opt" data-q="q3"><span class="opt-letter">D</span>pizza / sushi / 4</button>
+    </div>
+    <button class="reveal-btn" data-q="q3">Reveal Answer</button>
+    <div class="quiz-answer" id="ans-q3">
+      <div class="callout callout-info">
+        <strong>B.</strong> Index 1 is the <em>second</em> item (<code>tacos</code>) because indexing starts at 0. After the append, <code>[-1]</code> is the new last item (<code>pasta</code>), and the length is 4. If you picked A, you counted from 1 — the single most common indexing mistake.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 13: CH4 ANCHOR — BRANCHING ════════ -->
+<section class="slide" data-title="Chapter 4 — Branching">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Chapter 4</span>🔀 if / elif / else</h2>
+    <div class="two-col">
+      <div>
+        <ul>
+          <li><strong>Anatomy:</strong> keyword, expression, colon, indented block — the same shape as <code>while</code></li>
+          <li><strong>An elif chain tests top-down</strong> and runs only the <em>first</em> true branch — order matters</li>
+          <li><strong><code>else</code> has no condition</strong> — it catches everything that fell through</li>
+          <li><strong>Range checking:</strong> because earlier branches already excluded values, <code>elif grade >= 80</code> means "80–89" without writing the upper bound</li>
+          <li><strong>Indentation decides ownership</strong> — a misindented line silently moves in or out of the branch</li>
+        </ul>
+      </div>
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">grades.py</span></div>
+          <pre><code class="language-python">grade = 85
+if grade >= 90:
+    print("A")
+elif grade >= 80:
+    print("B")      # first true wins
+elif grade >= 70:
+    print("C")
+else:
+    print("Keep working")
+# prints: B  (and ONLY B)</code></pre>
+        </div>
+        <div class="callout callout-warn">
+          <strong>Exam trap:</strong> reorder those branches (<code>>= 70</code> first) and an 85 prints <code>C</code>. Always check the order of an elif chain before answering.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 14: CH4 ANCHOR — OPERATORS ════════ -->
+<section class="slide" data-title="Chapter 4 — Comparison & Boolean Operators">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Chapter 4</span>⚖️ Comparison &amp; Boolean Operators</h2>
+    <div class="two-col">
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Operator</th><th>True when…</th></tr></thead>
+            <tbody>
+              <tr><td><code>==</code> / <code>!=</code></td><td>equal / not equal</td></tr>
+              <tr><td><code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>&gt;=</code></td><td>the comparison holds</td></tr>
+              <tr><td><code>a and b</code></td><td><strong>both</strong> are true</td></tr>
+              <tr><td><code>a or b</code></td><td><strong>at least one</strong> is true</td></tr>
+              <tr><td><code>not a</code></td><td><code>a</code> is false (flips it)</td></tr>
+              <tr><td><code>x in container</code></td><td><code>x</code> is a member</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Short-circuit:</strong> <code>False and …</code> never evaluates the right side; neither does <code>True or …</code>.</p>
+      </div>
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">booleans.py</span></div>
+          <pre><code class="language-python">age = 25
+has_id = False
+
+print(age >= 21 and has_id)   # False
+print(age >= 21 or has_id)    # True
+print(not has_id)             # True
+
+vowels = "aeiou"
+print("e" in vowels)          # True
+print("z" not in vowels)      # True</code></pre>
+        </div>
+        <div class="callout callout-note">
+          Use parentheses to make mixed <code>and</code>/<code>or</code> expressions unambiguous — and expect the exam to test one <em>without</em> them: <code>and</code> binds tighter than <code>or</code>.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 15: CH4 QUIZ 1 ════════ -->
+<section class="slide" data-title="Drill — Chapter 4 (elif chain)">
+  <div class="slide-inner">
+    <span class="quiz-tag">Trace Drill · Chapter 4</span>
+    <h2 class="slide-h">What does this print?</h2>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill_4a.py</span></div>
+      <pre><code class="language-python">temp = 70
+if temp > 85:
+    print("Hot")
+elif temp > 65:
+    print("Warm")
+elif temp > 45:
+    print("Cool")
+else:
+    print("Cold")</code></pre>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-q="q4"><span class="opt-letter">A</span>Hot</button>
+      <button class="quiz-opt" data-q="q4" data-correct><span class="opt-letter">B</span>Warm</button>
+      <button class="quiz-opt" data-q="q4"><span class="opt-letter">C</span>Warm
+Cool</button>
+      <button class="quiz-opt" data-q="q4"><span class="opt-letter">D</span>Cool</button>
+    </div>
+    <button class="reveal-btn" data-q="q4">Reveal Answer</button>
+    <div class="quiz-answer" id="ans-q4">
+      <div class="callout callout-info">
+        <strong>B — Warm, and only Warm.</strong> 70 is not &gt; 85, so the chain falls to <code>temp > 65</code>, which is true — the branch runs and the <em>entire rest of the chain is skipped</em>, even though <code>70 > 45</code> is also true. Option C is the classic "every true branch runs" misconception.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 16: CH4 QUIZ 2 ════════ -->
+<section class="slide" data-title="Drill — Chapter 4 (booleans)">
+  <div class="slide-inner">
+    <span class="quiz-tag">Trace Drill · Chapter 4</span>
+    <h2 class="slide-h">What does this print?</h2>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill_4b.py</span></div>
+      <pre><code class="language-python">x = 8
+y = 3
+if x > 5 and y > 5:
+    print("both")
+elif x > 5 or y > 5:
+    print("one")
+if not (x == y):
+    print("different")</code></pre>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-q="q5"><span class="opt-letter">A</span>both
+different</button>
+      <button class="quiz-opt" data-q="q5" data-correct><span class="opt-letter">B</span>one
+different</button>
+      <button class="quiz-opt" data-q="q5"><span class="opt-letter">C</span>one</button>
+      <button class="quiz-opt" data-q="q5"><span class="opt-letter">D</span>different</button>
+    </div>
+    <button class="reveal-btn" data-q="q5">Reveal Answer</button>
+    <div class="quiz-answer" id="ans-q5">
+      <div class="callout callout-info">
+        <strong>B.</strong> <code>8 > 5 and 3 > 5</code> → <code>True and False</code> → <code>False</code>; the elif's <code>or</code> needs only one side, so "one" prints. The second <code>if</code> is a <em>separate</em> statement — not part of the chain — and <code>not (8 == 3)</code> is <code>not False</code> → <code>True</code>, so "different" also prints. Watch for a fresh <code>if</code> hiding below an elif chain.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 17: CH5 ANCHOR — WHILE ════════ -->
+<section class="slide" data-title="Chapter 5 — while Loops">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Chapter 5</span>🔁 while Loops &amp; Sentinels</h2>
+    <div class="two-col">
+      <div>
+        <ul>
+          <li><strong>Tests at the top</strong>, runs the body while true; when false, skips past the whole body</li>
+          <li><strong>The body always finishes its pass</strong> — the condition is only checked back at the top</li>
+          <li><strong>Infinite loop</strong> = condition can never go false; stop with Ctrl+C</li>
+          <li><strong>Sentinel pattern:</strong> input once <em>before</em> the loop, repeat input as the <em>last line of the body</em> (Python has no do-while)</li>
+        </ul>
+        <div class="callout callout-note">
+          Case matters: a loop testing <code>!= "quit"</code> does <em>not</em> stop on <code>Quit</code>.
+        </div>
+      </div>
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">sentinel.py</span></div>
+          <pre><code class="language-python">user = input("Type quit to exit: ")
+while user != "quit":
+    print(f"You said {user}")
+    user = input("Type quit to exit: ")
+print("Goodbye")</code></pre>
+        </div>
+        <p>You'll use exactly this pattern in tonight's group project.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 18: CH5 ANCHOR — COUNTERS ════════ -->
+<section class="slide" data-title="Chapter 5 — Counter Loops">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Chapter 5</span>🔢 Counters — and the Value <em>After</em> the Loop</h2>
+    <div class="two-col">
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">counter.py</span></div>
+          <pre><code class="language-python">count = 1
+while count <= 5:
+    print(count)        # 1 2 3 4 5
+    count += 1
+print(count)            # 6  ← !!</code></pre>
+        </div>
+      </div>
+      <div>
+        <p><strong>The single most-asked loop question:</strong> what is the counter after the loop exits?</p>
+        <p>The body runs with <code>count</code> at 5, increments it to <strong>6</strong>, the test <code>6 <= 5</code> fails, and the loop exits — with the counter <em>one step past</em> the last printed value.</p>
+        <p>Counting down by 5 from 10 while <code>count >= 0</code> prints <code>10 5 0</code> and exits with <code>count == -5</code>. Same principle: <strong>one step past</strong>.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Shortcut</th><th>Same as</th></tr></thead>
+            <tbody>
+              <tr><td><code>x += 2</code></td><td><code>x = x + 2</code></td></tr>
+              <tr><td><code>x -= 2</code></td><td><code>x = x - 2</code></td></tr>
+              <tr><td><code>x *= 2</code></td><td><code>x = x * 2</code></td></tr>
+              <tr><td><code>x //= 2</code></td><td><code>x = x // 2</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 19: CH5 ANCHOR — FOR/RANGE ════════ -->
+<section class="slide" data-title="Chapter 5 — for & range()">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Chapter 5</span>📏 for Loops &amp; range()</h2>
+    <div class="two-col">
+      <div>
+        <ul>
+          <li><strong><code>for item in container:</code></strong> works on lists, strings, tuples, sets (unordered!), and dictionaries (<strong>iterates the keys</strong>)</li>
+          <li><strong>while vs. for:</strong> unknown number of passes (sentinel input) → <code>while</code>; a container or a known count → <code>for</code></li>
+          <li><strong><code>range(start, stop, step)</code></strong> — the <strong>stop value is never included</strong></li>
+          <li><strong><code>enumerate(lst)</code></strong> yields <code>(index, value)</code> pairs: <code>for i, v in enumerate(lst):</code></li>
+        </ul>
+      </div>
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Call</th><th>Produces</th></tr></thead>
+            <tbody>
+              <tr><td><code>range(5)</code></td><td>0 1 2 3 4</td></tr>
+              <tr><td><code>range(2, 6)</code></td><td>2 3 4 5</td></tr>
+              <tr><td><code>range(0, 10, 3)</code></td><td>0 3 6 9</td></tr>
+              <tr><td><code>range(3, 31, 3)</code></td><td>3 6 … 27 30</td></tr>
+              <tr><td><code>range(5, 0, -1)</code></td><td>5 4 3 2 1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warn">
+          <strong>If a range question is on the exam — and it will be — the wrong answers all hinge on the stop value.</strong> Say it with me: <em>stop is not included.</em>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 20: CH5 ANCHOR — NESTED/BREAK ════════ -->
+<section class="slide" data-title="Chapter 5 — Nested Loops, break, continue">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Chapter 5</span>🪆 Nested Loops · break · continue</h2>
+    <div class="two-col">
+      <div>
+        <div class="code-wrap">
+          <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">nested.py</span></div>
+          <pre><code class="language-python">for i in range(1, 4):      # outer
+    for j in range(1, 3):  # inner
+        print(i, j)
+# 1 1 / 1 2 / 2 1 / 2 2 / 3 1 / 3 2
+# inner runs COMPLETELY for
+# every single outer pass
+# total prints: 3 x 2 = 6</code></pre>
+        </div>
+      </div>
+      <div>
+        <ul>
+          <li><strong><code>break</code></strong> exits the loop immediately — but only the <strong>innermost</strong> loop it sits in</li>
+          <li><strong><code>continue</code></strong> skips the rest of <em>this</em> pass and jumps to the next iteration</li>
+          <li><strong>Count nested output:</strong> outer passes × inner passes — a 9×9 table prints 81 cells</li>
+          <li><strong>Indentation</strong> decides which loop a statement belongs to — a <code>print()</code> at the outer level runs once per outer pass</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 21: CH5 QUIZ 1 ════════ -->
+<section class="slide" data-title="Drill — Chapter 5 (from class)">
+  <div class="slide-inner">
+    <span class="quiz-tag">Trace Drill · Chapter 5 — you saw this one in class</span>
+    <h2 class="slide-h">What does this print?</h2>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill_5a.py</span></div>
+      <pre><code class="language-python">result = 0
+n = 2
+while n < 6:
+    print(n, end=" ")
+    result -= 3
+    n += 1
+print(result)</code></pre>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-q="q6"><span class="opt-letter">A</span>2 3 4 5 6 -15</button>
+      <button class="quiz-opt" data-q="q6" data-correct><span class="opt-letter">B</span>2 3 4 5 -12</button>
+      <button class="quiz-opt" data-q="q6"><span class="opt-letter">C</span>2 3 4 5 -9</button>
+      <button class="quiz-opt" data-q="q6"><span class="opt-letter">D</span>3 4 5 6 -12</button>
+    </div>
+    <button class="reveal-btn" data-q="q6">Reveal Answer</button>
+    <div class="quiz-answer" id="ans-q6">
+      <div class="callout callout-info">
+        <strong>B.</strong> The loop runs with n = 2, 3, 4, 5 — four passes (when n hits 6, <code>6 < 6</code> is false). Four passes × −3 each = <strong>−12</strong>. Option A includes the 6 (off-by-one on the strict <code>&lt;</code>); option C only counts three passes.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 22: CH5 QUIZ 2 ════════ -->
+<section class="slide" data-title="Drill — Chapter 5 (range)">
+  <div class="slide-inner">
+    <span class="quiz-tag">Trace Drill · Chapter 5</span>
+    <h2 class="slide-h">What does this print?</h2>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill_5b.py</span></div>
+      <pre><code class="language-python">total = 0
+for i in range(2, 10, 3):
+    print(i, end=" ")
+    total += i
+print(total)</code></pre>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-q="q7"><span class="opt-letter">A</span>2 5 8 10 25</button>
+      <button class="quiz-opt" data-q="q7"><span class="opt-letter">B</span>2 5 8 11 26</button>
+      <button class="quiz-opt" data-q="q7" data-correct><span class="opt-letter">C</span>2 5 8 15</button>
+      <button class="quiz-opt" data-q="q7"><span class="opt-letter">D</span>3 6 9 18</button>
+    </div>
+    <button class="reveal-btn" data-q="q7">Reveal Answer</button>
+    <div class="quiz-answer" id="ans-q7">
+      <div class="callout callout-info">
+        <strong>C.</strong> <code>range(2, 10, 3)</code> produces 2, 5, 8 — then 8 + 3 = 11 is past the stop, so it ends. The stop value (10) is never included, and neither is anything beyond it. Sum: 2 + 5 + 8 = <strong>15</strong>.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 23: CH5 QUIZ 3 ════════ -->
+<section class="slide" data-title="Drill — Chapter 5 (break)">
+  <div class="slide-inner">
+    <span class="quiz-tag">Trace Drill · Chapter 5 — you saw this one in class too</span>
+    <h2 class="slide-h">The user enters 4. What does this print?</h2>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill_5c.py</span></div>
+      <pre><code class="language-python">stop = int(input())    # user enters 4
+n = 3
+while True:
+    print(n, end=" ")
+    if n > stop:
+        print("Stop")
+        break
+    n += 1</code></pre>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-q="q8"><span class="opt-letter">A</span>3 4 Stop</button>
+      <button class="quiz-opt" data-q="q8" data-correct><span class="opt-letter">B</span>3 4 5 Stop</button>
+      <button class="quiz-opt" data-q="q8"><span class="opt-letter">C</span>3 4 5 6 Stop</button>
+      <button class="quiz-opt" data-q="q8"><span class="opt-letter">D</span>Infinite loop — never stops</button>
+    </div>
+    <button class="reveal-btn" data-q="q8">Reveal Answer</button>
+    <div class="quiz-answer" id="ans-q8">
+      <div class="callout callout-info">
+        <strong>B.</strong> <code>while True</code> looks infinite, but the <code>break</code> is the exit. Trace it: n=3 prints, 3 &gt; 4 false, n→4; prints, 4 &gt; 4 false (strict!), n→5; prints, 5 &gt; 4 <strong>true</strong> → "Stop", break. The strict <code>&gt;</code> vs <code>&gt;=</code> distinction is exactly the kind of detail the exam hides in plain sight.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 24: TOP TEN TRAPS ════════ -->
+<section class="slide" data-title="The Ten Traps">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">Summary</span>⚠️ The Ten Traps That Cost the Most Points</h2>
+    <div class="trap-grid">
+      <div class="trap"><b>1.</b> <code>input()</code> returns a <b>string</b> — <code>"4" + "3"</code> is <code>"43"</code></div>
+      <div class="trap"><b>2.</b> <code>=</code> assigns; <code>==</code> compares</div>
+      <div class="trap"><b>3.</b> Indexing starts at <b>0</b>; last index is <code>len - 1</code></div>
+      <div class="trap"><b>4.</b> <code>range()</code> <b>never includes the stop value</b></div>
+      <div class="trap"><b>5.</b> The counter is <b>one step past</b> its last printed value after a loop</div>
+      <div class="trap"><b>6.</b> Only the <b>first true branch</b> of an elif chain runs</div>
+      <div class="trap"><b>7.</b> <code>/</code> always gives a float; <code>//</code> floors; <code>%</code> gives the remainder; <code>int(3.9)</code> is 3</div>
+      <div class="trap"><b>8.</b> Never trust <code>==</code> on floats — <code>0.1 + 0.2 == 0.3</code> is <code>False</code></div>
+      <div class="trap"><b>9.</b> Python is <b>case-sensitive</b>: variables, strings, and <code>"quit" != "Quit"</code></div>
+      <div class="trap"><b>10.</b> <b>Indentation is meaning</b> — it decides which if/loop owns each line</div>
+    </div>
+    <div class="callout callout-note" style="margin-top:1.1rem;">
+      Screenshot this slide. Half the exam's wrong answers are engineered from this list.
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 25: STUDY PLAN ════════ -->
+<section class="slide" data-title="Your Week — Study Plan">
+  <div class="slide-inner">
+    <h2 class="slide-h"><span class="eyebrow">This Week</span>📚 Between Now and June 23</h2>
+    <ol>
+      <li><strong>Take the 10-question practice quiz</strong> (Canvas → Modules → Practice Quizzes) — it verifies your LockDown Browser setup <em>and</em> shows you the question style</li>
+      <li><strong>Re-run the zyBook participation activities</strong> for Chapters 1–5 — they reset, and they're the closest thing to a question bank</li>
+      <li><strong>Re-trace tonight's drills on paper</strong>, cold, a few days from now — if you can play computer without the answer key, you're ready</li>
+      <li><strong>Review the lecture summaries</strong> on the course site — every chapter has one, with the traps called out</li>
+      <li><strong>Finish Chapter 5 zyBook work</strong> if you haven't (it was due tonight)</li>
+    </ol>
+    <div class="callout callout-info">
+      The exam is open-resource in one sense: I provide cheat sheets. Don't memorize syntax — practice <em>tracing</em>. Speed and accuracy at playing computer is what 50 questions in one sitting actually tests.
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SLIDE 26: CLOSING / PROJECT HANDOFF ════════ -->
+<section class="slide hero" data-title="Group Project">
+  <div class="hero-inner">
+    <h1>Now: the <span class="accent">Group Project</span></h1>
+    <p class="subtitle">Groups are posted in Canvas. Build the temperature-conversion program together — it's a sentinel loop, an elif chain, and f-string output. Everything you just reviewed, in one program.</p>
+    <p class="meta">One member submits for the team · 5% of your grade · Questions: jmasseri@mdc.edu</p>
+  </div>
+</section>
+
+</div><!-- /slides-container -->
+</div><!-- /player -->
+
+<!-- ════════ NAV ════════ -->
+<div class="deck-nav">
+  <button id="btn-first" title="First slide">⏮ First</button>
+  <button id="btn-prev" title="Previous slide">◀ Prev</button>
+  <span id="counter">1 / 26</span>
+  <button id="btn-next" title="Next slide">Next ▶</button>
+  <button id="btn-last" title="Last slide">Last ⏭</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+(function () {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const counter = document.getElementById('counter');
+  const titlebar = document.getElementById('titlebar');
+  const progress = document.getElementById('progress');
+  let current = 0;
+
+  function show(i) {
+    current = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === current));
+    counter.textContent = (current + 1) + ' / ' + slides.length;
+    titlebar.textContent = slides[current].dataset.title || '';
+    progress.style.width = ((current + 1) / slides.length * 100) + '%';
+    document.getElementById('btn-first').disabled = current === 0;
+    document.getElementById('btn-prev').disabled = current === 0;
+    document.getElementById('btn-next').disabled = current === slides.length - 1;
+    document.getElementById('btn-last').disabled = current === slides.length - 1;
+    slides[current].scrollTop = 0;
+  }
+
+  document.getElementById('btn-first').addEventListener('click', () => show(0));
+  document.getElementById('btn-prev').addEventListener('click', () => show(current - 1));
+  document.getElementById('btn-next').addEventListener('click', () => show(current + 1));
+  document.getElementById('btn-last').addEventListener('click', () => show(slides.length - 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); show(current + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp') { e.preventDefault(); show(current - 1); }
+    if (e.key === 'Home') { e.preventDefault(); show(0); }
+    if (e.key === 'End')  { e.preventDefault(); show(slides.length - 1); }
+  });
+
+  // Quiz interactions: clicking an option or Reveal shows the answer
+  function reveal(q) {
+    document.getElementById('ans-' + q).classList.add('shown');
+    document.querySelectorAll('.quiz-opt[data-q="' + q + '"]').forEach(btn => {
+      btn.classList.add(btn.hasAttribute('data-correct') ? 'correct' : 'wrong');
+    });
+  }
+  document.querySelectorAll('.reveal-btn').forEach(btn =>
+    btn.addEventListener('click', () => reveal(btn.dataset.q)));
+  document.querySelectorAll('.quiz-opt').forEach(btn =>
+    btn.addEventListener('click', () => reveal(btn.dataset.q)));
+
+  show(0);
+})();
+</script>
+</body>
+</html>
