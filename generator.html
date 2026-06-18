@@ -81,6 +81,7 @@ body { background:var(--bg); color:var(--text); font-family:var(--sans); font-si
 .btn-green { background:rgba(52,211,153,.15); color:var(--green); border:1px solid var(--green-bd); }
 .btn-ghost { background:var(--surface2); color:var(--text); border:1px solid var(--border2); }
 .btn-red   { background:var(--red-bg); color:var(--red); border:1px solid var(--red-bd); }
+.btn-blue  { background:rgba(96,165,250,.12); color:#60a5fa; border:1px solid rgba(96,165,250,.3); }
 .copy-feedback { font-size:.78rem; color:var(--green); opacity:0; transition:opacity .3s; }
 .copy-feedback.show { opacity:1; }
 textarea.out-code { width:100%; min-height:300px; resize:vertical; background:#060a10; color:#c9d8e8; border:1px solid var(--border); border-radius:8px; padding:1rem; font-family:var(--mono); font-size:.75rem; line-height:1.6; font-variant-ligatures:none; font-feature-settings:"liga" 0,"calt" 0; }
@@ -154,7 +155,9 @@ textarea.out-code { width:100%; min-height:300px; resize:vertical; background:#0
           <div class="out-actions">
             <button class="btn btn-green" onclick="copyOutput('index')">Copy index.html</button>
             <span class="copy-feedback" id="cf-index">Copied!</span>
-            <span class="hint">Paste over your existing index.html, then push to GitHub.</span>
+            <button class="btn btn-blue" onclick="pushIndexToGitHub()" id="pushBtn">🚀 Push to GitHub</button>
+            <span class="copy-feedback" id="cf-push">Pushed!</span>
+            <span class="hint">Or paste over your existing index.html and push manually.</span>
           </div>
           <textarea class="out-code" id="out-index" readonly placeholder="Click Generate…"></textarea>
         </div>
@@ -693,6 +696,45 @@ function copyOutput(which) {
   const fb = document.getElementById("cf-"+which);
   fb.classList.add("show");
   setTimeout(()=>fb.classList.remove("show"), 2000);
+}
+
+async function pushIndexToGitHub() {
+  const btn = document.getElementById("pushBtn");
+  const fb  = document.getElementById("cf-push");
+  const html = document.getElementById("out-index").value;
+
+  if (!html.trim()) {
+    alert("Click Generate first.");
+    return;
+  }
+  if (!confirm("Push this index.html to the live course site? This updates johnmasseriamdc.github.io/cop1047c-summer2026 immediately.")) {
+    return;
+  }
+
+  const originalText = btn.textContent;
+  btn.textContent = "Pushing…";
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${WORKER_URL}/course/index`, {
+      method:  "PUT",
+      headers: { "Authorization": `Bearer ${jwt}`, "Content-Type": "application/json" },
+      body:    JSON.stringify({ html }),
+    });
+    if (res.status === 401) { handleExpiredSession(); return; }
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err.error || `HTTP ${res.status}`);
+    }
+    fb.textContent = "Pushed!";
+    fb.classList.add("show");
+    setTimeout(()=>fb.classList.remove("show"), 3000);
+  } catch(e) {
+    alert("Push failed: " + e.message);
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
 }
 
 // ================================================================
