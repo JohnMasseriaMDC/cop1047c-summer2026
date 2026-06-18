@@ -88,8 +88,11 @@ textarea.out-code { width:100%; min-height:300px; resize:vertical; background:#0
 
 /* ── GENERATE BAR ── */
 .generate-bar { display:flex; justify-content:center; padding:1rem 0 .25rem; }
-.btn-generate { background:var(--accent); color:#000; font-size:1rem; font-weight:700; padding:11px 36px; border-radius:8px; border:none; cursor:pointer; font-family:var(--sans); letter-spacing:.02em; transition:opacity .15s; }
+.btn-generate { background:var(--accent); color:#000; font-size:1rem; font-weight:700; padding:11px 36px; border-radius:8px; border:none; cursor:pointer; font-family:var(--sans); letter-spacing:.02em; transition:transform .12s, background .25s, opacity .15s; }
 .btn-generate:hover { opacity:.88; }
+.btn-generate:active { transform:scale(.96); }
+.btn-generate.success { background:var(--green); animation:genPulse .4s ease; }
+@keyframes genPulse { 0%{transform:scale(1)} 35%{transform:scale(1.06)} 100%{transform:scale(1)} }
 
 .hint { font-size:.78rem; color:var(--muted); }
 </style>
@@ -141,7 +144,7 @@ textarea.out-code { width:100%; min-height:300px; resize:vertical; background:#0
 
     <!-- GENERATE -->
     <div class="generate-bar">
-      <button class="btn-generate" onclick="generate()">⚡ Generate Both Files</button>
+      <button class="btn-generate" id="generateBtn" onclick="generate()">⚡ Generate Both Files</button>
     </div>
 
     <!-- OUTPUT -->
@@ -596,7 +599,7 @@ lectures.forEach(lec=>{
   if(lec.solutions)links+=\`<a class="card-link" href="\${lec.solutions}">\${iconCode} Solutions</a>\`;
   const noteHtml=lec.note?\`<div style="font-size:.75rem;color:var(--accent);margin-top:2px;">\${lec.note}</div>\`:'';
   const mc=(lec.note&&lec.note.includes('Midterm'))?' midterm-card':'';
-  grid.innerHTML+=`<div class="card ${sc}${mc}"><div class="card-top"><span class="card-num">Lecture ${String(lec.num).padStart(2,'0')}</span><span class="card-date">${lec.date}</span></div><div><div class="card-chapter">${lec.chapter}${lec.zydue?` &nbsp;·&nbsp; zyBook due ${lec.zydue}`:''}</div><div class="card-topic">${lec.topic}</div>${noteHtml}</div><div class="card-bottom">${badge}${links?`<div class="card-links">${links}</div>`:''}</div></div>`;
+  grid.innerHTML+=\`<div class="card \${sc}\${mc}"><div class="card-top"><span class="card-num">Lecture \${String(lec.num).padStart(2,'0')}</span><span class="card-date">\${lec.date}</span></div><div><div class="card-chapter">\${lec.chapter}\${lec.zydue?\` &nbsp;·&nbsp; zyBook due \${lec.zydue}\`:''}</div><div class="card-topic">\${lec.topic}</div>\${noteHtml}</div><div class="card-bottom">\${badge}\${links?\`<div class="card-links">\${links}</div>\`:''}</div></div>\`;
 });
 <\/script>
 </body>
@@ -680,6 +683,15 @@ ${rows}
 function generate() {
   document.getElementById("out-index").value  = genIndex();
   document.getElementById("out-canvas").value = genCanvas();
+
+  const btn = document.getElementById("generateBtn");
+  const original = "⚡ Generate Both Files";
+  btn.textContent = "✓ Generated!";
+  btn.classList.add("success");
+  setTimeout(() => {
+    btn.textContent = original;
+    btn.classList.remove("success");
+  }, 1100);
 }
 
 function switchTab(tab) {
