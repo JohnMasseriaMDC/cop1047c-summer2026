@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COP 1047C – Lecture 6 Summary: Midterm Review (Chapters 1–5)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #080c14;
+    --surface:   #0f1724;
+    --surface2:  #16202e;
+    --border:    #1e2d42;
+    --border2:   #253347;
+    --accent:    #f59e0b;
+    --accent-dk: #d97706;
+    --text:      #e2e8f0;
+    --muted:     #7d93af;
+    --green-bg:  #071510;
+    --green-bdr: #0d3322;
+    --green-txt: #34d399;
+    --tag-bg:    #1a2a3a;
+    --tag-txt:   #60a5fa;
+    --mono:      'JetBrains Mono', 'Courier New', monospace;
+    --sans:      'Outfit', system-ui, sans-serif;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Anchor links must land below the sticky header.
+     150px is a fallback; JS at the bottom measures the real height. */
+  html {
+    scroll-padding-top: 150px;
+    scroll-behavior: smooth;
+  }
+
+  /* JetBrains Mono ligature fix — keeps <=, >=, ==, != as typed characters */
+  pre, code, kbd {
+    font-family: var(--mono) !important;
+    font-variant-ligatures: none !important;
+    font-feature-settings: "liga" 0, "calt" 0 !important;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .course-tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 4px;
+    padding: 3px 10px;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+  header h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .header-meta {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: right;
+  }
+  .header-meta div { margin-bottom: 2px; }
+  header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding-bottom: 0.75rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  header nav a {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: color .15s, background .15s;
+  }
+  header nav a:hover { color: var(--accent); background: var(--surface2); }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  .section { margin-bottom: 3rem; }
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.35rem;
+  }
+  .section h2 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section p { margin-bottom: 1rem; color: var(--text); }
+  .section ul { margin: 0 0 1rem 1.4rem; }
+  .section ul li { margin-bottom: 0.45rem; }
+
+  .topic { margin: 1.75rem 0; }
+  .topic h3 {
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .topic-num {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--accent);
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 4px;
+    padding: 2px 8px;
+    flex-shrink: 0;
+  }
+
+  /* ── CODE BLOCKS ── */
+  .code-wrap {
+    background: #0a0f1a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1rem 0;
+  }
+  .code-bar {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot-r { background: #ef4444; } .dot-y { background: #f59e0b; } .dot-g { background: #22c55e; }
+  .code-bar .code-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+  .code-wrap pre {
+    margin: 0 !important;
+    padding: 1rem 1.25rem !important;
+    background: transparent !important;
+    font-size: 0.85rem !important;
+    line-height: 1.55 !important;
+    overflow-x: auto;
+  }
+  code:not(pre code) {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.84em;
+    color: #fbbf24;
+  }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+  .callout strong { display: inline; }
+  .callout-warn { background: #190b0b; border: 1px solid #3d1515; color: #fca5a5; }
+  .callout-info { background: #0a1322; border: 1px solid #1b3a5c; color: #93c5fd; }
+  .callout-note { background: #1a1304; border: 1px solid #4a3408; color: #fcd34d; }
+
+  /* ── TABLES ── */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th {
+    background: var(--surface2);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  td code { white-space: nowrap; }
+
+  /* ── ACTIVITY / DRILL BLOCKS ── */
+  .activity {
+    background: var(--green-bg);
+    border: 1px solid var(--green-bdr);
+    border-radius: 10px;
+    padding: 1.25rem 1.4rem;
+    margin: 1.25rem 0;
+  }
+  .activity-tag {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--green-txt);
+    margin-bottom: 0.5rem;
+  }
+  .activity h4 { font-size: 1rem; margin-bottom: 0.5rem; }
+  .activity ol { margin: 0.5rem 0 0 1.3rem; }
+  .activity ol li { margin-bottom: 0.5rem; font-size: 0.93rem; }
+  .answer {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--green-txt);
+    margin-top: 0.6rem;
+  }
+
+  /* ── REMINDERS ── */
+  .reminder-list { list-style: none; margin-left: 0 !important; }
+  .reminder-list li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.93rem;
+  }
+  .reminder-list li strong { color: var(--accent); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.75rem 1.5rem 2.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted);
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .header-meta { text-align: left; }
+    header { padding: 1.25rem 1.25rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <span class="course-tag">COP 1047C · Intro to Python · Summer 2026</span>
+      <h1>Lecture 6 Summary — Midterm Review (Chapters 1–5)</h1>
+    </div>
+    <div class="header-meta">
+      <div>Tuesday, June 16, 2026</div>
+      <div>Chapters 1–5</div>
+      <div>Prof. John Masseria · MDC West</div>
+    </div>
+  </div>
+  <nav>
+    <a href="#objectives">Objectives</a>
+    <a href="#admin">Exam Logistics</a>
+    <a href="#technique">Playing Computer</a>
+    <a href="#ch1">Ch 1 · Foundations</a>
+    <a href="#ch2">Ch 2 · Variables</a>
+    <a href="#ch3">Ch 3 · Types</a>
+    <a href="#ch4">Ch 4 · Branching</a>
+    <a href="#ch5">Ch 5 · Loops</a>
+    <a href="#ternary">Ternary</a>
+    <a href="#float">Floating Point</a>
+    <a href="#drills">Drills</a>
+    <a href="#traps">Top Traps</a>
+    <a href="#plan">Study Plan</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ═══ LEARNING OBJECTIVES ═══ -->
+<section class="section" id="objectives">
+  <div class="section-eyebrow">Tonight's Agenda</div>
+  <h2>🎯 What This Review Covers</h2>
+  <p>This was a full-session review of Chapters 1–5 in preparation for the midterm. We worked the material the way the exam tests it: read a piece of code, predict its output, then verify in Python. By the end you should be able to:</p>
+  <ul>
+    <li>Trace any short program on paper and predict its exact output — "playing computer"</li>
+    <li>Predict a counter's value <em>after</em> a loop ends, and how many times a loop body runs</li>
+    <li>Read an <code>if</code>/<code>elif</code>/<code>else</code> chain and know that only the first true branch runs</li>
+    <li>Apply the rules for <code>range()</code>, indexing, casting, and the arithmetic operators</li>
+    <li>Read the new <strong>ternary (conditional) expression</strong> — there is at least one exam question on it</li>
+    <li>Recognize the classic traps the exam's wrong answers are built from</li>
+  </ul>
+  <div class="callout callout-info">
+    <strong>The in-class group project has been postponed.</strong> The review ran the full session so that every question got answered — which was the right call with the midterm one week out. The temperature-conversion project will run on a later, lighter week (likely after we've covered exceptions, so you can add error handling to it). No action needed from you now.
+  </div>
+</section>
+
+<!-- ═══ ADMIN / EXAM LOGISTICS ═══ -->
+<section class="section" id="admin">
+  <div class="section-eyebrow">The Exam</div>
+  <h2>📝 Midterm Logistics</h2>
+  <div class="table-wrap">
+    <table>
+      <tbody>
+        <tr><td><strong>Opens</strong></td><td>Now (after this class)</td></tr>
+        <tr><td><strong>Due</strong></td><td>Tuesday, June 23 — <strong>before class begins.</strong> We'll review it together at the start of next class.</td></tr>
+        <tr><td><strong>Covers</strong></td><td>Chapters 1–5 only</td></tr>
+        <tr><td><strong>Length</strong></td><td>50 multiple-choice questions · <strong>2-hour</strong> time limit</td></tr>
+        <tr><td><strong>Format</strong></td><td>Read code, predict output. No code writing.</td></tr>
+        <tr><td><strong>Software</strong></td><td>Respondus LockDown Browser + webcam (required). You can't leave the browser during the exam, so close everything else first.</td></tr>
+        <tr><td><strong>One sitting</strong></td><td>You can't exit and re-enter. Pick a quiet 2-hour block. If something genuinely interrupts you (e.g., a power failure), email me — I may be able to grant another attempt.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="reminder-list">
+    <li><strong>Take the 10-question practice quiz first</strong> (Canvas → Modules → Practice Quizzes). It runs in LockDown Browser too, so it verifies your setup, and its questions closely mirror the real exam — some real questions are the practice ones with changed values or wording. You can take it as many times as you want.</li>
+    <li><strong>Install &amp; test LockDown Browser tonight or first thing tomorrow.</strong> If it won't work, I need to know early — in the past a student used a lab computer in School Pathways (Building 2, 2nd floor, West Campus) when their webcam failed.</li>
+    <li><strong>Cheat sheets are now posted</strong> on the Canvas home page — four pages total (a 3-page reference plus the operator/precedence sheet). Print them and have them on your desk. You may also bring <strong>one</strong> additional page of your own notes.</li>
+    <li><strong>Have blank paper and a pen/pencil ready.</strong> Many questions require you to trace code by hand. The exam asks you to show your papers to the webcam at the end.</li>
+    <li><strong>Read every question carefully.</strong> Don't pattern-match to the practice quiz — a changed value or one different word can change the answer. Answer options appear in random order.</li>
+    <li><strong>Slides &amp; notes for Lectures 1–5 are now all published</strong> on the course home page. Lectures 1–2 use the zyBook resources directly (no separate deck); Lectures 3–5 have full decks and notes.</li>
+  </ul>
+</section>
+
+<!-- ═══ TECHNIQUE ═══ -->
+<section class="section" id="technique">
+  <div class="section-eyebrow">Exam Technique</div>
+  <h2>✏️ "Playing Computer" — The One Skill the Exam Tests</h2>
+  <p>Almost every question gives you code and asks for the output, the value of a variable, or how many times something runs. The reliable method is the same every time: don't eyeball it — execute it on paper, one line at a time.</p>
+  <ol style="margin:0 0 1rem 1.4rem;">
+    <li>Write each variable in a small table on your scratch paper.</li>
+    <li>Execute one line at a time, updating the table. Never skip ahead or "guess" a loop.</li>
+    <li>Write down each output the moment a <code>print()</code> runs.</li>
+    <li>Check the exit condition: what are the variables <em>after</em> the loop ends?</li>
+  </ol>
+  <div class="callout callout-warn">
+    <strong>Don't jump to conclusions.</strong> Seeing <code>for i in range(1, 5)</code> and instantly saying "runs 4 times" is exactly how the exam catches you. Look at every statement and every condition. Know your operators cold — at least one question uses the modulo operator <code>%</code>.
+  </div>
+</section>
+
+<!-- ═══ CHAPTER 1 ═══ -->
+<section class="section" id="ch1">
+  <div class="section-eyebrow">Chapter 1</div>
+  <h2>🧱 Foundations</h2>
+  <ul>
+    <li><strong>Every program is input → process → output.</strong></li>
+    <li><strong>Python is interpreted</strong>, executing statements one at a time. Languages like C++ are compiled. Expect a definition-style question on this.</li>
+    <li><strong>Python 3 is not backward compatible with Python 2.7.</strong> Know the term "backward compatible."</li>
+    <li><strong><code>input()</code> always returns a string.</strong> Wrap it in <code>int()</code> or <code>float()</code> when you need a number.</li>
+    <li><strong>Types:</strong> <code>int</code>, <code>float</code>, <code>str</code> — check with <code>type(x)</code>.</li>
+    <li><strong>Comments</strong> start with <code>#</code>. A multi-line comment uses triple single-quotes <code>'''…'''</code> (this becomes a function's docstring later — not on this exam).</li>
+    <li><strong>Identifiers:</strong> letters, digits, underscores; cannot start with a digit; avoid leading double underscores (reserved for Python internals).</li>
+    <li><strong>Two error types:</strong> <em>syntax errors</em> (won't parse — e.g., a missing quote) and <em>runtime errors</em> (parse fine, then raise an exception — e.g., <code>ZeroDivisionError</code>, <code>ValueError</code>, <code>NameError</code>). A program that runs but gives a wrong answer is a <em>logic</em> error, not a runtime error.</li>
+  </ul>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">ch1_print.py</span></div>
+    <pre><code class="language-python">name = input("Name: ")        # always a str
+print("Hi", name, sep="--")   # Hi--Ana
+print("A", end="")            # no newline
+print("B")                    # AB</code></pre>
+  </div>
+  <div class="callout callout-note">
+    <strong><code>print()</code> named parameters:</strong> <code>sep</code> goes <em>between</em> items (default a single space) and <code>end</code> goes <em>after</em> the line (default <code>"\n"</code>, the newline). Setting <code>end=""</code> keeps the next print on the same line; setting <code>sep=""</code> removes the spaces between items.
+  </div>
+</section>
+
+<!-- ═══ CHAPTER 2 ═══ -->
+<section class="section" id="ch2">
+  <div class="section-eyebrow">Chapter 2</div>
+  <h2>🧮 Variables &amp; Expressions</h2>
+  <ul>
+    <li><strong><code>=</code> assigns; <code>==</code> compares.</strong> A single equals stores a value; a double equals asks a true/false question.</li>
+    <li><strong>Python is case-sensitive.</strong> <code>wage</code>, <code>Wage</code>, and <code>WAGE</code> are three different variables — a misspelling silently creates a new one.</li>
+    <li><strong>Compound operators:</strong> <code>x += 2</code> means <code>x = x + 2</code>; likewise <code>-=</code>, <code>*=</code>, <code>//=</code>.</li>
+    <li><strong>Scientific notation:</strong> <code>6.02e23</code> is 6.02 × 10²³; <code>1.5e-10</code> is a very small positive number. The <code>e</code> is the base-10 exponent.</li>
+    <li><strong>Order of precedence</strong> follows PEMDAS (parentheses, exponentiation, multiply/divide, add/subtract). It's on the operator cheat sheet — when in doubt, add parentheses.</li>
+    <li><strong>Unicode:</strong> <code>ord('A')</code> → 65 (character to number), <code>chr(97)</code> → <code>'a'</code> (number to character).</li>
+    <li><strong>Float formatting:</strong> <code>f"{value:.2f}"</code> displays exactly two decimal places. The stored value keeps full precision; only the display rounds.</li>
+  </ul>
+</section>
+
+<!-- ═══ CHAPTER 3 ═══ -->
+<section class="section" id="ch3">
+  <div class="section-eyebrow">Chapter 3</div>
+  <h2>📘 Types: Strings, Containers, and Casting</h2>
+
+  <div class="topic">
+    <h3><span class="topic-num">3a</span> Strings</h3>
+    <ul>
+      <li><strong>Indexing starts at 0.</strong> In <code>"Python"</code>, <code>[0]</code> is <code>'P'</code> and the last valid index is <code>len(s) - 1</code> (here, 5).</li>
+      <li><strong>Negative indexes count from the end:</strong> <code>[-1]</code> is the last character — a quick way to reach the end without computing the length.</li>
+      <li><strong><code>+</code> concatenates, <code>*</code> repeats:</strong> <code>"ab" * 3</code> → <code>"ababab"</code>.</li>
+      <li><strong>Strings are immutable.</strong> <code>s[0] = "x"</code> is a runtime error. Lists, dictionaries, and sets <em>can</em> be changed; tuples cannot.</li>
+      <li><strong>An escape sequence is ONE character.</strong> <code>len("a\nb")</code> is 3 — internally that's the bytes 65, 10, 66. The <code>\n</code> is for us when we write it; in memory it's a single newline character (decimal 10).</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">3b</span> The four containers</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Container</th><th>Syntax</th><th>Ordered?</th><th>Changeable?</th><th>Duplicates?</th></tr></thead>
+        <tbody>
+          <tr><td>List</td><td><code>[1, 2, 3]</code></td><td>Yes</td><td>Mutable</td><td>Yes</td></tr>
+          <tr><td>Tuple</td><td><code>(1, 2, 3)</code></td><td>Yes</td><td><strong>Immutable</strong></td><td>Yes</td></tr>
+          <tr><td>Dictionary</td><td><code>{"a": 1}</code></td><td>Keys → values</td><td>Mutable</td><td>Keys unique</td></tr>
+          <tr><td>Set</td><td><code>{1, 2, 3}</code></td><td><strong>No</strong></td><td>Mutable</td><td><strong>No</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>"Changeable/unchangeable" on the cheat sheet are synonyms for "mutable/immutable." Use a <strong>tuple</strong> for values that should never change after they're set. A <strong>set</strong> automatically removes duplicates — <code>{1, 2, 2, 3, 3, 3}</code> has length 3. Sets also support <code>union</code> (combine and dedupe) and <code>intersection</code> (keep only what's in both).</p>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">3c</span> Type conversion (casting)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Expression</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td><code>int("42")</code></td><td><code>42</code></td></tr>
+          <tr><td><code>int("3.5")</code></td><td><strong>ValueError</strong> — int() can't parse a decimal string</td></tr>
+          <tr><td><code>int(3.9)</code></td><td><code>3</code> — truncates, never rounds</td></tr>
+          <tr><td><code>int(float("3.5"))</code></td><td><code>3</code> — convert to float first, then truncate</td></tr>
+          <tr><td><code>str(42)</code></td><td><code>"42"</code> — needed before concatenating a number onto a string</td></tr>
+          <tr><td><code>10 / 5</code></td><td><code>2.0</code> — regular division <em>always</em> yields a float</td></tr>
+          <tr><td><code>15 // 2</code></td><td><code>7</code> — floor division truncates the remainder</td></tr>
+          <tr><td><code>13 % 2</code></td><td><code>1</code> — modulo gives the remainder</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-info">
+      <strong>Floor division and modulo are partners.</strong> <code>//</code> gives the integer (quotient) part; <code>%</code> gives the remainder. Together they let you peel digits off a number: <code>n % 10</code> reads the last digit, <code>n //= 10</code> drops it. Also: <code>n % 2 == 1</code> means <code>n</code> is odd; <code>n % 2 == 0</code> means even.
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CHAPTER 4 ═══ -->
+<section class="section" id="ch4">
+  <div class="section-eyebrow">Chapter 4</div>
+  <h2>🔀 Branching: if / elif / else</h2>
+  <ul>
+    <li><strong>An <code>if</code> can stand alone</strong>, or have an <code>else</code>, or have one or more <code>elif</code> clauses followed by an optional <code>else</code>. The <code>else</code> has no condition — it's the catch-all.</li>
+    <li><strong>Only the first true branch runs.</strong> Once a condition matches, its block executes and the entire rest of the chain is skipped — even if a later condition is also true. This is the most-tested branching idea.</li>
+    <li><strong>Order matters in a range check.</strong> When testing "greater than" thresholds, check from highest to lowest; otherwise a low threshold matches first and the logic is wrong.</li>
+    <li><strong>Boolean operators:</strong> <code>and</code> needs both sides true; <code>or</code> needs at least one; <code>not</code> flips a value. Python <em>short-circuits</em> — <code>False and …</code> and <code>True or …</code> never evaluate the right side.</li>
+    <li><strong>Membership:</strong> <code>x in container</code> / <code>x not in container</code>. For a dictionary, <code>in</code> checks the <strong>keys</strong>; use <code>.values()</code> to search the values.</li>
+  </ul>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">temperature.py</span></div>
+    <pre><code class="language-python">temp = 70
+if temp > 85:
+    print("Hot")
+elif temp > 65:
+    print("Warm")      # 70 > 65 is true → prints Warm, then STOPS
+elif temp > 45:
+    print("Cool")      # never reached, even though 70 > 45
+else:
+    print("Cold")</code></pre>
+  </div>
+  <div class="callout callout-warn">
+    <strong>Strict vs. inclusive matters.</strong> In the chain above, the highest value that prints "Cold" is <strong>45</strong> — because <code>45 > 45</code> is false, so 45 falls through to the <code>else</code>. If the test were <code>>= 45</code>, the answer would be 44. The exam hides exactly this kind of boundary.
+  </div>
+</section>
+
+<!-- ═══ CHAPTER 5 ═══ -->
+<section class="section" id="ch5">
+  <div class="section-eyebrow">Chapter 5</div>
+  <h2>🔁 Loops</h2>
+
+  <div class="topic">
+    <h3><span class="topic-num">5a</span> while loops &amp; the counter-after-loop trap</h3>
+    <p>A <code>while</code> loop tests its condition at the top, runs the body while the condition is true, and when the condition becomes false it skips the body and continues after the loop. The body always finishes its current pass — the condition is only re-checked back at the top.</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">counter.py</span></div>
+      <pre><code class="language-python">count = 1
+while count <= 5:
+    print(count)      # 1 2 3 4 5
+    count += 1
+print(count)          # 6  — NOT 5</code></pre>
+    </div>
+    <div class="callout callout-warn">
+      <strong>The single most-asked loop question.</strong> After the loop, <code>count</code> is <strong>6</strong>. The body runs with <code>count</code> at 5, increments to 6, the test <code>6 <= 5</code> fails, and the loop exits — but the value 6 is already stored in memory. The expression being false doesn't undo the increment. The counter ends up <em>one step past</em> the last value that passed the test (more if you increment by more than 1).
+    </div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">5b</span> Sentinel pattern</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">sentinel.py</span></div>
+      <pre><code class="language-python">val = input("Type quit to exit: ")
+while val != "quit":
+    print(f"You said {val}")
+    val = input("Type quit to exit: ")   # repeated at the bottom
+print("Goodbye")</code></pre>
+    </div>
+    <p>Input once <em>before</em> the loop, then repeat the input as the <em>last line of the body</em> (Python has no do-while). It's case-sensitive: <code>Quit</code> won't end a loop testing for <code>quit</code>.</p>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">5c</span> for loops, range(), and enumerate()</h3>
+    <ul>
+      <li><strong><code>for item in container:</code></strong> walks a list, string, tuple, set (order not guaranteed), or dictionary (you get the <strong>keys</strong>).</li>
+      <li><strong>while vs. for:</strong> unknown number of passes (e.g., reading input until a sentinel) → <code>while</code>; iterating a container or a known count → <code>for</code>.</li>
+      <li><strong><code>range(start, stop, step)</code> — the stop value is never produced.</strong> <code>range(5)</code> gives 0–4; <code>range(2, 10, 3)</code> gives 2, 5, 8 (11 is past the stop).</li>
+      <li><strong><code>enumerate(lst)</code></strong> yields <code>(index, value)</code> tuples — unpack them with two loop variables: <code>for i, v in enumerate(lst):</code>.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">5d</span> Nested loops, break, continue</h3>
+    <p>An inner loop runs <em>completely</em> for every single pass of the outer loop, so the inner body runs <strong>outer × inner</strong> times. A <code>range(1, 4)</code> outer loop (3 passes) around a <code>range(1, 3)</code> inner loop (2 passes) prints 6 times. <strong>"How many times does this run?"</strong> is a guaranteed exam question — count each range carefully (remember: stop excluded).</p>
+    <ul>
+      <li><strong><code>break</code></strong> exits the loop immediately — but only the innermost loop it's in.</li>
+      <li><strong><code>continue</code></strong> jumps back to the top of the loop and re-tests the condition. (A <code>while True</code> loop that always hits <code>continue</code> with no change is an infinite loop.)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ TERNARY ═══ -->
+<section class="section" id="ternary">
+  <div class="section-eyebrow">On the Exam</div>
+  <h2>❓ The Ternary (Conditional) Expression</h2>
+  <p>This compresses a simple if/else assignment into a single line. <strong>There is at least one midterm question on it</strong>, so make sure you can read it.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">ternary.py</span></div>
+    <pre><code class="language-python"># These four lines...
+age = 20
+if age >= 18:
+    status = "adult"
+else:
+    status = "minor"
+
+# ...are exactly this one line:
+status = "adult" if age >= 18 else "minor"</code></pre>
+  </div>
+  <p>Read it as: <em>the value before <code>if</code></em> is used when the condition is true; <em>the value after <code>else</code></em> is used when it's false. It's called a <strong>ternary</strong> operator because it has three operands (true-value, condition, false-value) — unlike binary operators such as <code>+</code> (two operands) or the unary <code>not</code> and negation <code>-</code> (one operand). It also works inline, e.g. inside a print: <code>print("pass" if score >= 50 else "fail")</code>.</p>
+</section>
+
+<!-- ═══ FLOATING POINT ═══ -->
+<section class="section" id="float">
+  <div class="section-eyebrow">Concept (Not Tested, but Important)</div>
+  <h2>⚠️ Why Floating-Point Numbers Are "Evil"</h2>
+  <p>A computer stores numbers in binary, and many ordinary base-10 decimals have no exact binary representation — just as <sup>1</sup>⁄<sub>3</sub> = 0.3333… has no exact <em>decimal</em> representation. So floats are stored as very close <em>approximations</em>, not exact values.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">float_trap.py</span></div>
+    <pre><code class="language-python">a = 0.1 + 0.2
+print(a)              # 0.30000000000000004
+print(a == 0.3)       # False  (!)</code></pre>
+  </div>
+  <div class="callout callout-warn">
+    <strong>Never test floats with <code>==</code>.</strong> Because of tiny representation errors, two values that "should" be equal often aren't. Compare with a tolerance (<code>abs(a - b) &lt; 1e-9</code>), or format/round both to a fixed number of decimals first. This won't be tested directly, but it's a real-world rule every Python developer lives by.</p>
+  </div>
+  <div class="callout callout-note">
+    <strong>A correction from class on rounding.</strong> I described Python's display rounding as the "round half up" rule from elementary school (5–9 rounds up). That isn't quite right, and I'll cover this properly in a future lecture. Two things are actually going on: (1) Python's <code>round()</code> and <code>:.2f</code> use <strong>banker's rounding</strong> (round half to <em>even</em>) — so <code>round(0.5)</code> is 0 and <code>round(2.5)</code> is 2, not 1 and 3. (2) Even that can look "wrong" because the stored value isn't exactly what you typed: <code>2.675</code> is really stored as <code>2.67499999…</code>, so it rounds <em>down</em> to <code>2.67</code>, not up to <code>2.68</code>. The takeaway is the same — floats are approximate, so don't rely on exact rounding behavior for anything that has to be exact (like money). None of this is on the midterm.
+  </div>
+</section>
+
+<!-- ═══ DRILLS ═══ -->
+<section class="section" id="drills">
+  <div class="section-eyebrow">Practice</div>
+  <h2>🧪 Trace Drills We Worked in Class</h2>
+  <p>Re-trace each of these on paper, cold, a few days from now. If you can produce the answer without peeking, you're ready for that question type.</p>
+
+  <div class="activity">
+    <div class="activity-tag">Drill 1 · strings &amp; concatenation</div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill1.py</span></div>
+      <pre><code class="language-python">x = input()        # user types: 4
+y = input()        # user types: 3
+print(x + y)</code></pre>
+    </div>
+    <p class="answer">Answer: 43 — input() returns strings, so + concatenates. (To get 7, wrap both in int().)</p>
+  </div>
+
+  <div class="activity">
+    <div class="activity-tag">Drill 2 · list indexing</div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill2.py</span></div>
+      <pre><code class="language-python">foods = ["pizza", "tacos", "sushi"]
+foods.append("pasta")
+print(foods[1])      # tacos  (index 1 = 2nd item)
+print(foods[-1])     # pasta  (last item)
+print(len(foods))    # 4</code></pre>
+    </div>
+    <p class="answer">Answer: tacos / pasta / 4.</p>
+  </div>
+
+  <div class="activity">
+    <div class="activity-tag">Drill 3 · elif chain</div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill3.py</span></div>
+      <pre><code class="language-python">temp = 70
+if temp > 85:   print("Hot")
+elif temp > 65: print("Warm")
+elif temp > 45: print("Cool")
+else:           print("Cold")</code></pre>
+    </div>
+    <p class="answer">Answer: Warm — and only Warm. First true branch wins. (Highest value that prints "Cold": 45.)</p>
+  </div>
+
+  <div class="activity">
+    <div class="activity-tag">Drill 4 · booleans + a separate if</div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill4.py</span></div>
+      <pre><code class="language-python">x = 8
+y = 3
+if x > 5 and y > 5:   print("both")
+elif x > 5 or y > 5:  print("one")
+if not (x == y):      print("different")</code></pre>
+    </div>
+    <p class="answer">Answer: one / different — the second if is separate from the elif chain, so both can print.</p>
+  </div>
+
+  <div class="activity">
+    <div class="activity-tag">Drill 5 · counter after the loop</div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill5.py</span></div>
+      <pre><code class="language-python">count = 1
+while count <= 5:
+    print(count)
+    count += 1
+print(count)</code></pre>
+    </div>
+    <p class="answer">Answer: prints 1 2 3 4 5, then 6. The counter ends one step past the last passing value.</p>
+  </div>
+
+  <div class="activity">
+    <div class="activity-tag">Drill 6 · range with a step</div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill6.py</span></div>
+      <pre><code class="language-python">total = 0
+for i in range(2, 10, 3):
+    print(i, end=" ")
+    total += i
+print(total)</code></pre>
+    </div>
+    <p class="answer">Answer: 2 5 8 15 — 11 is past the stop, so it's excluded; 2 + 5 + 8 = 15.</p>
+  </div>
+
+  <div class="activity">
+    <div class="activity-tag">Drill 7 · digit peeling (modulo + floor division)</div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">drill7.py</span></div>
+      <pre><code class="language-python">number = 12345678
+while number > 0:
+    print(number % 10, end=" ")   # last digit
+    number = number // 10         # drop last digit</code></pre>
+    </div>
+    <p class="answer">Answer: 8 7 6 5 4 3 2 1 — modulo reads each digit, floor division removes it. Forgetting the // 10 makes it an infinite loop.</p>
+  </div>
+</section>
+
+<!-- ═══ TOP TRAPS ═══ -->
+<section class="section" id="traps">
+  <div class="section-eyebrow">Summary</div>
+  <h2>🔟 The Traps That Cost the Most Points</h2>
+  <ul>
+    <li><strong><code>input()</code> returns a string</strong> — <code>"4" + "3"</code> is <code>"43"</code>, not 7.</li>
+    <li><strong><code>=</code> assigns; <code>==</code> compares.</strong></li>
+    <li><strong>Indexing starts at 0</strong>; the last index is <code>len - 1</code> (or <code>-1</code>).</li>
+    <li><strong><code>range()</code> never includes the stop value</strong> — tied for most important rule.</li>
+    <li><strong>The counter ends past the stop value</strong> after a loop (usually one more).</li>
+    <li><strong>Only the first true branch</strong> of an if/elif chain runs.</li>
+    <li><strong><code>/</code> always gives a float; <code>//</code> floors; <code>%</code> gives the remainder; <code>int(3.9)</code> is 3.</strong></li>
+    <li><strong>Never trust <code>==</code> on floats.</strong></li>
+    <li><strong>Python is case-sensitive</strong> — <code>"quit" != "Quit"</code>.</li>
+    <li><strong>Indentation defines blocks</strong> — it decides which <code>if</code> or loop owns each line.</li>
+  </ul>
+  <div class="callout callout-note">
+    Half of the exam's wrong answers are engineered from this list. If you can explain why each one trips people up, you're in good shape.
+  </div>
+</section>
+
+<!-- ═══ STUDY PLAN ═══ -->
+<section class="section" id="plan">
+  <div class="section-eyebrow">Between Now and June 23</div>
+  <h2>📚 Your Week</h2>
+  <ol style="margin:0 0 1rem 1.4rem;">
+    <li><strong>Tonight/tomorrow:</strong> install &amp; test LockDown Browser; run the 10-question practice quiz at least once.</li>
+    <li><strong>Print the four cheat-sheet pages</strong> from the Canvas home page; optionally prepare your one page of personal notes.</li>
+    <li><strong>Re-run the zyBook participation activities</strong> for Chapters 1–5 — they reset and are the closest thing to a question bank.</li>
+    <li><strong>Re-trace the seven drills above on paper</strong>, cold, later in the week.</li>
+    <li><strong>Finish any outstanding Chapter 1–5 readings and labs</strong> — they reinforce exactly what the exam tests.</li>
+    <li><strong>When ready,</strong> pick a quiet 2-hour block and take the midterm before class on June 23.</li>
+  </ol>
+  <div class="callout callout-info">
+    Don't memorize syntax — the cheat sheets cover that. Practice <em>tracing</em>. Speed and accuracy at playing computer is what 50 questions in one sitting actually measures. If a practice question stumps you, the Circle In AI tutor inside Canvas can explain why an answer is correct.
+  </div>
+</section>
+
+<!-- ═══ UP NEXT ═══ -->
+<section class="section" id="next">
+  <div class="section-eyebrow">Up Next</div>
+  <h2>⏭️ June 23 — Midterm Review &amp; Chapter 6 (Functions)</h2>
+  <p>The midterm is due before class. We'll go over it together at the start, then begin functions. The temperature-conversion group project is deferred to a later week.</p>
+</section>
+
+</main>
+
+<footer>
+  Questions? Post on the <strong>Class Question Board</strong> in Canvas or email
+  <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+// Keep anchor targets clear of the sticky header, whatever its
+// current height (the nav wraps to extra rows on narrow screens).
+(function () {
+  const header = document.querySelector('header');
+  function setScrollOffset() {
+    document.documentElement.style.scrollPaddingTop = (header.offsetHeight + 12) + 'px';
+  }
+  setScrollOffset();
+  window.addEventListener('resize', setScrollOffset);
+})();
+</script>
+</body>
+</html>
