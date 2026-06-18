@@ -167,7 +167,7 @@ const lectures=[
     note: "Midterm opens after class · due June 23",
     past: true,
     slides:    "slides/lecture-06-slides.html",
-    summary:   null,
+    summary:   "lectures/lecture-06-summary.html",
     solutions: null,
   },
   {
@@ -256,7 +256,7 @@ lectures.forEach(lec=>{
   if(lec.solutions)links+=`<a class="card-link" href="${lec.solutions}">${iconCode} Solutions</a>`;
   const noteHtml=lec.note?`<div style="font-size:.75rem;color:var(--accent);margin-top:2px;">${lec.note}</div>`:'';
   const mc=(lec.note&&lec.note.includes('Midterm'))?' midterm-card':'';
-  grid.innerHTML+=`<div class="card ${sc}${mc}"><div class="card-top"><span class="card-num">Lecture ${String(lec.num).padStart(2,'0')}</span><span class="card-date">${lec.date}</span></div><div><div class="card-chapter">${lec.chapter}${lec.zydue?` &nbsp;·&nbsp; zyBook due ${lec.zydue}`:''}</div><div class="card-topic">${lec.topic}</div>${noteHtml}</div><div class="card-bottom">${badge}${links?`<div class="card-links">${links}</div>":''}</div></div>`;
+  grid.innerHTML+=`<div class="card ${sc}${mc}"><div class="card-top"><span class="card-num">Lecture ${String(lec.num).padStart(2,'0')}</span><span class="card-date">${lec.date}</span></div><div><div class="card-chapter">${lec.chapter}${lec.zydue?` &nbsp;·&nbsp; zyBook due ${lec.zydue}`:''}</div><div class="card-topic">${lec.topic}</div>${noteHtml}</div><div class="card-bottom">${badge}${links?`<div class="card-links">${links}</div>`:''}</div></div>`;
 });
 </script>
 </body>
