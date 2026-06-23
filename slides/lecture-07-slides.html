@@ -545,7 +545,7 @@
       <li><strong>Return multiple values</strong> via tuples and use unpacking (6.10)</li>
       <li><strong>Understand</strong> recursion and when to use it (6.11)</li>
       <li><strong>Write docstrings</strong> and use <span class="ic">help()</span> (6.12)</li>
-      <li style="color:var(--purple);"><strong>Deep dive (optional):</strong> namespaces + LEGB (6.14) &nbsp;|&nbsp; *args / **kwargs (6.17)</li>
+      <li style="color:var(--purple);"><strong>Deep dive (optional):</strong> namespaces + LEGB (6.14) &nbsp;|&nbsp; <span style="white-space:nowrap;">*args / **kwargs</span> (6.17)</li>
     </ul>
     <div class="callout callout-info">
       <strong>Competency 5</strong> — Creating functions, using library functions, returning values, identifying variable scope
@@ -587,7 +587,7 @@ c2 = F2C(f2)  # as many —
 c3 = F2C(f3)  # times as needed</code></pre>
         </div>
         <div class="callout callout-note">
-          The calculation is written <strong>once</strong>. Fix a bug once → fixed everywhere it's called.
+          The calculation is written <strong>once</strong>. Fix a bug once&nbsp;→ fixed everywhere it's called.
         </div>
       </div>
     </div>
@@ -628,7 +628,7 @@ print(f"12-inch pizza: {area:.3f} sq in")  # → 12-inch pizza: 113.097 sq in</c
       <ul class="bl">
         <li><strong>return</strong> — sends a value back to the caller</li>
         <li><strong>Function call</strong> — uses the name + arguments in <span class="ic">( )</span></li>
-        <li><strong>Built-ins you know:</strong> <span class="ic">input()</span>, <span class="ic">int()</span>, <span class="ic">len()</span>, <span class="ic">print()</span>…</li>
+        <li><strong>Built-ins you know:</strong> <span style="white-space:nowrap;"><span class="ic">input()</span>, <span class="ic">int()</span>, <span class="ic">len()</span>, <span class="ic">print()</span>…</span></li>
         <li><strong>Define first, call second</strong> — Python reads top-to-bottom</li>
       </ul>
     </div>
@@ -676,16 +676,16 @@ print(f"Volume: {vol:.3f} cubic in")</code></pre>
           <p><strong style="color:var(--text);">Parameter</strong> — the variable name in the <em>definition</em> (the placeholder).<br><br><strong style="color:var(--text);">Argument</strong> — the actual value supplied in the <em>call</em>.</p>
         </div>
         <ul class="bl" style="margin-top:4px;">
-          <li>Arguments map <strong>left → right</strong> to parameters</li>
+          <li>Arguments map <strong><span style="white-space:nowrap;">left → right</span></strong> to parameters</li>
           <li>An argument can be a literal, variable, or expression</li>
           <li>No parameters? Still need the empty <span class="ic">( )</span></li>
-          <li>A function call <strong>evaluates to</strong> its returned value — usable in any expression</li>
+          <li><span style="white-space:nowrap;">A function call</span> <strong>evaluates to</strong> its returned value — usable in any expression</li>
         </ul>
         <div class="callout callout-warn">
-          No return statement (or bare <span class="ic">return</span>) → function returns <strong>None</strong>. A function returning None <em>cannot</em> be used in a math expression.
+          No return statement (or bare <span class="ic">return</span>)&nbsp;→ function returns <strong>None</strong>. A function returning None <em>cannot</em> be used in a math expression.
         </div>
         <div class="callout callout-note">
-          <strong>Invalid parameter:</strong><br><span class="ic">def my_fct(x + 5):</span> → SyntaxError. Parameters must be plain names.
+          <strong>Invalid parameter:</strong><br><span class="ic">def my_fct(x + 5):</span>&nbsp;→ SyntaxError. Parameters must be plain names.
         </div>
       </div>
     </div>
@@ -733,7 +733,7 @@ user_val = int(input("Enter a number: "))
           <span class="ic">int(input())</span> is a nested call — <span class="ic">input()</span> runs first, its string result is passed to <span class="ic">int()</span>.
         </div>
         <div class="callout callout-info">
-          <strong>Think in layers:</strong> calc_circle_area handles geometry; calc_pizza_calories handles nutrition. Each function has one clear job. The main program orchestrates them.
+          <strong>Think in layers:</strong> <span class="ic">calc_circle_area</span> handles geometry; <span class="ic">calc_pizza_calories</span> handles nutrition. Each function has one clear job. The main program orchestrates them.
         </div>
       </div>
     </div>
@@ -875,7 +875,7 @@ num = 5       # references an int
 num = "seven" # now references a str — valid in Python!</code></pre>
         </div>
         <div class="callout callout-warn">
-          <span class="ic">add(5, "100")</span> → <strong>TypeError</strong> at runtime. Python checks types <em>when the code runs</em>, not before.
+          <span class="ic">add(5, "100")</span>&nbsp;→ <strong>TypeError</strong> at runtime. Python checks types <em>when the code runs</em>, not before.
         </div>
       </div>
       <div class="gap-sm">
@@ -1009,10 +1009,26 @@ print(f"Surface area: {calc_cylinder_surface_area(r, h):.3f}")</code></pre>
       <div class="gap-sm">
         <ul class="bl">
           <li>Use <strong>UPPER_CASE</strong> for constants at global scope</li>
-          <li>A function call <strong>evaluates to its return value</strong> — treat it like a number in any expression</li>
-          <li><span class="ic">5 + compute_square(4)</span> → <span class="ic">5 + 16</span> → <span class="ic">21</span></li>
-          <li>Nested calls: <span class="ic">pow(2, pow(3, 2))</span> → <span class="ic">pow(2, 9)</span> → <span class="ic">512</span></li>
+          <li><span style="white-space:nowrap;">A function call</span> <strong>evaluates to its return value</strong> — treat it like a number in any expression</li>
         </ul>
+        <!-- eval-trace rows: flex + nowrap keeps each expression on one line -->
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:6px;background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:9px 14px;overflow-x:auto;white-space:nowrap;">
+            <span style="font-family:'JetBrains Mono',monospace;font-variant-ligatures:none;font-feature-settings:'liga' 0,'calt' 0;font-size:.78rem;background:var(--surface2);color:var(--blue);padding:2px 7px;border-radius:4px;flex-shrink:0;">5 + compute_square(4)</span>
+            <span style="color:var(--amber);flex-shrink:0;font-weight:700;">→</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-variant-ligatures:none;font-feature-settings:'liga' 0,'calt' 0;font-size:.78rem;background:var(--surface2);color:var(--blue);padding:2px 7px;border-radius:4px;flex-shrink:0;">5 + 16</span>
+            <span style="color:var(--amber);flex-shrink:0;font-weight:700;">→</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-variant-ligatures:none;font-feature-settings:'liga' 0,'calt' 0;font-size:.78rem;background:var(--surface2);color:var(--green);padding:2px 7px;border-radius:4px;flex-shrink:0;font-weight:700;">21</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:9px 14px;overflow-x:auto;white-space:nowrap;">
+            <span style="font-size:.72rem;color:var(--text-f);font-weight:700;flex-shrink:0;">Nested:</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-variant-ligatures:none;font-feature-settings:'liga' 0,'calt' 0;font-size:.78rem;background:var(--surface2);color:var(--blue);padding:2px 7px;border-radius:4px;flex-shrink:0;">pow(2, pow(3, 2))</span>
+            <span style="color:var(--amber);flex-shrink:0;font-weight:700;">→</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-variant-ligatures:none;font-feature-settings:'liga' 0,'calt' 0;font-size:.78rem;background:var(--surface2);color:var(--blue);padding:2px 7px;border-radius:4px;flex-shrink:0;">pow(2, 9)</span>
+            <span style="color:var(--amber);flex-shrink:0;font-weight:700;">→</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-variant-ligatures:none;font-feature-settings:'liga' 0,'calt' 0;font-size:.78rem;background:var(--surface2);color:var(--green);padding:2px 7px;border-radius:4px;flex-shrink:0;font-weight:700;">512</span>
+          </div>
+        </div>
         <div class="callout callout-warn">
           A void function (returns None) <strong>cannot</strong> be used inside a math expression — it will crash with a TypeError at runtime.
         </div>
@@ -1070,7 +1086,7 @@ print(f"Calories: {calories}")  # → Calories: None (or -1)</code></pre>
         <ul class="bl">
           <li><strong>pass</strong> — required placeholder when the body would otherwise be empty; returns None</li>
           <li><strong>return -1</strong> — signals "not ready yet" without crashing</li>
-          <li><strong>raise NotImplementedError</strong> — hard stop; prevents downstream code from running on unfinished logic</li>
+          <li><strong><span style="white-space:nowrap;">raise NotImplementedError</span></strong> — hard stop; prevents downstream code from running on unfinished logic</li>
         </ul>
         <div class="callout callout-info">
           Stubs are like planning a road trip <em>before</em> you start driving — you know the destinations (functions) before filling in every detail.
@@ -1160,9 +1176,9 @@ print(f"${calc_ebay_fee(100.0):.2f}")  # → $9.50</code></pre>
           <p class="small"><strong style="color:var(--text);">Your Task:</strong></p>
           <ul class="bl">
             <li>Write <span class="ic">classify_speed(mph)</span> that <strong>returns a string</strong> describing the speed zone</li>
-            <li><strong>Less than 25 mph</strong> → <span class="ic">"School Zone / Slow"</span></li>
-            <li><strong>25 to 64 mph</strong> → <span class="ic">"Normal / Highway"</span></li>
-            <li><strong>65 or above</strong> → <span class="ic">"Fast / Interstate"</span></li>
+            <li><strong>Less than 25 mph</strong>&nbsp;→ <span class="ic">"School Zone / Slow"</span></li>
+            <li><strong>25 to 64 mph</strong>&nbsp;→ <span class="ic">"Normal / Highway"</span></li>
+            <li><strong>65 or above</strong>&nbsp;→ <span class="ic">"Fast / Interstate"</span></li>
             <li>Test with <strong>15, 45, and 90</strong> mph — print result for each</li>
             <li><strong>Bonus:</strong> Read speed from <span class="ic">input()</span> in a loop until the user enters <span class="ic">-1</span>; classify and print each one</li>
           </ul>
@@ -1279,7 +1295,7 @@ print(f"Centimeters: {height_US_to_cm(feet, inches)}")
 # def get_name(): ...</code></pre>
         </div>
         <div class="callout callout-warn">
-          A function's own <span class="ic">feet</span> parameter is a <em>different</em> variable from the global <span class="ic">feet</span> — same name, different namespace. This can confuse beginners; use distinct names when possible.
+          A function's own <span class="ic">feet</span> parameter is a <em>different</em> variable from the global <span class="ic">feet</span>&nbsp;— same name, different namespace. This can confuse beginners; use distinct names when possible.
         </div>
       </div>
       <div class="gap-sm">
@@ -1346,7 +1362,7 @@ print(employee_name)    # → Juliet Capulet</code></pre>
         <strong>Rule:</strong> Any assignment inside a function creates a <em>local</em> variable by default — even if a global with the same name exists. Use <span class="ic">global x</span> only when you truly must modify a global.
       </div>
       <div class="callout callout-note">
-        <strong>Mutable exception:</strong> Modifying list contents — <span class="ic">my_list.append(x)</span> — does <em>not</em> require <span class="ic">global</span>. Only <em>reassignment</em> (<span class="ic">my_list = []</span>) does.
+        <strong>Mutable exception:</strong> Modifying list contents — <span class="ic">my_list.append(x)</span>&nbsp;— does <em>not</em> require <span class="ic">global</span>. Only <em>reassignment</em> (<span class="ic">my_list = []</span>) does.
       </div>
     </div>
     <div class="callout callout-info">
@@ -1464,7 +1480,7 @@ backwards_alphabet("d")   # → d  c  b  a</code></pre>
         </div>
         <ul class="bl">
           <li>Each call gets its own <strong>local namespace</strong> (own copy of parameters)</li>
-          <li>Without a base case → <strong>infinite recursion</strong> → program crash</li>
+          <li>Without a base case&nbsp;→ <strong>infinite recursion</strong>&nbsp;→ program crash</li>
           <li>Most loops can be rewritten as recursion and vice versa</li>
           <li>Recursion is natural for problems that are <em>self-similar</em>: file trees, fractals, factorial, Fibonacci</li>
         </ul>
@@ -1560,7 +1576,7 @@ help(m_to_cm)   # prints: Converts meters to centimeters...</code></pre>
             <li>Include a proper <strong>docstring</strong> describing the function, parameter, and what it returns</li>
             <li>Use <strong>unpacking</strong> to receive all three returned values into separate variables</li>
             <li>Test with: <span class="ic">[34, 12, 78, 5, 99, 23]</span></li>
-            <li><strong>Bonus A:</strong> Call <span class="ic">help(min_max_range)</span> — watch your docstring appear!</li>
+            <li><strong>Bonus A:</strong> Call <span class="ic">help(min_max_range)</span>&nbsp;— watch your docstring appear!</li>
             <li><strong>Bonus B:</strong> Can you write this using a loop <em>without</em> using Python's built-in <span class="ic">min()</span> and <span class="ic">max()</span>?</li>
           </ul>
         </div>
@@ -1645,7 +1661,7 @@ print(c)   # what is c?</code></pre>
       <div class="gap-sm">
         <div class="concept">
           <div class="concept-label">What is a Namespace?</div>
-          <p>A <strong style="color:var(--text);">namespace</strong> is a dictionary mapping <em>names</em> → <em>objects</em>. Python maintains separate namespaces for different scopes. Each function call creates its own local namespace that is destroyed on return.</p>
+          <p>A <strong style="color:var(--text);">namespace</strong> is a dictionary mapping <em>names</em>&nbsp;→ <em>objects</em>. Python maintains separate namespaces for different scopes. Each function call creates its own local namespace that is destroyed on return.</p>
         </div>
         <div class="code-wrap">
           <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
@@ -1679,7 +1695,7 @@ def show_locals(x):
           </ul>
         </div>
         <div class="callout callout-info">
-          When Python sees a name, it searches L → E → G → B in that order. First match wins. If not found anywhere → <strong>NameError</strong>.
+          When Python sees a name, it searches <span style="white-space:nowrap;">L → E → G → B</span> in that order. First match wins. If not found anywhere&nbsp;→ <strong>NameError</strong>.
         </div>
         <div class="callout callout-note">
           The same name can exist in multiple namespaces simultaneously. A local <span class="ic">tmp</span> inside a function shadows a global <span class="ic">tmp</span> — they are independent objects.
@@ -1701,7 +1717,7 @@ def show_locals(x):
     <h2 class="slide-h2">Flexible Functions: <span class="ic">*args</span> and <span class="ic">**kwargs</span></h2>
     <div class="two-col">
       <div class="gap-sm">
-        <p class="small" style="color:var(--blue);font-weight:600;">*args — arbitrary positional arguments → tuple</p>
+        <p class="small" style="color:var(--blue);font-weight:600;"><span style="white-space:nowrap;">*args</span> — arbitrary positional arguments&nbsp;→ tuple</p>
         <div class="code-wrap">
           <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
           <pre><code class="language-python">def print_sandwich(bread, meat, *args):
@@ -1723,7 +1739,7 @@ print_sandwich("wheat", "ham", "mustard", "tomato", "lettuce")
         </div>
       </div>
       <div class="gap-sm">
-        <p class="small" style="color:var(--purple);font-weight:600;">**kwargs — arbitrary keyword arguments → dict</p>
+        <p class="small" style="color:var(--purple);font-weight:600;"><span style="white-space:nowrap;">**kwargs</span> — arbitrary keyword arguments&nbsp;→ dict</p>
         <div class="code-wrap">
           <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
           <pre><code class="language-python">def print_sandwich(meat, bread, **kwargs):
@@ -1742,7 +1758,7 @@ print_sandwich("ham", "wheat",
 # →   veggie1: tomato</code></pre>
         </div>
         <div class="callout callout-info">
-          <strong>Ordering rule:</strong> Normal params → <span class="ic">*args</span> → <span class="ic">**kwargs</span>. Both can appear together but must be last in that order.
+          <strong>Ordering rule:</strong> <span style="white-space:nowrap;">Normal params → <span class="ic">*args</span> → <span class="ic">**kwargs</span></span>. Both can appear together but must be last in that order.
         </div>
         <div class="callout callout-note">
           "args" and "kwargs" are just conventions — any valid identifier works: <span class="ic">*toppings</span>, <span class="ic">**options</span>. The <span class="ic">*</span> and <span class="ic">**</span> are what matter.
