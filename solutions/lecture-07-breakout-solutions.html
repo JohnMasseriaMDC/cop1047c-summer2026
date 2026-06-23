@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lecture 7 Breakout Solutions — Chapter 6: Functions | COP 1047C</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+  <style>
+
+    /* ── Reset & tokens ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080c14;
+      --surface:  #0f1623;
+      --surface2: #162030;
+      --border:   #1e2d42;
+      --amber:    #f59e0b;
+      --amber-d:  #b45309;
+      --blue:     #38bdf8;
+      --green:    #4ade80;
+      --red:      #f87171;
+      --purple:   #c084fc;
+      --text:     #e2e8f0;
+      --text-d:   #94a3b8;
+      --text-f:   #475569;
+    }
+
+    html {
+      scroll-padding-top: 150px; /* patched by JS on resize */
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      line-height: 1.7;
+      padding-top: 0;
+    }
+
+    /* ── Sticky header ──────────────────────────────────────── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 80;
+      background: rgba(8,12,20,.97);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+    }
+
+    .header-top {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      gap: 12px;
+    }
+
+    .header-course {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    .header-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .header-badge {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: rgba(56,189,248,.08);
+      border: 1px solid rgba(56,189,248,.2);
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* section nav */
+    .header-nav {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 6px 24px 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .header-nav a {
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--text-d);
+      text-decoration: none;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid transparent;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .header-nav a:hover {
+      color: var(--amber);
+      border-color: rgba(245,158,11,.3);
+      background: rgba(245,158,11,.06);
+    }
+
+    /* ── Page wrapper ───────────────────────────────────────── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── Hero intro ─────────────────────────────────────────── */
+    .doc-hero {
+      margin-bottom: 56px;
+    }
+
+    .eyebrow {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 10px;
+    }
+
+    .doc-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 14px;
+    }
+
+    .doc-subtitle {
+      font-size: 1rem;
+      color: var(--text-d);
+      max-width: 580px;
+      margin-bottom: 18px;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .meta-pill {
+      font-size: .72rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .pill-a  { background: rgba(245,158,11,.12); color: #fcd34d; }
+    .pill-b  { background: rgba(56,189,248,.1);  color: #7dd3fc; }
+    .pill-g  { background: rgba(74,222,128,.1);  color: #86efac; }
+    .pill-p  { background: rgba(192,132,252,.1); color: #d8b4fe; }
+
+    /* ── Section headings ───────────────────────────────────── */
+    .section {
+      margin-bottom: 64px;
+    }
+
+    .section-eyebrow {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 6px;
+    }
+
+    h2.section-h2 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .topic-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-d);
+      margin-bottom: 10px;
+      margin-top: 28px;
+    }
+
+    .topic-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(245,158,11,.15);
+      color: var(--amber);
+      font-size: .7rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* ── Code blocks ────────────────────────────────────────── */
+    .code-wrap {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 14px 0;
+    }
+
+    .code-hdr {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: #161b22;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-hdr-label {
+      margin-left: auto;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-f);
+    }
+
+    .dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+
+    .code-wrap pre {
+      margin: 0 !important;
+      background: transparent !important;
+      padding: 16px !important;
+      font-size: .82rem !important;
+      line-height: 1.7 !important;
+      overflow-x: auto;
+    }
+
+    .code-wrap pre code {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-variant-ligatures: none !important;
+      font-feature-settings: "liga" 0, "calt" 0 !important;
+    }
+
+    /* output block */
+    .output-wrap {
+      background: #040810;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      margin: 10px 0;
+    }
+
+    .output-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .output-wrap pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-ligatures: none;
+      font-feature-settings: "liga" 0, "calt" 0;
+      font-size: .82rem;
+      line-height: 1.7;
+      color: #86efac;
+      white-space: pre;
+      margin: 0;
+    }
+
+    /* ── Inline code ─────────────────────────────────────────── */
+    .ic {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-ligatures: none;
+      font-feature-settings: "liga" 0, "calt" 0;
+      font-size: .83em;
+      background: var(--surface2);
+      color: var(--blue);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Callouts ────────────────────────────────────────────── */
+    .callout {
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: .9rem;
+      line-height: 1.65;
+      margin: 14px 0;
+    }
+
+    .callout-info   { background: rgba(56,189,248,.07);  border: 1px solid rgba(56,189,248,.22);  color: #bae6fd; }
+    .callout-warn   { background: rgba(245,158,11,.07);  border: 1px solid rgba(245,158,11,.25);  color: #fde68a; }
+    .callout-note   { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.22);  color: #bbf7d0; }
+    .callout-purple { background: rgba(192,132,252,.07); border: 1px solid rgba(192,132,252,.22); color: #e9d5ff; }
+    .callout-red    { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.22); color: #fecaca; }
+
+    .callout strong { color: inherit; font-weight: 700; }
+
+    /* ── Concept box ─────────────────────────────────────────── */
+    .concept {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--amber);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 14px 0;
+    }
+
+    .concept-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 6px;
+    }
+
+    .concept p { color: var(--text-d); font-size: .92rem; line-height: 1.65; }
+
+    /* ── Annotation list ─────────────────────────────────────── */
+    .annot-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .annot-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: .9rem;
+      color: var(--text-d);
+      line-height: 1.6;
+    }
+
+    .annot-list li .lnum {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-ligatures: none;
+      font-feature-settings: "liga" 0, "calt" 0;
+      font-size: .72rem;
+      background: var(--surface2);
+      color: var(--amber);
+      border: 1px solid rgba(245,158,11,.2);
+      padding: 1px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .annot-list li strong { color: var(--text); }
+
+    /* ── Common mistakes table ───────────────────────────────── */
+    .mistake-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 14px 0;
+    }
+
+    .mistake-card {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .mistake-card-hdr {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    .mistake-card.wrong .mistake-card-hdr {
+      background: rgba(248,113,113,.12);
+      color: var(--red);
+      border-bottom: 1px solid rgba(248,113,113,.2);
+    }
+
+    .mistake-card.right .mistake-card-hdr {
+      background: rgba(74,222,128,.08);
+      color: var(--green);
+      border-bottom: 1px solid rgba(74,222,128,.2);
+    }
+
+    .mistake-card .code-wrap {
+      border-radius: 0;
+      border: none;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin: 0;
+    }
+
+    .mistake-card .code-wrap pre {
+      font-size: .76rem !important;
+      padding: 12px 14px !important;
+    }
+
+    /* ── Bonus section ───────────────────────────────────────── */
+    .bonus-block {
+      background: rgba(192,132,252,.04);
+      border: 1px solid rgba(192,132,252,.18);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin-top: 28px;
+    }
+
+    .bonus-label {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-bottom: 10px;
+    }
+
+    /* ── Key takeaway banner ─────────────────────────────────── */
+    .takeaway {
+      background: linear-gradient(135deg, rgba(245,158,11,.08) 0%, rgba(56,189,248,.06) 100%);
+      border: 1px solid rgba(245,158,11,.2);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-top: 28px;
+    }
+
+    .takeaway-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 8px;
+    }
+
+    .takeaway p {
+      font-size: .92rem;
+      color: var(--text-d);
+      line-height: 1.65;
+    }
+
+    /* ── Divider ─────────────────────────────────────────────── */
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 56px 0;
+    }
+
+    /* ── Problem recap ───────────────────────────────────────── */
+    .problem-recap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 22px;
+    }
+
+    .problem-recap-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-d);
+      margin-bottom: 10px;
+    }
+
+    .problem-recap ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .problem-recap ul li {
+      font-size: .88rem;
+      color: var(--text-d);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .problem-recap ul li::before {
+      content: '▸';
+      color: var(--amber);
+      flex-shrink: 0;
+    }
+
+    .problem-recap ul li strong { color: var(--text); }
+
+    /* ── Breakout section header bar ─────────────────────────── */
+    .breakout-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(245,158,11,.05);
+      border: 1px solid rgba(245,158,11,.2);
+      border-radius: 10px;
+      padding: 16px 22px;
+      margin-bottom: 22px;
+    }
+
+    .breakout-bar .icon { font-size: 1.6rem; }
+
+    .breakout-bar .info .num {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber-d);
+      margin-bottom: 2px;
+    }
+
+    .breakout-bar .info .name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--amber);
+    }
+
+    .breakout-bar .chips {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      font-size: .65rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+
+    .chip-a { background: rgba(245,158,11,.12); color: #fcd34d; }
+    .chip-b { background: rgba(56,189,248,.1);  color: #7dd3fc; }
+
+    /* ── Prose paragraphs ────────────────────────────────────── */
+    p.prose {
+      font-size: .92rem;
+      color: var(--text-d);
+      line-height: 1.7;
+      margin: 10px 0;
+    }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 24px;
+      text-align: center;
+      font-size: .78rem;
+      color: var(--text-f);
+    }
+
+    .site-footer a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .site-footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 680px) {
+      .doc-title { font-size: 1.8rem; }
+      .mistake-grid { grid-template-columns: 1fr; }
+      .breakout-bar { flex-wrap: wrap; }
+      .breakout-bar .chips { margin-left: 0; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ══ STICKY HEADER ══════════════════════════════════════════ -->
+<header class="site-header" id="site-header">
+  <div class="header-top">
+    <span class="header-course">COP 1047C &nbsp;&middot;&nbsp; Summer 2026</span>
+    <span class="header-title">Lecture 7 — Breakout Solutions</span>
+    <span class="header-badge">Chapter 6: Functions</span>
+  </div>
+  <nav class="header-nav" aria-label="Jump to section">
+    <a href="#breakout-1">🛠️ Breakout #1 — Miles ↔ Km</a>
+    <a href="#breakout-2">🏎️ Breakout #2 — Speed Classifier</a>
+    <a href="#breakout-3">📊 Breakout #3 — Min / Max / Range</a>
+  </nav>
+</header>
+
+<!-- ══ PAGE ═══════════════════════════════════════════════════ -->
+<main class="page">
+
+  <!-- HERO -->
+  <div class="doc-hero">
+    <div class="eyebrow">Lecture 7 &nbsp;&middot;&nbsp; Week 7</div>
+    <h1 class="doc-title">Breakout Activity Solutions</h1>
+    <p class="doc-subtitle">Complete, annotated solutions for all three in-class breakout activities from Chapter 6. Use these to check your work, understand <em>why</em> each choice was made, and learn from common mistakes.</p>
+    <div class="meta-row">
+      <span class="meta-pill pill-a">Chapter 6 — Functions</span>
+      <span class="meta-pill pill-b">3 Activities</span>
+      <span class="meta-pill pill-g">Competency 5</span>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       BREAKOUT #1
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="section" id="breakout-1">
+    <div class="section-eyebrow">Breakout Activity #1</div>
+    <h2 class="section-h2">🛠️ Miles &harr; Kilometers Converter</h2>
+
+    <div class="breakout-bar">
+      <span class="icon">🛠️</span>
+      <div class="info">
+        <div class="num">Breakout #1 &nbsp;&middot;&nbsp; 8 minutes</div>
+        <div class="name">Miles &harr; Kilometers Converter</div>
+      </div>
+      <div class="chips">
+        <span class="chip chip-a">def / return</span>
+        <span class="chip chip-b">parameters</span>
+        <span class="chip chip-a">f-strings</span>
+      </div>
+    </div>
+
+    <div class="problem-recap">
+      <div class="problem-recap-label">Problem Recap</div>
+      <ul>
+        <li>Define <strong>miles_to_km(miles)</strong> — convert miles to km using 1 mile = 1.60934 km</li>
+        <li>Call it for <strong>5, 26.2, and 100</strong> miles; print results to 2 decimal places</li>
+        <li><strong>Bonus A:</strong> Write km_to_miles(km) and verify 42.195 km = 26.2 miles</li>
+        <li><strong>Bonus B:</strong> Call both in a nested expression and explain the result</li>
+      </ul>
+    </div>
+
+    <!-- Base solution -->
+    <div class="topic-label"><span class="topic-num">1</span>Base Solution</div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="code-hdr-label">breakout1_solution.py</span>
+      </div>
+      <pre><code class="language-python">KM_PER_MILE = 1.60934    # constant defined at global scope — UPPER_CASE convention
+
+def miles_to_km(miles):
+    """Converts a distance in miles to kilometers.
+
+    Arguments:
+      miles -- numeric distance in miles (int or float)
+    Returns:
+      Equivalent distance in kilometers (float)
+    """
+    return miles * KM_PER_MILE    # one clean computation, returned directly
+
+# ── test calls ────────────────────────────────────────────────────────────────
+distances = [5, 26.2, 100]
+
+for d in distances:
+    print(f"{d} miles = {miles_to_km(d):.2f} km")</code></pre>
+    </div>
+
+    <div class="output-wrap">
+      <div class="output-label">Output</div>
+      <pre>5 miles = 8.05 km
+26.2 miles = 42.16 km
+100 miles = 160.93 km</pre>
+    </div>
+
+    <!-- Annotations -->
+    <div class="topic-label"><span class="topic-num">2</span>Line-by-Line Explanation</div>
+
+    <ul class="annot-list">
+      <li>
+        <span class="lnum">Line 1</span>
+        <span><strong>KM_PER_MILE = 1.60934</strong> — We define the conversion factor as a global constant using UPPER_CASE. This makes the magic number visible and reusable. If the precision ever needs updating, there's exactly one place to change it.</span>
+      </li>
+      <li>
+        <span class="lnum">Line 3–10</span>
+        <span><strong>Docstring</strong> — Describes what the function does, what it takes, and what it returns. This is what <span class="ic">help(miles_to_km)</span> will display.</span>
+      </li>
+      <li>
+        <span class="lnum">Line 11</span>
+        <span><strong>return miles * KM_PER_MILE</strong> — We don't need a temporary variable here. The expression is simple enough to return directly. The function accesses <span class="ic">KM_PER_MILE</span> from the global namespace (it's not defined locally).</span>
+      </li>
+      <li>
+        <span class="lnum">Lines 14–17</span>
+        <span><strong>A list + for loop</strong> — Rather than three separate print statements, we store the test distances in a list and loop. This is cleaner and easier to extend. The <span class="ic">:.2f</span> format spec rounds the output to 2 decimal places.</span>
+      </li>
+    </ul>
+
+    <!-- Common mistakes -->
+    <div class="topic-label"><span class="topic-num">3</span>Common Mistakes</div>
+
+    <div class="mistake-grid">
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">❌ Forgot the return statement</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">def miles_to_km(miles):
+    result = miles * 1.60934
+    # missing: return result!
+
+x = miles_to_km(5)
+print(x)   # → None</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card right">
+        <div class="mistake-card-hdr">✅ Always return the value</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">def miles_to_km(miles):
+    result = miles * 1.60934
+    return result    # ← required!
+
+x = miles_to_km(5)
+print(x)   # → 8.0467</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">❌ Magic number buried in code</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">def miles_to_km(miles):
+    return miles * 1.60934
+# What is 1.60934? Hard to know
+# without context. Hard to update.</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card right">
+        <div class="mistake-card-hdr">✅ Named constant at top of file</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">KM_PER_MILE = 1.60934
+
+def miles_to_km(miles):
+    return miles * KM_PER_MILE
+# Self-documenting; one place to update</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bonus solutions -->
+    <div class="bonus-block">
+      <div class="bonus-label">⭐ Bonus A — km_to_miles() + Inverse Verification</div>
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-hdr-label">breakout1_bonus_a.py</span>
+        </div>
+        <pre><code class="language-python">KM_PER_MILE  = 1.60934
+MILES_PER_KM = 1.0 / KM_PER_MILE   # derive from the same source — no separate magic number
+
+def miles_to_km(miles):
+    """Converts miles to kilometers."""
+    return miles * KM_PER_MILE
+
+def km_to_miles(km):
+    """Converts kilometers to miles."""
+    return km * MILES_PER_KM
+
+# Verify: a marathon is 42.195 km — should be approximately 26.2 miles
+marathon_km = 42.195
+print(f"42.195 km = {km_to_miles(marathon_km):.1f} miles")   # → 42.195 km = 26.2 miles</code></pre>
+      </div>
+
+      <div class="output-wrap">
+        <div class="output-label">Output</div>
+        <pre>42.195 km = 26.2 miles</pre>
+      </div>
+    </div>
+
+    <div class="bonus-block" style="margin-top:14px;">
+      <div class="bonus-label">⭐ Bonus B — Nested Call &amp; the Identity Round-Trip</div>
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-hdr-label">breakout1_bonus_b.py</span>
+        </div>
+        <pre><code class="language-python"># Passing the result of km_to_miles() directly into miles_to_km()
+# This is a "round-trip" — convert to km, then back to miles
+result = miles_to_km(km_to_miles(100))
+print(f"{result:.4f}")    # → 100.0000
+
+# Python evaluates inside-out:
+#   Step 1: km_to_miles(100)  → 62.1371 miles
+#   Step 2: miles_to_km(62.1371) → 100.0 km
+#
+# This demonstrates that the two functions are INVERSE OPERATIONS.
+# In math:  f(g(x)) = x  when f and g are inverses of each other.</code></pre>
+      </div>
+
+      <div class="output-wrap">
+        <div class="output-label">Output</div>
+        <pre>100.0000</pre>
+      </div>
+
+      <div class="callout callout-info" style="margin-top:12px;">
+        <strong>What this teaches:</strong> Hierarchical function calls evaluate inside-out — exactly like <span class="ic">int(input())</span> that you've been using all semester. When two functions are inverses of each other, composing them (calling one inside the other) returns the original value.
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key Takeaway — Breakout #1</div>
+      <p>A well-written function has <strong>one job</strong>, a clear name, a descriptive docstring, and a single return statement that sends back exactly what the caller needs. Constants belong at the top of the file — not buried inside a function body. The caller decides what to do with the returned value.</p>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ════════════════════════════════════════════════════════
+       BREAKOUT #2
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="section" id="breakout-2">
+    <div class="section-eyebrow">Breakout Activity #2</div>
+    <h2 class="section-h2">🏎️ Speed Zone Classifier</h2>
+
+    <div class="breakout-bar">
+      <span class="icon">🏎️</span>
+      <div class="info">
+        <div class="num">Breakout #2 &nbsp;&middot;&nbsp; 10 minutes</div>
+        <div class="name">Speed Zone Classifier</div>
+      </div>
+      <div class="chips">
+        <span class="chip chip-a">branches</span>
+        <span class="chip chip-b">multiple returns</span>
+        <span class="chip chip-a">while loop</span>
+      </div>
+    </div>
+
+    <div class="problem-recap">
+      <div class="problem-recap-label">Problem Recap</div>
+      <ul>
+        <li>Write <strong>classify_speed(mph)</strong> that returns a string describing the speed zone</li>
+        <li><strong>Less than 25 mph</strong> → <span class="ic">"School Zone / Slow"</span></li>
+        <li><strong>25 to 64 mph</strong> → <span class="ic">"Normal / Highway"</span></li>
+        <li><strong>65 or above</strong> → <span class="ic">"Fast / Interstate"</span></li>
+        <li>Test with 15, 45, and 90 mph</li>
+        <li><strong>Bonus:</strong> Read from input() in a loop until -1</li>
+      </ul>
+    </div>
+
+    <!-- Base solution -->
+    <div class="topic-label"><span class="topic-num">1</span>Base Solution</div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="code-hdr-label">breakout2_solution.py</span>
+      </div>
+      <pre><code class="language-python">def classify_speed(mph):
+    """Returns a speed zone classification for the given speed in mph.
+
+    Arguments:
+      mph -- numeric speed in miles per hour (int or float)
+    Returns:
+      A string describing the speed zone:
+        'School Zone / Slow'   if mph < 25
+        'Normal / Highway'     if 25 <= mph < 65
+        'Fast / Interstate'    if mph >= 65
+    """
+    if mph < 25:
+        return "School Zone / Slow"
+    elif mph < 65:             # implied: mph >= 25 (already ruled out)
+        return "Normal / Highway"
+    else:                      # implied: mph >= 65
+        return "Fast / Interstate"
+
+# ── test calls ────────────────────────────────────────────────────────────────
+test_speeds = [15, 45, 90]
+
+for speed in test_speeds:
+    zone = classify_speed(speed)
+    print(f"{speed} mph → {zone}")</code></pre>
+    </div>
+
+    <div class="output-wrap">
+      <div class="output-label">Output</div>
+      <pre>15 mph → School Zone / Slow
+45 mph → Normal / Highway
+90 mph → Fast / Interstate</pre>
+    </div>
+
+    <!-- Annotations -->
+    <div class="topic-label"><span class="topic-num">2</span>Design Decisions Explained</div>
+
+    <ul class="annot-list">
+      <li>
+        <span class="lnum">if mph &lt; 25</span>
+        <span><strong>Check the lower boundary first.</strong> The conditions must be checked in order. Once we know mph is NOT less than 25, the <span class="ic">elif</span> inherits that knowledge — we only need to check the upper boundary of the next range.</span>
+      </li>
+      <li>
+        <span class="lnum">elif mph &lt; 65</span>
+        <span><strong>No need to write <span class="ic">elif mph >= 25 and mph &lt; 65</span></strong> — the <span class="ic">elif</span> only runs if the previous condition was False, which already guarantees mph >= 25. Writing the redundant condition is legal but unnecessary.</span>
+      </li>
+      <li>
+        <span class="lnum">else</span>
+        <span><strong>The else catches everything remaining</strong> — by elimination, we know mph must be >= 65. No explicit condition needed. Always use <span class="ic">else</span> as the final fallback so no input goes unclassified.</span>
+      </li>
+      <li>
+        <span class="lnum">3 returns</span>
+        <span><strong>One return per branch</strong> is valid and clear. Python exits the function at the first <span class="ic">return</span> it hits. This function will always return exactly one of the three strings — never None, never nothing.</span>
+      </li>
+    </ul>
+
+    <!-- Common mistakes -->
+    <div class="topic-label"><span class="topic-num">3</span>Common Mistakes — Condition Order Matters</div>
+
+    <div class="callout callout-warn">
+      <strong>What happens if you flip the order of conditions?</strong> This is one of the most common bugs in functions with branches. Let's trace through it.
+    </div>
+
+    <div class="mistake-grid">
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">❌ Wrong condition order</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">def classify_speed(mph):
+    if mph >= 65:          # checked first
+        return "Fast"
+    elif mph >= 25:        # checked second
+        return "Normal"
+    else:
+        return "Slow"
+# This version actually works correctly!
+# But read below for the truly dangerous flip...</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">❌ Dangerous: boundary in wrong direction</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">def classify_speed(mph):
+    if mph < 65:           # ← catches 15, 45, AND 90!
+        return "Slow"      # 90 mph → "Slow" (WRONG!)
+    elif mph < 25:         # unreachable — never runs
+        return "Normal"
+    else:
+        return "Fast"</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-red">
+      <strong>Trace 90 mph through the broken version:</strong><br>
+      <span class="ic">if 90 &lt; 65</span> → False &nbsp;|&nbsp; <span class="ic">elif 90 &lt; 25</span> → False &nbsp;|&nbsp; <span class="ic">else</span> → "Fast" — actually this one works by accident. Now trace <em>45 mph</em>: <span class="ic">if 45 &lt; 65</span> → True → returns <strong>"Slow"</strong>. Wrong! A 45 mph highway driver is not "Slow."
+    </div>
+
+    <!-- Bonus -->
+    <div class="bonus-block">
+      <div class="bonus-label">⭐ Bonus — Input Loop Until -1 (Sentinel Pattern)</div>
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-hdr-label">breakout2_bonus.py</span>
+        </div>
+        <pre><code class="language-python">def classify_speed(mph):
+    """Returns a speed zone classification for the given speed in mph."""
+    if mph < 25:
+        return "School Zone / Slow"
+    elif mph < 65:
+        return "Normal / Highway"
+    else:
+        return "Fast / Interstate"
+
+# ── Sentinel loop (-1 to quit) ────────────────────────────────────────────────
+print("Speed Zone Classifier — enter -1 to quit\n")
+
+speed = float(input("Enter speed (mph): "))     # priming read
+
+while speed != -1:
+    zone = classify_speed(speed)
+    print(f"  {speed:.0f} mph → {zone}\n")
+    speed = float(input("Enter speed (mph): "))  # update at end of loop
+
+print("Goodbye!")</code></pre>
+      </div>
+
+      <div class="output-wrap">
+        <div class="output-label">Sample Session</div>
+        <pre>Speed Zone Classifier — enter -1 to quit
+
+Enter speed (mph): 15
+  15 mph → School Zone / Slow
+
+Enter speed (mph): 55
+  55 mph → Normal / Highway
+
+Enter speed (mph): -1
+Goodbye!</pre>
+      </div>
+
+      <div class="callout callout-info" style="margin-top:12px;">
+        <strong>Sentinel pattern:</strong> We read the first value <em>before</em> the loop (the "priming read"), then read again at the <em>end</em> of the loop body. This ensures we check the sentinel value (<span class="ic">-1</span>) at the top of the while condition before processing it. Notice how <span class="ic">classify_speed()</span> itself is unchanged — the loop logic lives outside the function, keeping each piece of code focused on one job.
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key Takeaway — Breakout #2</div>
+      <p>A function with branches must have <strong>a return statement in every possible path</strong> — otherwise some inputs would cause the function to return None silently. The order of <span class="ic">if / elif / else</span> conditions matters: once a condition is True, Python skips the rest. Carefully trace through edge cases (exactly 25 mph, exactly 65 mph) to confirm boundary values land in the right zone.</p>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ════════════════════════════════════════════════════════
+       BREAKOUT #3
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="section" id="breakout-3">
+    <div class="section-eyebrow">Breakout Activity #3</div>
+    <h2 class="section-h2">📊 List Statistics — Min, Max &amp; Range</h2>
+
+    <div class="breakout-bar">
+      <span class="icon">📊</span>
+      <div class="info">
+        <div class="num">Breakout #3 &nbsp;&middot;&nbsp; 12 minutes</div>
+        <div class="name">List Statistics — Min, Max &amp; Range</div>
+      </div>
+      <div class="chips">
+        <span class="chip chip-a">multiple returns</span>
+        <span class="chip chip-b">tuple unpacking</span>
+        <span class="chip chip-a">docstrings</span>
+      </div>
+    </div>
+
+    <div class="problem-recap">
+      <div class="problem-recap-label">Problem Recap</div>
+      <ul>
+        <li>Write <strong>min_max_range(numbers)</strong> returning <strong>three values</strong>: minimum, maximum, and range (max − min)</li>
+        <li>Include a complete <strong>docstring</strong></li>
+        <li>Use <strong>unpacking</strong> to receive all three values into separate variables</li>
+        <li>Test with <strong>[34, 12, 78, 5, 99, 23]</strong></li>
+        <li><strong>Bonus A:</strong> Call <span class="ic">help(min_max_range)</span> to see the docstring displayed</li>
+        <li><strong>Bonus B:</strong> Rewrite without Python's built-in <span class="ic">min()</span> and <span class="ic">max()</span></li>
+      </ul>
+    </div>
+
+    <!-- Base solution -->
+    <div class="topic-label"><span class="topic-num">1</span>Base Solution — Using Built-in min() / max()</div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="code-hdr-label">breakout3_solution.py</span>
+      </div>
+      <pre><code class="language-python">def min_max_range(numbers):
+    """Returns the minimum, maximum, and range of a list of numbers.
+
+    Arguments:
+      numbers -- a non-empty list of numeric values (int or float)
+    Returns:
+      A tuple (minimum, maximum, range) where range = maximum - minimum
+    """
+    minimum = min(numbers)          # Python's built-in min() scans the list
+    maximum = max(numbers)          # Python's built-in max() scans the list
+    return minimum, maximum, maximum - minimum   # tuple — no parentheses needed
+
+# ── test ──────────────────────────────────────────────────────────────────────
+scores = [34, 12, 78, 5, 99, 23]
+
+# Unpacking — three variables receive the three returned values, left to right
+mn, mx, rng = min_max_range(scores)
+
+print(f"Min:   {mn}")
+print(f"Max:   {mx}")
+print(f"Range: {rng}")
+
+# ── Bonus A: call help() to display the docstring ─────────────────────────────
+# help(min_max_range)</code></pre>
+    </div>
+
+    <div class="output-wrap">
+      <div class="output-label">Output</div>
+      <pre>Min:   5
+Max:   99
+Range: 94</pre>
+    </div>
+
+    <!-- Annotations -->
+    <div class="topic-label"><span class="topic-num">2</span>Why This Works — Tuples and Unpacking</div>
+
+    <ul class="annot-list">
+      <li>
+        <span class="lnum">return a, b, c</span>
+        <span><strong>The comma creates a tuple.</strong> <span class="ic">return minimum, maximum, maximum - minimum</span> is identical to <span class="ic">return (minimum, maximum, maximum - minimum)</span>. Python sees the comma and packages the values into a tuple automatically.</span>
+      </li>
+      <li>
+        <span class="lnum">mn, mx, rng = ...</span>
+        <span><strong>Unpacking assigns left-to-right.</strong> The first element of the returned tuple goes to <span class="ic">mn</span>, the second to <span class="ic">mx</span>, and the third to <span class="ic">rng</span>. The number of variables on the left must exactly match the number of values in the tuple.</span>
+      </li>
+      <li>
+        <span class="lnum">Docstring</span>
+        <span><strong>Multi-line docstring format:</strong> First line is a one-sentence summary. Then a blank line, then structured sections documenting Arguments and Returns. This is the format that <span class="ic">help()</span> displays beautifully.</span>
+      </li>
+      <li>
+        <span class="lnum">min() / max()</span>
+        <span><strong>Python's built-ins are your friends.</strong> <span class="ic">min(numbers)</span> and <span class="ic">max(numbers)</span> accept any iterable. The Bonus B solution shows how to replicate this yourself — which is a great way to understand what the built-ins are doing under the hood.</span>
+      </li>
+    </ul>
+
+    <!-- What help() shows -->
+    <div class="topic-label"><span class="topic-num">3</span>Bonus A — What help() Displays</div>
+
+    <div class="output-wrap">
+      <div class="output-label">help(min_max_range) output</div>
+      <pre>Help on function min_max_range in module __main__:
+
+min_max_range(numbers)
+    Returns the minimum, maximum, and range of a list of numbers.
+
+    Arguments:
+      numbers -- a non-empty list of numeric values (int or float)
+    Returns:
+      A tuple (minimum, maximum, range) where range = maximum - minimum</pre>
+    </div>
+
+    <div class="callout callout-note">
+      <strong>This is exactly what <span class="ic">help(max)</span> or <span class="ic">help(len)</span> shows</strong> — Python reads your docstring and formats it for the reader. Writing docstrings means your functions work like professional library functions. The Python Standard Library itself was documented this way.
+    </div>
+
+    <!-- Bonus B solution -->
+    <div class="bonus-block">
+      <div class="bonus-label">⭐ Bonus B — Manual Loop Version (No Built-ins)</div>
+
+      <p class="prose" style="margin-bottom:14px;">This version finds the minimum and maximum manually, using the same technique that <span class="ic">min()</span> and <span class="ic">max()</span> use internally: start by assuming the first element is both the min and max, then scan the rest of the list to update.</p>
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-hdr-label">breakout3_bonus_b.py</span>
+        </div>
+        <pre><code class="language-python">def min_max_range(numbers):
+    """Returns the minimum, maximum, and range of a list of numbers.
+    Uses a manual loop — no built-in min() or max() used.
+
+    Arguments:
+      numbers -- a non-empty list of numeric values (int or float)
+    Returns:
+      A tuple (minimum, maximum, range) where range = maximum - minimum
+    """
+    # Start by assuming the first element is both the smallest and the largest.
+    # This is the standard technique for finding min/max in a single pass.
+    minimum = numbers[0]
+    maximum = numbers[0]
+
+    for num in numbers:        # iterate over every element
+        if num < minimum:
+            minimum = num      # found a new minimum — update
+        if num > maximum:
+            maximum = num      # found a new maximum — update
+        # note: using two separate ifs (not if/elif) so a value can
+        # update both minimum and maximum independently (though in
+        # practice it can only be one or the other, not both)
+
+    return minimum, maximum, maximum - minimum    # same return as the built-in version
+
+# ── test — output is identical ────────────────────────────────────────────────
+scores = [34, 12, 78, 5, 99, 23]
+mn, mx, rng = min_max_range(scores)
+
+print(f"Min:   {mn}")    # → 5
+print(f"Max:   {mx}")    # → 99
+print(f"Range: {rng}")   # → 94
+
+# ── trace through the first few iterations ────────────────────────────────────
+# numbers[0] = 34   → minimum = 34, maximum = 34
+# num = 34  → 34 < 34? No. 34 > 34? No.    (starting element, no change)
+# num = 12  → 12 < 34? Yes → minimum = 12. 12 > 34? No.
+# num = 78  → 78 < 12? No. 78 > 34? Yes → maximum = 78.
+# num = 5   → 5 < 12? Yes → minimum = 5.  5 > 78? No.
+# num = 99  → 99 < 5? No. 99 > 78? Yes → maximum = 99.
+# num = 23  → 23 < 5? No. 23 > 99? No.   (no change)
+# Result: minimum = 5, maximum = 99, range = 94  ✅</code></pre>
+      </div>
+
+      <div class="output-wrap">
+        <div class="output-label">Output</div>
+        <pre>Min:   5
+Max:   99
+Range: 94</pre>
+      </div>
+
+      <div class="callout callout-info" style="margin-top:12px;">
+        <strong>Why start with numbers[0] instead of 0?</strong> If we initialized <span class="ic">minimum = 0</span> and all values in the list were positive, the final minimum would incorrectly be 0. Starting with an actual element from the list guarantees we never report a minimum or maximum that isn't in the data.
+      </div>
+    </div>
+
+    <!-- Edge cases -->
+    <div class="topic-label"><span class="topic-num">4</span>Thinking About Edge Cases</div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="code-hdr-label">edge_cases.py</span>
+      </div>
+      <pre><code class="language-python">mn, mx, rng = min_max_range([7])          # single element
+print(mn, mx, rng)                         # → 7  7  0   (range is 0 — makes sense)
+
+mn, mx, rng = min_max_range([-10, -3, -7]) # all negatives
+print(mn, mx, rng)                         # → -10  -3  7
+
+mn, mx, rng = min_max_range([42, 42, 42])  # all identical
+print(mn, mx, rng)                         # → 42  42  0
+
+# min_max_range([])   ← empty list would crash with IndexError
+#                       in the manual version, and ValueError in
+#                       the built-in version. For production code
+#                       you'd guard against this — topic for later!</code></pre>
+    </div>
+
+    <div class="callout callout-warn">
+      <strong>Empty list guard:</strong> Neither version handles an empty list gracefully. For now this is fine — but when you learn about exceptions (Chapter 8), you'll know how to raise a meaningful error if someone calls <span class="ic">min_max_range([])</span>.
+    </div>
+
+    <!-- Capturing as a tuple -->
+    <div class="topic-label"><span class="topic-num">5</span>Alternate: Capture as One Tuple</div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="code-hdr-label">capture_as_tuple.py</span>
+      </div>
+      <pre><code class="language-python"># You don't have to unpack immediately — capture as one tuple variable
+stats = min_max_range([34, 12, 78, 5, 99, 23])
+print(stats)           # → (5, 99, 94)
+print(stats[0])        # → 5   (index into the tuple)
+print(stats[1])        # → 99
+print(stats[2])        # → 94
+
+# Both are valid:
+mn, mx, rng = min_max_range(scores)  # unpack right away
+stats = min_max_range(scores)        # or keep as a tuple</code></pre>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key Takeaway — Breakout #3</div>
+      <p>A function can return multiple values by packing them into a <strong>tuple</strong> — the comma is all that's needed, parentheses are optional. <strong>Unpacking</strong> lets you assign all returned values in a single, readable statement. Always write a docstring that answers: what do I take? what do I return? Bonus B demonstrated that Python's built-in functions use the same basic algorithms you can write yourself — understanding the loop version helps you trust and use the built-in version confidently.</p>
+    </div>
+  </section>
+
+
+</main>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <p>COP 1047C &nbsp;&middot;&nbsp; Introduction to Python Programming &nbsp;&middot;&nbsp; Summer 2026 &nbsp;&middot;&nbsp; Miami Dade College West Campus</p>
+  <p style="margin-top:6px;">Instructor: John Masseria &nbsp;&middot;&nbsp; <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a></p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+<script>
+  /* ── Dynamic scroll-padding-top (accounts for sticky header height) ── */
+  function updateScrollPadding() {
+    const hdr = document.getElementById('site-header');
+    if (hdr) {
+      const h = hdr.getBoundingClientRect().height;
+      document.documentElement.style.scrollPaddingTop = (h + 16) + 'px';
+    }
+  }
+  updateScrollPadding();
+  window.addEventListener('resize', updateScrollPadding);
+</script>
+
+</body>
+</html>

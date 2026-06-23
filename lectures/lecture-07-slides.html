@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lecture 7 — Chapter 6: Functions | COP 1047C Summer 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080c14;
+      --surface:  #0f1623;
+      --surface2: #162030;
+      --border:   #1e2d42;
+      --amber:    #f59e0b;
+      --amber-d:  #b45309;
+      --blue:     #38bdf8;
+      --green:    #4ade80;
+      --red:      #f87171;
+      --purple:   #c084fc;
+      --text:     #e2e8f0;
+      --text-d:   #94a3b8;
+      --text-f:   #475569;
+      --hdr-h:    64px;
+      --nav-h:    56px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── Progress bar ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--amber);
+      transition: width .3s ease;
+      z-index: 100;
+    }
+
+    /* ── Header ── */
+    .slide-header {
+      position: fixed;
+      top: 3px; left: 0; right: 0;
+      height: var(--hdr-h);
+      background: rgba(8,12,20,.97);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 90;
+      backdrop-filter: blur(8px);
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* Override — header should span full width */
+    .slide-header {
+      max-width: none;
+      left: 0;
+      transform: none;
+    }
+
+    .chapter-tag {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      background: rgba(245,158,11,.1);
+      border: 1px solid rgba(245,158,11,.25);
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    #slide-title-display {
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+      flex: 1;
+      padding: 0 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mdc-badge {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: rgba(56,189,248,.08);
+      border: 1px solid rgba(56,189,248,.2);
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* ── Deck / slide ── */
+    #deck {
+      position: fixed;
+      top: calc(var(--hdr-h) + 3px);
+      bottom: var(--nav-h);
+      left: 0; right: 0;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* hero variant — centred layout, NO display rule on base .slide.hero */
+    .slide.hero {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* ── Slide body ── */
+    .slide-body {
+      flex: 1;
+      padding: 32px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .slide.hero .slide-body {
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    /* ── Typography ── */
+    .eyebrow {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    h1.slide-h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h2.slide-h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .slide-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-d);
+      font-weight: 400;
+      max-width: 580px;
+    }
+
+    /* ── Inline code helper ── */
+    .ic {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-ligatures: none;
+      font-feature-settings: "liga" 0, "calt" 0;
+      font-size: .82em;
+      background: var(--surface2);
+      color: var(--blue);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Concept box ── */
+    .concept {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--amber);
+      border-radius: 8px;
+      padding: 14px 18px;
+    }
+
+    .concept-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 6px;
+    }
+
+    .concept p, .concept li {
+      color: var(--text-d);
+      font-size: .92rem;
+      line-height: 1.65;
+    }
+
+    /* ── Bullet list ── */
+    .bl {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .bl li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: .92rem;
+      color: var(--text-d);
+      line-height: 1.6;
+    }
+
+    .bl li::before {
+      content: '▸';
+      color: var(--amber);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .bl li strong { color: var(--text); }
+
+    /* ── Two-column ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .two-col.wl { grid-template-columns: 3fr 2fr; }
+    .two-col.rw { grid-template-columns: 2fr 3fr; }
+
+    /* ── Code block ── */
+    .code-wrap {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .code-hdr {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: #161b22;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+
+    .code-wrap pre {
+      margin: 0 !important;
+      background: transparent !important;
+      padding: 14px 16px !important;
+      font-size: .8rem !important;
+      line-height: 1.65 !important;
+      overflow-x: auto;
+    }
+
+    .code-wrap pre code {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-variant-ligatures: none !important;
+      font-feature-settings: "liga" 0, "calt" 0 !important;
+    }
+
+    /* ── Callouts ── */
+    .callout {
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: .88rem;
+      line-height: 1.65;
+    }
+
+    .callout-info   { background: rgba(56,189,248,.07);  border: 1px solid rgba(56,189,248,.22);  color: #bae6fd; }
+    .callout-warn   { background: rgba(245,158,11,.07);  border: 1px solid rgba(245,158,11,.25);  color: #fde68a; }
+    .callout-note   { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.22);  color: #bbf7d0; }
+    .callout-purple { background: rgba(192,132,252,.07); border: 1px solid rgba(192,132,252,.22); color: #e9d5ff; }
+
+    .callout strong { color: inherit; font-weight: 700; }
+
+    /* ── Tag row ── */
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { font-size: .75rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+    .tag-a  { background: rgba(245,158,11,.15); color: #fcd34d; }
+    .tag-b  { background: rgba(56,189,248,.12); color: #7dd3fc; }
+    .tag-g  { background: rgba(74,222,128,.12); color: #86efac; }
+    .tag-p  { background: rgba(192,132,252,.12); color: #d8b4fe; }
+
+    /* ── Optional badge ── */
+    .opt-badge {
+      display: inline-block;
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--purple);
+      background: rgba(192,132,252,.1);
+      border: 1px solid rgba(192,132,252,.25);
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* ── Breakout card ── */
+    .breakout-card {
+      background: rgba(245,158,11,.04);
+      border: 2px solid rgba(245,158,11,.3);
+      border-radius: 12px;
+      padding: 22px 26px;
+      flex: 1;
+    }
+
+    .breakout-hdr {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .breakout-icon { font-size: 1.4rem; }
+
+    .breakout-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--amber);
+    }
+
+    .breakout-time {
+      margin-left: auto;
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--amber-d);
+      background: rgba(245,158,11,.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* ── Quiz / trace ── */
+    .quiz-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .quiz-q {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      font-size: .9rem;
+    }
+
+    .quiz-reveal {
+      font-size: .85rem;
+      color: var(--text-d);
+      background: rgba(245,158,11,.06);
+      border: 1px solid rgba(245,158,11,.15);
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-top: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .2s;
+    }
+
+    .quiz-reveal:hover { background: rgba(245,158,11,.12); }
+
+    .quiz-answer {
+      display: none;
+      margin-top: 8px;
+      color: var(--green);
+      font-weight: 600;
+      font-size: .88rem;
+    }
+
+    .quiz-answer.shown { display: block; }
+
+    /* ── Summary table ── */
+    .sum-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .86rem;
+    }
+
+    .sum-table th {
+      background: var(--surface2);
+      color: var(--amber);
+      font-weight: 700;
+      padding: 9px 14px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .sum-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-d);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .sum-table td:first-child {
+      color: var(--text);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ── Nav ── */
+    .slide-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: rgba(8,12,20,.97);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      z-index: 90;
+    }
+
+    .nav-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-d);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .nav-btn:hover {
+      background: var(--surface2);
+      color: var(--text);
+      border-color: var(--amber);
+    }
+
+    .nav-btn:disabled {
+      opacity: .35;
+      cursor: default;
+    }
+
+    #slide-counter {
+      font-size: .82rem;
+      color: var(--text-f);
+      min-width: 76px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Utility ── */
+    .gap-sm { display: flex; flex-direction: column; gap: 10px; }
+    .small { font-size: .85rem; color: var(--text-d); }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header class="slide-header">
+  <div class="chapter-tag">Ch 6 &middot; Functions</div>
+  <div id="slide-title-display">COP 1047C &mdash; Introduction to Python</div>
+  <div class="mdc-badge">MDC Live &middot; Summer 2026</div>
+</header>
+
+<main id="deck">
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 1 — HERO
+════════════════════════════════════════════ -->
+<section class="slide hero active" data-title="Chapter 6: Functions">
+  <div class="slide-body">
+    <div class="eyebrow">COP 1047C &nbsp;&middot;&nbsp; Lecture 7 &nbsp;&middot;&nbsp; Week 7</div>
+    <h1 class="slide-h1">Chapter 6<br>Functions</h1>
+    <p class="slide-subtitle">Writing reusable, readable, and modular Python code</p>
+    <div class="tag-row" style="justify-content:center;margin-top:10px;">
+      <span class="tag tag-a">def</span>
+      <span class="tag tag-b">parameters</span>
+      <span class="tag tag-g">return</span>
+      <span class="tag tag-b">scope</span>
+      <span class="tag tag-p">recursion</span>
+      <span class="tag tag-a">docstrings</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 2 — AGENDA
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Tonight's Agenda">
+  <div class="slide-body">
+    <div class="eyebrow">Lecture 7</div>
+    <h2 class="slide-h2">Tonight's Agenda &amp; Learning Objectives</h2>
+    <p class="small">By the end of class you will be able to:</p>
+    <ul class="bl">
+      <li><strong>Define</strong> user-defined functions using <span class="ic">def</span> and call them from a main program (6.1)</li>
+      <li><strong>Write</strong> void and value-returning functions; use parameters, arguments, and return statements (6.1–6.2)</li>
+      <li><strong>Explain</strong> polymorphism and why Python uses dynamic typing (6.3)</li>
+      <li><strong>Decompose</strong> a program into readable, modular, non-redundant functions (6.4–6.5)</li>
+      <li><strong>Use</strong> function stubs for incremental development (6.6)</li>
+      <li><strong>Write</strong> functions containing branches and loops (6.7)</li>
+      <li><strong>Identify and fix</strong> common function errors: copy-paste bugs, missing returns (6.8)</li>
+      <li><strong>Distinguish</strong> local vs. global scope; use the <span class="ic">global</span> keyword correctly (6.9)</li>
+      <li><strong>Return multiple values</strong> via tuples and use unpacking (6.10)</li>
+      <li><strong>Understand</strong> recursion and when to use it (6.11)</li>
+      <li><strong>Write docstrings</strong> and use <span class="ic">help()</span> (6.12)</li>
+      <li style="color:var(--purple);"><strong>Deep dive (optional):</strong> namespaces + LEGB (6.14) &nbsp;|&nbsp; *args / **kwargs (6.17)</li>
+    </ul>
+    <div class="callout callout-info">
+      <strong>Competency 5</strong> — Creating functions, using library functions, returning values, identifying variable scope
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 3 — WHY FUNCTIONS?
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.1 — Why Functions? The Problem">
+  <div class="slide-body">
+    <div class="eyebrow">6.1 &mdash; User-defined Function Basics</div>
+    <h2 class="slide-h2">Why Functions? The Problem with Repeated Code</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <p class="small">❌ Without functions — cluttered and error-prone:</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python"># Fahrenheit → Celsius, written 3 times!
+c1 = (f1 - 32.0) * (5.0 / 9.0)
+c2 = (f2 - 32.0) * (5.0 / 9.0)
+c3 = (f3 + 32.0) * (5.0 / 9.0)  # ← BUG!</code></pre>
+        </div>
+        <div class="callout callout-warn">
+          The third line uses <strong>+ 32.0</strong> instead of <strong>- 32.0</strong>. Copy-pasting repeated code creates more opportunities for subtle bugs.
+        </div>
+      </div>
+      <div class="gap-sm">
+        <p class="small">✅ With a function — clean, safe, written once:</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">def F2C(f):
+    c = (f - 32.0) * (5.0 / 9.0)
+    return c
+
+c1 = F2C(f1)  # call it —
+c2 = F2C(f2)  # as many —
+c3 = F2C(f3)  # times as needed</code></pre>
+        </div>
+        <div class="callout callout-note">
+          The calculation is written <strong>once</strong>. Fix a bug once → fixed everywhere it's called.
+        </div>
+      </div>
+    </div>
+    <div class="concept">
+      <div class="concept-label">Definition</div>
+      <p>A <strong style="color:var(--text);">function</strong> is a named series of statements. Functions reduce redundancy, prevent errors, and keep programs readable — even without repeated code.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 4 — ANATOMY
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.1 — Function Anatomy">
+  <div class="slide-body">
+    <div class="eyebrow">6.1 &mdash; User-defined Function Basics</div>
+    <h2 class="slide-h2">Anatomy of a Python Function</h2>
+    <div class="code-wrap">
+      <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <pre><code class="language-python">def calc_pizza_area(pizza_diameter):        # ← DEFINITION  (def keyword + name + parameter(s))
+    """Returns area of a pizza in sq inches."""  # ← DOCSTRING  (first line of body)
+    pi_val       = 3.14159265               # ← LOCAL VARIABLE
+    pizza_radius = pizza_diameter / 2.0
+    pizza_area   = pi_val * pizza_radius * pizza_radius
+    return pizza_area                       # ← RETURN STATEMENT
+
+# ── calling the function ──────────────────────────────────────────────────────
+area   = calc_pizza_area(12.0)              # ← CALL (argument 12.0 → parameter pizza_diameter)
+print(f"12-inch pizza: {area:.3f} sq in")  # → 12-inch pizza: 113.097 sq in</code></pre>
+    </div>
+    <div class="two-col">
+      <ul class="bl">
+        <li><strong>def</strong> — keyword that starts a function definition</li>
+        <li><strong>Name</strong> — lowercase_with_underscores (<span class="ic">calc_pizza_area</span>). Use verbs.</li>
+        <li><strong>Parameters</strong> — named inputs listed in <span class="ic">( )</span></li>
+        <li><strong>Body</strong> — indented block; runs when the function is called</li>
+      </ul>
+      <ul class="bl">
+        <li><strong>return</strong> — sends a value back to the caller</li>
+        <li><strong>Function call</strong> — uses the name + arguments in <span class="ic">( )</span></li>
+        <li><strong>Built-ins you know:</strong> <span class="ic">input()</span>, <span class="ic">int()</span>, <span class="ic">len()</span>, <span class="ic">print()</span>…</li>
+        <li><strong>Define first, call second</strong> — Python reads top-to-bottom</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 5 — RETURN + PARAMETERS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.1 — Return Statements & Parameters">
+  <div class="slide-body">
+    <div class="eyebrow">6.1 &mdash; Return Statements &amp; Parameters</div>
+    <h2 class="slide-h2">Return Statements &amp; Parameters vs. Arguments</h2>
+    <div class="two-col wl">
+      <div class="gap-sm">
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">import math
+
+# One parameter, returns a value
+def compute_square(num_to_square):
+    return num_to_square * num_to_square
+
+# Multiple parameters
+def calc_pizza_volume(pizza_diameter, pizza_height):
+    radius = pizza_diameter / 2.0
+    area   = math.pi * radius * radius
+    return area * pizza_height
+
+# Storing the returned value
+sq = compute_square(7)        # sq = 49
+print(f"7 squared is {sq}")
+
+# Using call directly in an expression
+print(compute_square(5) + compute_square(3))  # → 34
+
+# Multiple arguments — matched left to right
+vol = calc_pizza_volume(12.0, 0.3)
+print(f"Volume: {vol:.3f} cubic in")</code></pre>
+        </div>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Parameter vs. Argument</div>
+          <p><strong style="color:var(--text);">Parameter</strong> — the variable name in the <em>definition</em> (the placeholder).<br><br><strong style="color:var(--text);">Argument</strong> — the actual value supplied in the <em>call</em>.</p>
+        </div>
+        <ul class="bl" style="margin-top:4px;">
+          <li>Arguments map <strong>left → right</strong> to parameters</li>
+          <li>An argument can be a literal, variable, or expression</li>
+          <li>No parameters? Still need the empty <span class="ic">( )</span></li>
+          <li>A function call <strong>evaluates to</strong> its returned value — usable in any expression</li>
+        </ul>
+        <div class="callout callout-warn">
+          No return statement (or bare <span class="ic">return</span>) → function returns <strong>None</strong>. A function returning None <em>cannot</em> be used in a math expression.
+        </div>
+        <div class="callout callout-note">
+          <strong>Invalid parameter:</strong><br><span class="ic">def my_fct(x + 5):</span> → SyntaxError. Parameters must be plain names.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 6 — HIERARCHICAL CALLS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.1 — Hierarchical Function Calls">
+  <div class="slide-body">
+    <div class="eyebrow">6.1 &mdash; Hierarchical Function Calls</div>
+    <h2 class="slide-h2">Functions Calling Functions</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <pre><code class="language-python">import math
+
+def calc_circle_area(diameter):
+    """Returns the area of a circle."""
+    radius = diameter / 2.0
+    return math.pi * radius * radius
+
+def calc_pizza_calories(diameter):
+    """Returns total calories for a pepperoni pizza."""
+    cal_per_sq_inch = 16.7
+    return calc_circle_area(diameter) * cal_per_sq_inch
+
+# Main program — reads like plain English
+print(f"12-inch pizza: {calc_pizza_calories(12.0):.0f} cal")
+print(f"14-inch pizza: {calc_pizza_calories(14.0):.0f} cal")
+
+# You have been doing this ALL semester already:
+user_val = int(input("Enter a number: "))
+#           ^inner   ^outer
+# input() runs first → result passed to int()</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Hierarchical (Nested) Calls</div>
+          <p>A function's body may call other functions. Complex functions build on simpler ones — each doing exactly <em>one thing</em>.</p>
+        </div>
+        <div class="callout callout-note">
+          <strong>You've been doing this all semester!</strong><br>
+          <span class="ic">int(input())</span> is a nested call — <span class="ic">input()</span> runs first, its string result is passed to <span class="ic">int()</span>.
+        </div>
+        <div class="callout callout-info">
+          <strong>Think in layers:</strong> calc_circle_area handles geometry; calc_pizza_calories handles nutrition. Each function has one clear job. The main program orchestrates them.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 7 — BREAKOUT #1
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Breakout #1 — Basic Functions">
+  <div class="slide-body">
+    <div class="eyebrow">Now You Try</div>
+    <h2 class="slide-h2">Breakout Activity #1</h2>
+    <div class="breakout-card">
+      <div class="breakout-hdr">
+        <span class="breakout-icon">🛠️</span>
+        <span class="breakout-title">Miles ↔ Kilometers Converter</span>
+        <span class="breakout-time">⏱ 8 minutes</span>
+      </div>
+      <div class="two-col">
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--text);">Your Task:</strong></p>
+          <ul class="bl">
+            <li>Define <span class="ic">miles_to_km(miles)</span> — converts miles to km using the constant <strong>1 mile = 1.60934 km</strong></li>
+            <li>Call it for <strong>5 miles</strong>, <strong>26.2 miles</strong> (marathon!), and <strong>100 miles</strong></li>
+            <li>Print each result formatted to <strong>2 decimal places</strong></li>
+            <li><strong>Bonus Round A:</strong> Write a second function <span class="ic">km_to_miles(km)</span> — convert 42.195 km back to miles and verify it matches 26.2</li>
+            <li><strong>Bonus Round B:</strong> Call both functions <em>in the same expression</em>: <br><span class="ic">print(miles_to_km(km_to_miles(100)))</span> — what do you expect?</li>
+          </ul>
+        </div>
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--amber);">Expected output:</strong></p>
+          <div class="code-wrap">
+            <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+            <pre><code class="language-text">5 miles    =   8.05 km
+26.2 miles =  42.16 km
+100 miles  = 160.93 km</code></pre>
+          </div>
+          <div class="callout callout-info">
+            <strong>Hint:</strong> <span class="ic">km = miles * 1.60934</span>
+          </div>
+          <div class="callout callout-warn">
+            <strong>Think:</strong> what does your function <em>return</em>? What does the caller do with it?
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 8 — VOID / PRINT FUNCTIONS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.2 — Void Functions & Print Functions">
+  <div class="slide-body">
+    <div class="eyebrow">6.2 &mdash; Print Functions</div>
+    <h2 class="slide-h2">Void Functions: Functions That Print</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <pre><code class="language-python">def print_summary(oid, items, price):
+    """Prints a formatted order summary."""
+    print(f"Order {oid}:")
+    print(f"  Items: {items}")
+    print(f"  Total: ${price:.2f}")
+    # no return → implicitly returns None
+
+# Call as many times as needed; formatting written once
+print_summary(42, 4, 13.99)
+print_summary(43, 1, 5.49)
+
+# ── Classic menu system ────────────────────────────────
+def print_menu():
+    print("Today's Menu:")
+    print("  1) Gumbo")
+    print("  2) Jambalaya")
+    print("  3) Quit\n")
+
+quit_program = False
+while not quit_program:
+    print_menu()                        # called once per loop
+    choice = int(input("Enter choice: "))
+    if choice == 3:
+        print("Goodbye")
+        quit_program = True
+    elif choice == 1:
+        print("Order: Gumbo")
+    elif choice == 2:
+        print("Order: Jambalaya")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Void Function</div>
+          <p>A function with <strong style="color:var(--text);">no return statement</strong> (or bare <span class="ic">return</span>) is <strong style="color:var(--text);">void</strong> — it performs an action but returns <span class="ic">None</span>.</p>
+        </div>
+        <ul class="bl">
+          <li>Void functions can have <strong>any number of parameters</strong></li>
+          <li>Great for <strong>formatted output</strong> that appears multiple times</li>
+          <li>Adding <span class="ic">return 0</span> makes <span class="ic">print_menu()</span> <em>non-void</em></li>
+          <li>Bare <span class="ic">return</span> alone still leaves it void</li>
+        </ul>
+        <div class="callout callout-note">
+          <strong>Key insight:</strong> Write complex output <em>once</em> inside the function. Call the function many times. Change the format in one place and it updates everywhere.
+        </div>
+        <div class="callout callout-warn">
+          A function that <em>both</em> prints <em>and</em> returns a value is not void — but separating those concerns makes code cleaner.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 9 — DYNAMIC TYPING
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.3 — Dynamic Typing & Polymorphism">
+  <div class="slide-body">
+    <div class="eyebrow">6.3 &mdash; Dynamic Typing</div>
+    <h2 class="slide-h2">Dynamic Typing &amp; Polymorphism</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">def add(x, y):
+    return x + y
+
+# Same function, different argument types:
+print(add(5, 7))              # → 12   (int + int)
+print(add("Tora", "Bora"))    # → ToraBora  (str + str)
+print(add([1, 2], [3, 4]))    # → [1, 2, 3, 4]  (list + list)
+print(add(5, "100"))          # → TypeError at runtime!
+
+# * is also polymorphic
+print(3 * 4)          # → 12
+print("ha" * 3)       # → hahaha
+
+# Dynamic typing — type determined at runtime
+num = 5       # references an int
+num = "seven" # now references a str — valid in Python!</code></pre>
+        </div>
+        <div class="callout callout-warn">
+          <span class="ic">add(5, "100")</span> → <strong>TypeError</strong> at runtime. Python checks types <em>when the code runs</em>, not before.
+        </div>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Dynamic Typing</div>
+          <p>Type is determined <strong style="color:var(--text);">when code executes</strong>, not when it is written. The same variable can hold different types at different times.</p>
+        </div>
+        <div class="concept">
+          <div class="concept-label">Polymorphism</div>
+          <p>One operation (<span class="ic">+</span>, <span class="ic">*</span>, a function) behaves <strong style="color:var(--text);">differently based on the types involved</strong>. Python's <span class="ic">add()</span> function is polymorphic.</p>
+        </div>
+        <div class="concept">
+          <div class="concept-label">Duck Typing</div>
+          <p>"If it walks, swims, and quacks like a duck — call it a duck." If an object supports the required operation, Python uses it.</p>
+        </div>
+        <div class="callout callout-info">
+          <strong>Contrast:</strong> C, C++, Java use <strong>static typing</strong> — every variable's type is declared in source code and checked at compile time. More verbose, but catches type errors earlier.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 10 — REASONS FOR FUNCTIONS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.4 — Reasons for Defining Functions">
+  <div class="slide-body">
+    <div class="eyebrow">6.4 &mdash; Reasons for Defining Functions</div>
+    <h2 class="slide-h2">Three Reasons to Write Functions</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">1 &middot; Readability</div>
+          <p>The main program becomes a short sequence of named function calls that reads like an outline. You understand <em>what</em> the program does without wading through <em>how</em>.</p>
+        </div>
+        <div class="concept">
+          <div class="concept-label">2 &middot; Avoid Redundancy — DRY</div>
+          <p><strong style="color:var(--text);">D</strong>on't <strong style="color:var(--text);">R</strong>epeat <strong style="color:var(--text);">Y</strong>ourself. Define a function once, call it everywhere. Fix a bug once and it's fixed in every call site.</p>
+        </div>
+        <div class="concept">
+          <div class="concept-label">3 &middot; Modular Development</div>
+          <p>Break a large program into independent modules. Write and test each function separately, then integrate. Far easier to debug and maintain.</p>
+        </div>
+        <div class="callout callout-info">
+          Think of a cruise ship — the bridge, engine room, and galley are separate departments, each with a clear job, working together. Functions are your program's departments.
+        </div>
+      </div>
+      <div class="gap-sm">
+        <p class="small">With functions — the main program:</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">steps = int(input("Enter steps: "))
+
+feet     = steps_to_feet(steps)
+calories = steps_to_calories(steps)
+
+print(f"Feet:     {feet}")
+print(f"Calories: {calories}")</code></pre>
+        </div>
+        <p class="small">Without functions — the main program:</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">steps = int(input("Enter steps: "))
+
+feet_per_step          = 3
+steps_per_minute       = 70.0
+cal_per_minute_walking = 3.5
+
+feet     = steps * feet_per_step
+minutes  = steps / steps_per_minute
+calories = minutes * cal_per_minute_walking
+
+print(f"Feet:     {feet}")
+print(f"Calories: {calories}")</code></pre>
+        </div>
+        <div class="callout callout-note">
+          <strong>Guideline:</strong> A function body should generally be <strong>30 lines or fewer</strong>. If it's growing beyond that, decompose it further.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 11 — MATHEMATICAL FUNCTIONS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.5 — Mathematical Functions">
+  <div class="slide-body">
+    <div class="eyebrow">6.5 &mdash; Writing Mathematical Functions</div>
+    <h2 class="slide-h2">Mathematical Functions &amp; Calling in Expressions</h2>
+    <div class="two-col wl">
+      <div class="gap-sm">
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">import math
+
+CM_PER_INCH    = 2.54   # ← UPPER_CASE for constants
+INCHES_PER_FT  = 12
+
+def height_US_to_cm(feet, inches):
+    """Converts height in feet/inches to centimeters."""
+    total_inches = feet * INCHES_PER_FT + inches
+    return total_inches * CM_PER_INCH
+
+# A call EVALUATES TO its returned value — use it anywhere
+print(height_US_to_cm(6, 4))   # → 193.04
+
+avg_cm = (height_US_to_cm(5, 8) + height_US_to_cm(6, 0)) / 2.0
+
+# Modular: functions calling functions
+def calc_circular_base_area(radius):
+    return math.pi * radius * radius
+
+def calc_cylinder_volume(base_radius, height):
+    return calc_circular_base_area(base_radius) * height
+
+def calc_cylinder_surface_area(base_radius, height):
+    return (2 * math.pi * base_radius * height) + \
+           (2 * calc_circular_base_area(base_radius))
+
+r = float(input("Enter base radius: "))
+h = float(input("Enter height: "))
+print(f"Volume:       {calc_cylinder_volume(r, h):.3f}")
+print(f"Surface area: {calc_cylinder_surface_area(r, h):.3f}")</code></pre>
+        </div>
+        <div class="callout callout-note">
+          <span class="ic">calc_circular_base_area()</span> is shared by both volume and surface area. One fix, two functions benefit — modularity in action.
+        </div>
+      </div>
+      <div class="gap-sm">
+        <ul class="bl">
+          <li>Use <strong>UPPER_CASE</strong> for constants at global scope</li>
+          <li>A function call <strong>evaluates to its return value</strong> — treat it like a number in any expression</li>
+          <li><span class="ic">5 + compute_square(4)</span> → <span class="ic">5 + 16</span> → <span class="ic">21</span></li>
+          <li>Nested calls: <span class="ic">pow(2, pow(3, 2))</span> → <span class="ic">pow(2, 9)</span> → <span class="ic">512</span></li>
+        </ul>
+        <div class="callout callout-warn">
+          A void function (returns None) <strong>cannot</strong> be used inside a math expression — it will crash with a TypeError at runtime.
+        </div>
+        <div class="callout callout-info">
+          <strong>Valid uses of height_US_to_cm():</strong><br>
+          <span class="ic">x = height_US_to_cm(5, 0)</span> ✅<br>
+          <span class="ic">x = 2 * (height_US_to_cm(5, 0) + 1.0)</span> ✅<br>
+          <span class="ic">height_US_to_cm(5, 0) = x</span> ❌ (can't assign to a call)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 12 — FUNCTION STUBS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.6 — Function Stubs & Incremental Development">
+  <div class="slide-body">
+    <div class="eyebrow">6.6 &mdash; Function Stubs</div>
+    <h2 class="slide-h2">Function Stubs &amp; Incremental Development</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <pre><code class="language-python">def steps_to_feet(num_steps):
+    """Converts steps to feet."""
+    feet_per_step = 3
+    return num_steps * feet_per_step
+
+# ── STUB style 1: pass — does nothing, returns None ──────
+def steps_to_calories(num_steps):
+    pass
+
+# ── STUB style 2: print + sentinel return ────────────────
+def steps_to_calories(num_steps):
+    print("FIXME: finish steps_to_calories")
+    return -1       # sentinel: caller knows it's not ready
+
+# ── STUB style 3: hard stop ───────────────────────────────
+def steps_to_calories(num_steps):
+    raise NotImplementedError
+
+# Main program works immediately (feet part tested now)
+steps    = int(input("Enter steps: "))
+feet     = steps_to_feet(steps)
+calories = steps_to_calories(steps)     # stub — safe placeholder
+print(f"Feet: {feet}")
+print(f"Calories: {calories}")  # → Calories: None (or -1)</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Incremental Development</div>
+          <p>Write a <em>small</em> amount of code, test it, then add a <em>little more</em>. Don't wait until everything is "done" before running the program.</p>
+        </div>
+        <ul class="bl">
+          <li><strong>pass</strong> — required placeholder when the body would otherwise be empty; returns None</li>
+          <li><strong>return -1</strong> — signals "not ready yet" without crashing</li>
+          <li><strong>raise NotImplementedError</strong> — hard stop; prevents downstream code from running on unfinished logic</li>
+        </ul>
+        <div class="callout callout-info">
+          Stubs are like planning a road trip <em>before</em> you start driving — you know the destinations (functions) before filling in every detail.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 13 — FUNCTIONS WITH BRANCHES
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.7 — Functions with Branches & Loops">
+  <div class="slide-body">
+    <div class="eyebrow">6.7 &mdash; Functions with Branches / Loops</div>
+    <h2 class="slide-h2">Functions with Branches &amp; Loops</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <p class="small">Normalize a grade to a bounded range:</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">def normalize_grade(grade):
+    upper_bound = 68
+    lower_bound = 54
+    if grade > upper_bound:
+        return upper_bound    # cap at 68
+    elif grade <= lower_bound:
+        return lower_bound    # floor at 54
+    else:
+        return grade          # within range
+
+print(normalize_grade(88))   # → 68
+print(normalize_grade(5))    # → 54
+print(normalize_grade(57))   # → 57</code></pre>
+        </div>
+        <div class="callout callout-info">
+          Multiple <span class="ic">return</span> statements in different branches is perfectly valid. Execution leaves the function at the <em>first</em> return encountered.
+        </div>
+      </div>
+      <div class="gap-sm">
+        <p class="small">Tiered pricing with if / elif / else:</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">def calc_ebay_fee(sell_price):
+    """eBay fee for books/music/video games."""
+    p50      = 0.13   # 13% on first $50
+    p50_1000 = 0.05   # 5% on $50.01–$1000
+    p1000    = 0.02   # 2% above $1000
+    fee      = 0.50   # listing fee
+
+    if sell_price <= 50:
+        fee += sell_price * p50
+    elif sell_price <= 1000:
+        fee += (50 * p50) + \
+               (sell_price - 50) * p50_1000
+    else:
+        fee += (50 * p50) + (950 * p50_1000) + \
+               (sell_price - 1000) * p1000
+    return fee
+
+print(f"${calc_ebay_fee(9.95):.2f}")   # → $1.79
+print(f"${calc_ebay_fee(100.0):.2f}")  # → $9.50</code></pre>
+        </div>
+        <div class="callout callout-note">
+          Functions can contain <strong>any</strong> valid Python: branches, loops, nested calls, list comprehensions — everything.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 14 — BREAKOUT #2
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Breakout #2 — Function with Branches">
+  <div class="slide-body">
+    <div class="eyebrow">Now You Try</div>
+    <h2 class="slide-h2">Breakout Activity #2</h2>
+    <div class="breakout-card">
+      <div class="breakout-hdr">
+        <span class="breakout-icon">🏎️</span>
+        <span class="breakout-title">Speed Zone Classifier</span>
+        <span class="breakout-time">⏱ 10 minutes</span>
+      </div>
+      <div class="two-col">
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--text);">Your Task:</strong></p>
+          <ul class="bl">
+            <li>Write <span class="ic">classify_speed(mph)</span> that <strong>returns a string</strong> describing the speed zone</li>
+            <li><strong>Less than 25 mph</strong> → <span class="ic">"School Zone / Slow"</span></li>
+            <li><strong>25 to 64 mph</strong> → <span class="ic">"Normal / Highway"</span></li>
+            <li><strong>65 or above</strong> → <span class="ic">"Fast / Interstate"</span></li>
+            <li>Test with <strong>15, 45, and 90</strong> mph — print result for each</li>
+            <li><strong>Bonus:</strong> Read speed from <span class="ic">input()</span> in a loop until the user enters <span class="ic">-1</span>; classify and print each one</li>
+          </ul>
+        </div>
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--amber);">Expected output:</strong></p>
+          <div class="code-wrap">
+            <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+            <pre><code class="language-text">15 mph → School Zone / Slow
+45 mph → Normal / Highway
+90 mph → Fast / Interstate</code></pre>
+          </div>
+          <div class="callout callout-warn">
+            <strong>Think:</strong> How many <span class="ic">return</span> statements does your function need? What happens if you accidentally get the condition order wrong?
+          </div>
+          <div class="quiz-box">
+            <div class="quiz-q">What would <span class="ic">normalize_grade()</span> return if the conditions were flipped (lower_bound checked first)?</div>
+            <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">👆 Tap to reveal</div>
+            <div class="quiz-answer">A grade of 57 would incorrectly return 54 — falling through the wrong branch because 57 &gt; 54 (lower bound) is true. Order of conditions matters!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 15 — COMMON ERRORS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.8 — Common Function Errors">
+  <div class="slide-body">
+    <div class="eyebrow">6.8 &mdash; Functions: Common Errors</div>
+    <h2 class="slide-h2">Common Function Errors</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <p class="small" style="color:var(--red);font-weight:600;">❌ Copy-Paste Error</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">def celsius_to_fahrenheit(celsius):
+    temperature = (9.0 / 5.0) * celsius
+    fahrenheit  = temperature + 32
+    return fahrenheit      # ✅ correct
+
+def fahrenheit_to_celsius(fahrenheit):
+    temperature = fahrenheit - 32
+    celsius     = temperature * (5.0 / 9.0)
+    return fahrenheit      # ❌ BUG — should be celsius!</code></pre>
+        </div>
+        <div class="callout callout-warn">
+          No syntax error — Python runs it happily. The function <em>sometimes</em> returns a plausible-looking number, making it very hard to find.
+        </div>
+        <div class="callout callout-info">
+          Also watch for the copy-paste sum example: adding <span class="ic">num3 * num4</span> but forgetting to change <span class="ic">num3</span> to <span class="ic">num4</span> in the last term.
+        </div>
+      </div>
+      <div class="gap-sm">
+        <p class="small" style="color:var(--red);font-weight:600;">❌ Missing Return Statement</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">def steps_to_feet(num_steps):
+    feet_per_step = 3
+    feet = num_steps * feet_per_step
+    # FORGOT: return feet
+
+feet = steps_to_feet(1000)
+print(f"Distance: {feet} feet")  # → Distance: None feet
+
+# Later this might cause:
+total = feet + 500  # TypeError: NoneType + int</code></pre>
+        </div>
+        <div class="callout callout-warn">
+          Python silently returns None. The program doesn't crash <em>here</em> — it crashes later with a confusing error about NoneType.
+        </div>
+        <div class="callout callout-note">
+          <strong>Golden rules after copy-pasting:</strong><br>
+          1. Read every line of the pasted code.<br>
+          2. Double-check every <span class="ic">return</span> — which <em>variable</em> are you actually returning?
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 16 — SCOPE
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.9 — Variable Scope: Local vs Global">
+  <div class="slide-body">
+    <div class="eyebrow">6.9 &mdash; Scope of Variables and Functions</div>
+    <h2 class="slide-h2">Variable Scope: Local vs. Global</h2>
+    <div class="two-col wl">
+      <div class="gap-sm">
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">CM_PER_INCH    = 2.54   # ← GLOBAL — visible everywhere
+INCHES_PER_FT  = 12    # ← GLOBAL constant
+
+def height_US_to_cm(feet, inches):
+    # total_inches is LOCAL — born here, dies when function returns
+    total_inches = feet * INCHES_PER_FT + inches
+    centimeters  = total_inches * CM_PER_INCH
+    return centimeters
+
+feet   = int(input("Feet: "))
+inches = int(input("Inches: "))
+print(f"Centimeters: {height_US_to_cm(feet, inches)}")
+
+# This would crash with NameError:
+# print(total_inches)   ← does not exist outside the function!
+# print(centimeters)    ← same — local only
+
+# Function must be DEFINED before it is CALLED:
+# get_name()            ← NameError if def is below this line!
+# def get_name(): ...</code></pre>
+        </div>
+        <div class="callout callout-warn">
+          A function's own <span class="ic">feet</span> parameter is a <em>different</em> variable from the global <span class="ic">feet</span> — same name, different namespace. This can confuse beginners; use distinct names when possible.
+        </div>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Local Variable</div>
+          <p>Created <strong style="color:var(--text);">inside a function</strong>. Exists only while the function is running. Invisible outside. Each call gets its own independent copy.</p>
+        </div>
+        <div class="concept">
+          <div class="concept-label">Global Variable</div>
+          <p>Created <strong style="color:var(--text);">outside any function</strong>. Visible from its assignment to the end of the file. Accessible inside functions for reading.</p>
+        </div>
+        <div class="callout callout-note">
+          <strong>Best practice:</strong> Use globals only for <em>constants</em>. Avoid modifying global variables inside functions — prefer passing values as parameters and returning results instead.
+        </div>
+        <div class="callout callout-info">
+          Parameters are also local variables — created when the function is called, destroyed when it returns.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 17 — GLOBAL STATEMENT
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.9 — The global Statement">
+  <div class="slide-body">
+    <div class="eyebrow">6.9 &mdash; Global Variables</div>
+    <h2 class="slide-h2">Modifying Global Variables: the <span class="ic">global</span> Statement</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <p class="small" style="color:var(--red);font-weight:600;">❌ Without global — creates a local, doesn't work</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">employee_name = "N/A"
+
+def get_name():
+    name = input("Enter name: ")
+    employee_name = name   # creates a LOCAL variable!
+                           # global is unchanged
+
+get_name()
+print(employee_name)    # → N/A  (unchanged)</code></pre>
+        </div>
+      </div>
+      <div class="gap-sm">
+        <p class="small" style="color:var(--green);font-weight:600;">✅ With global — modifies the global correctly</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">employee_name = "N/A"
+
+def get_name():
+    global employee_name   # ← declare intent to modify global
+    name = input("Enter name: ")
+    employee_name = name   # now modifies the GLOBAL
+
+get_name()
+print(employee_name)    # → Juliet Capulet</code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:4px;">
+      <div class="callout callout-warn">
+        <strong>Rule:</strong> Any assignment inside a function creates a <em>local</em> variable by default — even if a global with the same name exists. Use <span class="ic">global x</span> only when you truly must modify a global.
+      </div>
+      <div class="callout callout-note">
+        <strong>Mutable exception:</strong> Modifying list contents — <span class="ic">my_list.append(x)</span> — does <em>not</em> require <span class="ic">global</span>. Only <em>reassignment</em> (<span class="ic">my_list = []</span>) does.
+      </div>
+    </div>
+    <div class="callout callout-info">
+      Avoiding global variables makes your functions <strong>predictable</strong>. A function's behavior should be fully determined by its parameters — no hidden side effects.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 18 — MULTIPLE OUTPUTS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.10 — Multiple Return Values">
+  <div class="slide-body">
+    <div class="eyebrow">6.10 &mdash; Multiple Function Outputs</div>
+    <h2 class="slide-h2">Returning Multiple Values via Tuple</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <pre><code class="language-python">student_scores = [75, 84, 66, 99, 51, 65]
+
+def get_grade_stats(scores):
+    """Returns (mean, std_dev) for a list of scores."""
+    mean = sum(scores) / len(scores)
+
+    tmp = 0
+    for score in scores:
+        tmp += (score - mean) ** 2
+    std_dev = (tmp / len(scores)) ** 0.5
+
+    return mean, std_dev    # ← returns a TUPLE (no parens needed)
+    # equivalent: return (mean, std_dev)
+    # also valid:  return [mean, std_dev]  (a list)
+
+# ── Unpacking — multiple assignment at once ───────────────
+average, std = get_grade_stats(student_scores)
+print(f"Average: {average:.1f}")    # → Average: 73.3
+print(f"Std Dev: {std:.1f}")        # → Std Dev: 15.3
+
+# ── Capture as one tuple ──────────────────────────────────
+stats = get_grade_stats(student_scores)
+print(stats)   # → (73.333..., 15.260...)
+
+# ── get_positions example ────────────────────────────────
+def get_positions(number_list):
+    first_num  = number_list[0]
+    middle_num = number_list[len(number_list) // 2]
+    last_num   = number_list[-1]
+    return first_num, middle_num, last_num
+
+begin, center, end = get_positions([10, 20, 30, 40, 50])</code></pre>
+      </div>
+      <div class="gap-sm">
+        <ul class="bl">
+          <li><span class="ic">return a, b</span> creates and returns a <strong>tuple</strong></li>
+          <li>Parentheses are optional: <span class="ic">return (a, b)</span> is identical</li>
+          <li>Could also return a <strong>list</strong>: <span class="ic">return [a, b]</span></li>
+          <li><strong>Unpacking</strong> assigns multiple variables in one statement — must match count</li>
+        </ul>
+        <div class="callout callout-note">
+          <span class="ic">return a, b, [c, d]</span> is valid — returns a 3-element tuple where the third element is a list. Complex containers work too.
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">What does <span class="ic">x, y = get_grade_stats([80, 90, 70])</span> assign to <span class="ic">x</span>?</div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">👆 Tap to reveal</div>
+          <div class="quiz-answer">x = 80.0 (the mean). y gets the standard deviation (~8.16). Unpacking assigns left to right from the returned tuple.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 19 — RECURSION
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.11 — Recursive Functions">
+  <div class="slide-body">
+    <div class="eyebrow">6.11 &mdash; Recursive Functions</div>
+    <h2 class="slide-h2">Recursive Functions</h2>
+    <div class="two-col wl">
+      <div class="gap-sm">
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">def count_down(count):
+    if count == 0:          # ← BASE CASE (stops recursion)
+        print("Go!")
+    else:
+        print(count)
+        count_down(count - 1)  # ← RECURSIVE CALL
+
+count_down(3)
+# 3  → count_down(3) prints 3, calls count_down(2)
+# 2  → count_down(2) prints 2, calls count_down(1)
+# 1  → count_down(1) prints 1, calls count_down(0)
+# Go!→ count_down(0) hits base case, returns
+
+# ── Backwards alphabet ───────────────────────────────────
+def backwards_alphabet(curr_letter):
+    if curr_letter == "a":     # base case
+        print(curr_letter)
+    else:
+        print(curr_letter)
+        prev = chr(ord(curr_letter) - 1)  # 'd' → 'c' → 'b'…
+        backwards_alphabet(prev)          # recursive call
+
+backwards_alphabet("d")   # → d  c  b  a</code></pre>
+        </div>
+        <div class="callout callout-info">
+          <strong>Call count:</strong> <span class="ic">count_down(5)</span> makes <strong>6</strong> total calls (5 recursive + 1 base case).
+        </div>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Two Requirements for Recursion</div>
+          <p><strong style="color:var(--text);">1. Base case</strong> — the condition that stops the recursion (no self-call).<br><br><strong style="color:var(--text);">2. Recursive case</strong> — the function calls <em>itself</em> with a simpler version of the problem, moving toward the base case.</p>
+        </div>
+        <ul class="bl">
+          <li>Each call gets its own <strong>local namespace</strong> (own copy of parameters)</li>
+          <li>Without a base case → <strong>infinite recursion</strong> → program crash</li>
+          <li>Most loops can be rewritten as recursion and vice versa</li>
+          <li>Recursion is natural for problems that are <em>self-similar</em>: file trees, fractals, factorial, Fibonacci</li>
+        </ul>
+        <div class="callout callout-note">
+          Counting down is easier with a loop — but backwards_alphabet shows a case where recursion reads cleanly. Use the right tool for the problem.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 20 — DOCSTRINGS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.12 — Docstrings & help()">
+  <div class="slide-body">
+    <div class="eyebrow">6.12 &mdash; Documenting Functions</div>
+    <h2 class="slide-h2">Docstrings &amp; the <span class="ic">help()</span> Function</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <pre><code class="language-python"># ── Single-line docstring ─────────────────────────────────
+def num_seats(airliner_type):
+    """Determines number of seats on a plane."""
+    pass   # body here...
+
+# ── Multi-line docstring ──────────────────────────────────
+def ticket_price(origin, dest, coach=True, first_class=False):
+    """Calculates the price of a ticket between two airports.
+
+    Only one of coach or first_class may be True.
+    Arguments:
+      origin      -- string: IATA code of origin airport
+      dest        -- string: IATA code of destination airport
+    Optional keyword arguments:
+      coach       -- bool: True for coach pricing (default True)
+      first_class -- bool: True for first class pricing
+    """
+    pass   # body here...
+
+# ── Using help() ──────────────────────────────────────────
+help(ticket_price)    # prints docstring nicely formatted
+help(str)             # works on built-in types too!
+help(range)
+help(max)
+
+# ── Your own function ─────────────────────────────────────
+def m_to_cm(m):
+    """Converts meters to centimeters where 1 m = 100 cm."""
+    return 100 * m
+
+help(m_to_cm)   # prints: Converts meters to centimeters...</code></pre>
+      </div>
+      <div class="gap-sm">
+        <ul class="bl">
+          <li><strong>Docstring</strong> = string literal as the <em>first statement</em> in the function body</li>
+          <li>Starts and ends with <span class="ic">"""triple quotes"""</span></li>
+          <li><strong>Single-line:</strong> keep it on one line with the quotes</li>
+          <li><strong>Multi-line:</strong> one blank line before closing <span class="ic">"""</span>; document parameters and return value</li>
+        </ul>
+        <div class="callout callout-note">
+          <span class="ic">help()</span> reads the docstring and prints formatted documentation. Works on any function — user-defined or built-in!
+        </div>
+        <div class="callout callout-info">
+          Document <strong>every function you write</strong> — your future self and teammates will thank you. A good docstring answers three questions: What does it do? What does it take? What does it return?
+        </div>
+        <div class="callout callout-warn">
+          No blank lines <em>before or after</em> the docstring. The <span class="ic">"""</span> must be the literal first statement — not a comment.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 21 — BREAKOUT #3
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Breakout #3 — Multiple Outputs + Docstring">
+  <div class="slide-body">
+    <div class="eyebrow">Now You Try</div>
+    <h2 class="slide-h2">Breakout Activity #3</h2>
+    <div class="breakout-card">
+      <div class="breakout-hdr">
+        <span class="breakout-icon">📊</span>
+        <span class="breakout-title">List Statistics — Min, Max &amp; Range</span>
+        <span class="breakout-time">⏱ 12 minutes</span>
+      </div>
+      <div class="two-col">
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--text);">Your Task:</strong></p>
+          <ul class="bl">
+            <li>Write <span class="ic">min_max_range(numbers)</span> that returns <strong>three values</strong>: the minimum, the maximum, and the range (max − min)</li>
+            <li>Include a proper <strong>docstring</strong> describing the function, parameter, and what it returns</li>
+            <li>Use <strong>unpacking</strong> to receive all three returned values into separate variables</li>
+            <li>Test with: <span class="ic">[34, 12, 78, 5, 99, 23]</span></li>
+            <li><strong>Bonus A:</strong> Call <span class="ic">help(min_max_range)</span> — watch your docstring appear!</li>
+            <li><strong>Bonus B:</strong> Can you write this using a loop <em>without</em> using Python's built-in <span class="ic">min()</span> and <span class="ic">max()</span>?</li>
+          </ul>
+        </div>
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--amber);">Expected output:</strong></p>
+          <div class="code-wrap">
+            <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+            <pre><code class="language-text">Min:   5
+Max:   99
+Range: 94</code></pre>
+          </div>
+          <div class="callout callout-info">
+            <strong>Hint:</strong> Python's built-in <span class="ic">min(list)</span> and <span class="ic">max(list)</span> work great here — or find them manually with a loop!
+          </div>
+          <div class="callout callout-warn">
+            <strong>Remember:</strong><br>
+            <span class="ic">return a, b, c</span> returns a <strong>tuple</strong>.<br>
+            Unpack: <span class="ic">mn, mx, rng = min_max_range(...)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 22 — TRACE DRILL
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Trace Drill — What Does It Print?">
+  <div class="slide-body">
+    <div class="eyebrow">Practice &mdash; Trace the Execution</div>
+    <h2 class="slide-h2">Trace Drill — What Does This Print?</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <pre><code class="language-python">def change_value(x):
+    return x + 4
+
+def double_it(val):
+    return val * 2
+
+a = change_value(1)          # line 1
+b = change_value(a)          # line 2
+c = double_it(b) + change_value(3)  # line 3
+
+print(a)   # what is a?
+print(b)   # what is b?
+print(c)   # what is c?</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="quiz-box">
+          <div class="quiz-q">What does <span class="ic">print(a)</span> output?</div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">👆 Tap to reveal</div>
+          <div class="quiz-answer">a = change_value(1) = 1 + 4 = <strong>5</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">What does <span class="ic">print(b)</span> output?</div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">👆 Tap to reveal</div>
+          <div class="quiz-answer">b = change_value(5) = 5 + 4 = <strong>9</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">What does <span class="ic">print(c)</span> output?</div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">👆 Tap to reveal</div>
+          <div class="quiz-answer">c = double_it(9) + change_value(3) = 18 + 7 = <strong>25</strong></div>
+        </div>
+        <div class="callout callout-info">
+          Trace through by substituting values step by step — the same way Python evaluates expressions. Work inside-out, left-to-right.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 23 — OPTIONAL: NAMESPACES
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.14 — Namespaces & Scope Resolution (Optional)">
+  <div class="slide-body">
+    <div class="eyebrow">6.14 &mdash; Namespaces <span class="opt-badge">Optional Deep Dive</span></div>
+    <h2 class="slide-h2">Namespaces &amp; Scope Resolution</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">What is a Namespace?</div>
+          <p>A <strong style="color:var(--text);">namespace</strong> is a dictionary mapping <em>names</em> → <em>objects</em>. Python maintains separate namespaces for different scopes. Each function call creates its own local namespace that is destroyed on return.</p>
+        </div>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">daily_cals = 2300
+soda_cals  = 200
+
+def drink_soda(cals_left):
+    # Python looks for soda_cals:
+    # 1st: local namespace  — not found
+    # 2nd: global namespace — found! (200)
+    return cals_left - soda_cals
+
+daily_cals = drink_soda(daily_cals)  # → 2100
+
+# Inspect your namespaces:
+print(globals())   # all names at global scope
+# inside a function:
+def show_locals(x):
+    y = x * 2
+    print(locals())   # {'x': ..., 'y': ...}</code></pre>
+        </div>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">LEGB Rule — Scope Resolution Order</div>
+          <ul class="bl" style="margin-top:6px;">
+            <li><strong>L</strong>ocal — inside the currently executing function</li>
+            <li><strong>E</strong>nclosing — any outer functions (nested function scope)</li>
+            <li><strong>G</strong>lobal — module-level names (outside any function)</li>
+            <li><strong>B</strong>uilt-in — Python's built-in names: <span class="ic">int</span>, <span class="ic">str</span>, <span class="ic">list</span>…</li>
+          </ul>
+        </div>
+        <div class="callout callout-info">
+          When Python sees a name, it searches L → E → G → B in that order. First match wins. If not found anywhere → <strong>NameError</strong>.
+        </div>
+        <div class="callout callout-note">
+          The same name can exist in multiple namespaces simultaneously. A local <span class="ic">tmp</span> inside a function shadows a global <span class="ic">tmp</span> — they are independent objects.
+        </div>
+        <div class="callout callout-warn">
+          If you define a function called <span class="ic">list()</span>, it <em>shadows</em> the built-in — your version wins inside that scope. Not a crash, but a very confusing bug.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 24 — OPTIONAL: *ARGS / **KWARGS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="6.17 — *args and **kwargs (Optional)">
+  <div class="slide-body">
+    <div class="eyebrow">6.17 &mdash; Arbitrary Argument Lists <span class="opt-badge">Optional Deep Dive</span></div>
+    <h2 class="slide-h2">Flexible Functions: <span class="ic">*args</span> and <span class="ic">**kwargs</span></h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <p class="small" style="color:var(--blue);font-weight:600;">*args — arbitrary positional arguments → tuple</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">def print_sandwich(bread, meat, *args):
+    print(f"{meat} on {bread}", end=" ")
+    if len(args) > 0:
+        print("with", end=" ")
+        for extra in args:
+            print(extra, end=" ")
+    print()
+
+print_sandwich("sourdough", "turkey", "mayo")
+# → turkey on sourdough with mayo
+
+print_sandwich("wheat", "ham", "mustard", "tomato", "lettuce")
+# → ham on wheat with mustard tomato lettuce
+
+# *args collects "extra" positional args into a tuple
+# bread and meat are required; everything after is optional</code></pre>
+        </div>
+      </div>
+      <div class="gap-sm">
+        <p class="small" style="color:var(--purple);font-weight:600;">**kwargs — arbitrary keyword arguments → dict</p>
+        <div class="code-wrap">
+          <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <pre><code class="language-python">def print_sandwich(meat, bread, **kwargs):
+    print(f"{meat} on {bread}")
+    for category, extra in kwargs.items():
+        print(f"  {category}: {extra}")
+
+print_sandwich("turkey", "sourdough", sauce="mayo")
+# → turkey on sourdough
+# →   sauce: mayo
+
+print_sandwich("ham", "wheat",
+               sauce1="mustard", veggie1="tomato")
+# → ham on wheat
+# →   sauce1: mustard
+# →   veggie1: tomato</code></pre>
+        </div>
+        <div class="callout callout-info">
+          <strong>Ordering rule:</strong> Normal params → <span class="ic">*args</span> → <span class="ic">**kwargs</span>. Both can appear together but must be last in that order.
+        </div>
+        <div class="callout callout-note">
+          "args" and "kwargs" are just conventions — any valid identifier works: <span class="ic">*toppings</span>, <span class="ic">**options</span>. The <span class="ic">*</span> and <span class="ic">**</span> are what matter.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 25 — SUMMARY
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Chapter 6 Summary">
+  <div class="slide-body">
+    <div class="eyebrow">Chapter 6 Review</div>
+    <h2 class="slide-h2">Chapter 6 Summary</h2>
+    <table class="sum-table">
+      <thead>
+        <tr><th>Concept</th><th>Syntax / Keyword</th><th>Key Point</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Function definition</td>
+          <td><span class="ic">def name(params):</span></td>
+          <td>Named, reusable block; define before calling</td>
+        </tr>
+        <tr>
+          <td>Return value</td>
+          <td><span class="ic">return expr</span></td>
+          <td>Sends result to caller; returns None if omitted</td>
+        </tr>
+        <tr>
+          <td>Void function</td>
+          <td>No return statement</td>
+          <td>Returns None; used for print-only functions</td>
+        </tr>
+        <tr>
+          <td>Parameters vs. args</td>
+          <td><span class="ic">def f(param)</span> / <span class="ic">f(arg)</span></td>
+          <td>Parameter = placeholder in def; argument = value in call</td>
+        </tr>
+        <tr>
+          <td>Multiple outputs</td>
+          <td><span class="ic">return a, b, c</span></td>
+          <td>Returns a tuple; unpack with <span class="ic">x, y, z = f()</span></td>
+        </tr>
+        <tr>
+          <td>Local scope</td>
+          <td>Variable inside <span class="ic">def</span></td>
+          <td>Invisible outside function; each call gets its own copy</td>
+        </tr>
+        <tr>
+          <td>Global scope</td>
+          <td>Variable outside <span class="ic">def</span></td>
+          <td>Readable inside functions; use <span class="ic">global x</span> to modify</td>
+        </tr>
+        <tr>
+          <td>Function stub</td>
+          <td><span class="ic">pass</span> or <span class="ic">return -1</span></td>
+          <td>Placeholder for incremental development</td>
+        </tr>
+        <tr>
+          <td>Docstring</td>
+          <td><span class="ic">"""..."""</span> as 1st statement</td>
+          <td>Documents purpose; displayed by <span class="ic">help()</span></td>
+        </tr>
+        <tr>
+          <td>Recursion</td>
+          <td>Function calls itself</td>
+          <td>Must have a base case to stop</td>
+        </tr>
+        <tr>
+          <td>Dynamic typing</td>
+          <td>No type declarations</td>
+          <td>Type checked at runtime; same function works on multiple types</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 26 — CLOSING HERO
+════════════════════════════════════════════ -->
+<section class="slide hero" data-title="What's Next — Week 8">
+  <div class="slide-body">
+    <div class="eyebrow">Looking Ahead &nbsp;&middot;&nbsp; Week 8</div>
+    <h1 class="slide-h1" style="font-size:2.8rem;">Chapter 7<br>Strings</h1>
+    <p class="slide-subtitle">Slicing, built-in methods, formatting, and string processing — all built on the function foundations from tonight</p>
+    <div class="tag-row" style="justify-content:center;margin-top:10px;">
+      <span class="tag tag-a">Ch 6 Labs &amp; Readings — due tonight 6/23</span>
+      <span class="tag tag-b">Ch 7 Readings — due 6/30</span>
+    </div>
+    <div class="callout callout-warn" style="max-width:520px;margin-top:20px;text-align:left;">
+      <strong>Reminder:</strong> zyBook Chapter 6 Labs and Readings are due by 11:59 PM tonight. zyBook readings are 25% of your final grade — keep up each week!
+    </div>
+    <div class="callout callout-info" style="max-width:520px;margin-top:10px;text-align:left;">
+      Questions? Use the <strong>Class Question Board</strong> on Canvas or email <strong>jmasseri@mdc.edu</strong>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ── Nav ── -->
+<nav class="slide-nav">
+  <button class="nav-btn" id="btn-first" onclick="goTo(0)">&#9194; First</button>
+  <button class="nav-btn" id="btn-prev"  onclick="prev()">&#9664; Prev</button>
+  <span id="slide-counter">1 / 26</span>
+  <button class="nav-btn" id="btn-next"  onclick="next()">Next &#9654;</button>
+  <button class="nav-btn" id="btn-last"  onclick="goTo(total-1)">Last &#9193;</button>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total  = slides.length;
+  let cur = 0;
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(n, total - 1));
+    slides[cur].classList.add('active');
+    document.getElementById('slide-counter').textContent = `${cur + 1} / ${total}`;
+    document.getElementById('slide-title-display').textContent =
+      slides[cur].dataset.title || '';
+    document.getElementById('progress-bar').style.width =
+      `${((cur + 1) / total) * 100}%`;
+    document.getElementById('btn-first').disabled = cur === 0;
+    document.getElementById('btn-prev').disabled  = cur === 0;
+    document.getElementById('btn-next').disabled  = cur === total - 1;
+    document.getElementById('btn-last').disabled  = cur === total - 1;
+  }
+
+  function next() { if (cur < total - 1) goTo(cur + 1); }
+  function prev() { if (cur > 0)         goTo(cur - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prev();
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End')  goTo(total - 1);
+  });
+
+  goTo(0);
+</script>
+
+</body>
+</html>
