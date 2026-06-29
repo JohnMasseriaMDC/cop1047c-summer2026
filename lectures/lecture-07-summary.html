@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COP 1047C – Lecture 7 Summary: Functions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #080c14;
+    --surface:   #0f1724;
+    --surface2:  #16202e;
+    --border:    #1e2d42;
+    --border2:   #253347;
+    --accent:    #f59e0b;
+    --accent-dk: #d97706;
+    --text:      #e2e8f0;
+    --muted:     #7d93af;
+    --green-bg:  #071510;
+    --green-bdr: #0d3322;
+    --green-txt: #34d399;
+    --tag-bg:    #1a2a3a;
+    --tag-txt:   #60a5fa;
+    --mono:      'JetBrains Mono', 'Courier New', monospace;
+    --sans:      'Outfit', system-ui, sans-serif;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Anchor links must land below the sticky header.
+     150px is a fallback; JS at the bottom measures the real height. */
+  html {
+    scroll-padding-top: 150px;
+    scroll-behavior: smooth;
+  }
+
+  /* JetBrains Mono ligature fix — keeps <=, >=, ==, != as typed characters */
+  pre, code, kbd {
+    font-family: var(--mono) !important;
+    font-variant-ligatures: none !important;
+    font-feature-settings: "liga" 0, "calt" 0 !important;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .course-tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 4px;
+    padding: 3px 10px;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+  header h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .header-meta {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: right;
+  }
+  .header-meta div { margin-bottom: 2px; }
+  header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding-bottom: 0.75rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  header nav a {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: color .15s, background .15s;
+  }
+  header nav a:hover { color: var(--accent); background: var(--surface2); }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  .section { margin-bottom: 3rem; }
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.35rem;
+  }
+  .section h2 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section p { margin-bottom: 1rem; color: var(--text); }
+  .section ul { margin: 0 0 1rem 1.4rem; }
+  .section ul li { margin-bottom: 0.45rem; }
+
+  .topic { margin: 1.75rem 0; }
+  .topic h3 {
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .topic-num {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--accent);
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 4px;
+    padding: 2px 8px;
+    flex-shrink: 0;
+  }
+
+  /* ── CODE BLOCKS ── */
+  .code-wrap {
+    background: #0a0f1a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1rem 0;
+  }
+  .code-bar {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot-r { background: #ef4444; } .dot-y { background: #f59e0b; } .dot-g { background: #22c55e; }
+  .code-bar .code-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+  .code-wrap pre {
+    margin: 0 !important;
+    padding: 1rem 1.25rem !important;
+    background: transparent !important;
+    font-size: 0.85rem !important;
+    line-height: 1.55 !important;
+    overflow-x: auto;
+  }
+  code:not(pre code) {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.84em;
+    color: #fbbf24;
+  }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+  .callout strong { display: inline; }
+  .callout-warn { background: #190b0b; border: 1px solid #3d1515; color: #fca5a5; }
+  .callout-info { background: #0a1322; border: 1px solid #1b3a5c; color: #93c5fd; }
+  .callout-note { background: #1a1304; border: 1px solid #4a3408; color: #fcd34d; }
+
+  /* ── TABLES ── */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th {
+    background: var(--surface2);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  td code { white-space: nowrap; }
+
+  /* ── ACTIVITY BLOCKS ── */
+  .activity {
+    background: var(--green-bg);
+    border: 1px solid var(--green-bdr);
+    border-radius: 10px;
+    padding: 1.25rem 1.4rem;
+    margin: 1.25rem 0;
+  }
+  .activity-tag {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--green-txt);
+    margin-bottom: 0.5rem;
+  }
+  .activity h4 { font-size: 1rem; margin-bottom: 0.5rem; }
+  .activity ol { margin: 0.5rem 0 0 1.3rem; }
+  .activity ol li { margin-bottom: 0.5rem; font-size: 0.93rem; }
+
+  /* ── REMINDERS ── */
+  .reminder-list { list-style: none; margin-left: 0 !important; }
+  .reminder-list li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.93rem;
+  }
+  .reminder-list li strong { color: var(--accent); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.75rem 1.5rem 2.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted);
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .header-meta { text-align: left; }
+    header { padding: 1.25rem 1.25rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <span class="course-tag">COP 1047C · Intro to Python · Summer 2026</span>
+      <h1>Lecture 7 Summary — Functions</h1>
+    </div>
+    <div class="header-meta">
+      <div>Tuesday, June 23, 2026</div>
+      <div>zyBook Chapter 6</div>
+      <div>Prof. John Masseria · MDC West</div>
+    </div>
+  </div>
+  <nav>
+    <a href="#objectives">Objectives</a>
+    <a href="#admin">Reminders</a>
+    <a href="#why">Why Functions</a>
+    <a href="#define">def &amp; return</a>
+    <a href="#params">Parameters</a>
+    <a href="#scope">Scope</a>
+    <a href="#none">void / None</a>
+    <a href="#modules">Modules</a>
+    <a href="#multi">Multiple Returns</a>
+    <a href="#poly">Polymorphism</a>
+    <a href="#stubs">Stubbing</a>
+    <a href="#recursion">Recursion</a>
+    <a href="#breakouts">Breakouts</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ═══ LEARNING OBJECTIVES ═══ -->
+<section class="section" id="objectives">
+  <div class="section-eyebrow">Tonight's Agenda</div>
+  <h2>🎯 By the End of Class You'll Be Able To…</h2>
+  <ul>
+    <li>Explain <em>why</em> we write functions — reuse, single-source-of-truth, and managing complexity</li>
+    <li>Define a function with <code>def</code>, give it parameters, and return a value</li>
+    <li>Distinguish a <strong>parameter</strong> (in the definition) from an <strong>argument</strong> (in the call)</li>
+    <li>Explain variable <strong>scope</strong>: local vs. global, and why local variables vanish when a function returns</li>
+    <li>Recognize a <strong>void function</strong> that returns <code>None</code>, and the errors that follow from using <code>None</code> in a calculation</li>
+    <li>Return <strong>multiple values</strong> from a function and unpack the resulting tuple</li>
+    <li>Read a <strong>recursive</strong> function and identify its base case and recursive case</li>
+  </ul>
+  <div class="callout callout-info">
+    <strong>Plan note:</strong> Chapter 6 had more material than one session could hold, so the <strong>midterm review moved to next week</strong> (June 30), bundled with Chapter 7 (Strings). The course homepage agenda has been updated to reflect this.
+  </div>
+</section>
+
+<!-- ═══ ADMIN REMINDERS ═══ -->
+<section class="section" id="admin">
+  <div class="section-eyebrow">Administrative</div>
+  <h2>📋 Reminders</h2>
+  <ul class="reminder-list">
+    <li><strong>Due Tue 6/30:</strong> zyBook Chapter 6 — Readings and Labs. If you have <em>any</em> missing assignments from earlier chapters, catch up now — we're entering crunch time and they build on each other.</li>
+    <li><strong>Next week (6/30):</strong> Chapter 7 (Strings) <em>plus</em> the midterm review that was postponed from this week. We'll go over the midterm together.</li>
+    <li><strong>Extra credit:</strong> the Chapter 11 (Modules) reading assignment is worth <strong>5 points added to your final grade</strong>. Completing that reading is the whole requirement.</li>
+    <li><strong>Last day to withdraw with a W grade: June 30.</strong> If you're feeling overwhelmed and falling well behind, a W is generally better than a failing grade — but talk to me <em>first</em>. If you're having trouble finishing an assignment, email me and I'll help.</li>
+    <li><strong>Breakout solutions</strong> are posted to the course site under <code>solutions/</code>, alongside the prior lectures'.</li>
+  </ul>
+</section>
+
+<!-- ═══ WHY FUNCTIONS ═══ -->
+<section class="section" id="why">
+  <div class="section-eyebrow">Topic 1</div>
+  <h2>🧩 Why Write Functions?</h2>
+  <p>We've used functions all semester — <code>print()</code> and <code>input()</code> are functions. Tonight is about writing our <em>own</em>. The core reasons:</p>
+  <ul>
+    <li><strong>Reuse.</strong> A loop repeats code in one spot; a function lets you run the same code from <em>anywhere</em>, as many times as you like, with different inputs each time.</li>
+    <li><strong>Single source of truth.</strong> If you copy-paste a temperature formula five times, you've created five chances to introduce a typo (one wrong operator and that result is silently wrong). Put the formula in <em>one</em> function and every caller gets the correct, identical logic.</li>
+    <li><strong>Testing.</strong> Once a function is thoroughly tested, you can trust it — call it with any valid input and rely on the result.</li>
+    <li><strong>Decomposition (divide and conquer).</strong> Break a big problem into small, independently testable pieces, then assemble them. Think of functions as Lego blocks you snap together.</li>
+  </ul>
+</section>
+
+<!-- ═══ DEFINE & RETURN ═══ -->
+<section class="section" id="define">
+  <div class="section-eyebrow">Topic 2</div>
+  <h2>🛠️ Defining a Function: <code>def</code> and <code>return</code></h2>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">f_to_c.py</span></div>
+    <pre><code class="language-python">def f_to_c(f):
+    """Convert a Fahrenheit temperature to Celsius."""
+    c = (f - 32) * (5 / 9)
+    return c
+
+c1 = f_to_c(32)     # 0.0
+c2 = f_to_c(212)    # 100.0</code></pre>
+  </div>
+  <p>The anatomy: the <code>def</code> keyword (short for <em>define</em>), the function name (an identifier — same rules as any variable: letters, digits, underscores; can't start with a digit; case-sensitive), parentheses holding the parameter list, a colon, and an indented <strong>body</strong>. The body is a block, just like the body of a loop or an <code>if</code>.</p>
+  <ul>
+    <li><strong><code>return</code></strong> hands a value back to the caller and exits the function. The whole function call <em>becomes</em> that returned value: after <code>c1 = f_to_c(32)</code>, the call is replaced by <code>0.0</code>.</li>
+    <li><strong>Define before you call.</strong> Python must have read the <code>def</code> before it reaches a call to it. Standard program layout: imports at top, then all function definitions, then the main program that uses them.</li>
+    <li><strong>Parentheses matter:</strong> <code>(f - 32)</code> is parenthesized so the subtraction happens before the multiplication — without it, order of operations would compute the wrong result.</li>
+  </ul>
+  <div class="callout callout-note">
+    <strong>Docstring:</strong> a triple-quoted string as the <em>first</em> line of the body becomes the function's documentation. It's what <code>help(f_to_c)</code> displays. Best practice is to write one: say what the function does and what its parameters mean.
+  </div>
+  <div class="callout callout-info">
+    <strong>You can return an expression directly.</strong> There's no need for a throwaway variable — <code>return (f - 32) * (5 / 9)</code> works just as well as computing <code>c</code> first and returning it. <code>def compute_square(n): return n * n</code> is a complete function.
+  </div>
+</section>
+
+<!-- ═══ PARAMETERS ═══ -->
+<section class="section" id="params">
+  <div class="section-eyebrow">Topic 3</div>
+  <h2>📥 Parameters vs. Arguments</h2>
+  <p>The vocabulary distinction matters and may be tested:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Term</th><th>Where</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Parameter</strong></td><td>In the <em>definition</em> — a placeholder name</td><td><code>def calc(pizza_diameter):</code></td></tr>
+        <tr><td><strong>Argument</strong></td><td>In the <em>call</em> — the actual value passed</td><td><code>calc(12)</code> — 12 is the argument</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>When the function is called, Python creates a temporary local variable for each parameter and fills it with the matching argument: <code>calc(12)</code> sets <code>pizza_diameter</code> to 12 for the duration of that call. A function can take several parameters, matched left-to-right:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">two_params.py</span></div>
+    <pre><code class="language-python">import math
+
+def calc_pizza_volume(diameter, height):
+    radius = diameter / 2
+    area = math.pi * radius * radius
+    return area * height          # cylinder: area x height
+
+v = calc_pizza_volume(12, 0.3)    # diameter=12, height=0.3</code></pre>
+  </div>
+  <div class="callout callout-note">
+    <strong>Naming convention:</strong> name functions with a <em>verb</em> and underscores — <code>calc_pizza_volume</code>, <code>convert_to_celsius</code>. The camelCase style (capital-letter "humps") works syntactically but isn't the recommended Python style for function names.
+  </div>
+  <div class="callout callout-warn">
+    <strong>Don't put an expression in the parameter list of a definition.</strong> <code>def my_func(x + 5):</code> is invalid — the definition expects plain parameter names. To add 5 to the input, do it in the body: <code>x = x + 5</code>.
+  </div>
+</section>
+
+<!-- ═══ SCOPE ═══ -->
+<section class="section" id="scope">
+  <div class="section-eyebrow">Topic 4</div>
+  <h2>🔭 Variable Scope: Local vs. Global</h2>
+  <ul>
+    <li><strong>Local variables</strong> are created <em>inside</em> a function (including its parameters). They exist only while the function runs and <strong>vanish when it returns</strong> — their memory is reused. You can't reference them from outside.</li>
+    <li><strong>Global variables</strong> are created <em>outside</em> any function. They're visible everywhere, including inside functions.</li>
+    <li><strong>Two variables with the same name</strong> — one inside a function, one outside — are genuinely <em>different</em> variables (you can prove it with <code>id()</code>). The parameter name doesn't have to match the argument's variable name.</li>
+  </ul>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">scope.py</span></div>
+    <pre><code class="language-python">employee_name = "N/A"        # global
+
+def get_name():
+    employee_name = input("Name: ")   # creates a NEW local!
+
+get_name()
+print(employee_name)         # still "N/A" — global unchanged</code></pre>
+  </div>
+  <div class="callout callout-warn">
+    <strong>The assignment trap:</strong> assigning to a name inside a function creates a <em>local</em> variable, even if a global of the same name exists — so the global is left untouched. To actually modify the global, declare <code>global employee_name</code> as the first line of the function. (Constants are the usual reason to read globals; use the <code>global</code> keyword sparingly.)
+  </div>
+  <div class="callout callout-note">
+    <strong>Constants convention:</strong> Python has no true constants, so by convention we name them in <code>ALL_UPPERCASE</code> (e.g. <code>CENTIMETERS_PER_INCH = 2.54</code>) as a signal "don't change this." Nothing stops a program from changing it — the uppercase is a human warning, not an enforced rule.
+  </div>
+</section>
+
+<!-- ═══ VOID / NONE ═══ -->
+<section class="section" id="none">
+  <div class="section-eyebrow">Topic 5</div>
+  <h2>🕳️ Void Functions and <code>None</code></h2>
+  <p>A function with no <code>return</code> (or a bare <code>return</code> with no value) is a <strong>void function</strong>. It still returns something — the special value <code>None</code>. Python adds an implicit <code>return None</code> at the end of every function that doesn't return otherwise.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">none_trap.py</span></div>
+    <pre><code class="language-python">def miles_to_km(miles):
+    km = miles * 1.60934        # forgot to return!
+
+result = miles_to_km(5)
+print(type(result))             # &lt;class 'NoneType'&gt;
+print(f"{result:.2f}")          # TypeError — can't format None</code></pre>
+  </div>
+  <div class="callout callout-warn">
+    <strong>Forgetting <code>return</code> is a top mistake.</strong> The function runs, computes the answer, and throws it away — returning <code>None</code>. Using that <code>None</code> in arithmetic or an f-string raises a <code>TypeError</code>. A void function (like one that only prints a menu) is fine; the bug is forgetting <code>return</code> when you <em>needed</em> the value.</p>
+  </div>
+  <div class="callout callout-info">
+    <strong>Return a status signal.</strong> Many functions return <code>0</code> for success and a non-zero or <code>-1</code> for an error (a sentinel) so the caller can check whether things worked. Error codes are often used as an index into a list of error messages — remember to subtract 1 if the codes start at 1 but list indexes start at 0.
+  </div>
+</section>
+
+<!-- ═══ MODULES ═══ -->
+<section class="section" id="modules">
+  <div class="section-eyebrow">Topic 6</div>
+  <h2>📦 Using Modules</h2>
+  <p>Two ways to pull in library code, shown with <code>math</code>:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Import style</th><th>How you use it</th><th>Trade-off</th></tr></thead>
+      <tbody>
+        <tr><td><code>import math</code></td><td><code>math.pi</code>, <code>math.pow(2, 3)</code></td><td>Brings in the whole module — larger, but everything's available</td></tr>
+        <tr><td><code>from math import pi</code></td><td><code>pi</code> (no prefix needed)</td><td>Brings in just that one name — smaller, and you skip the <code>math.</code> prefix</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Imports go at the top of your program. Many hardware devices ship with a module too — the classroom display's library is imported the same way, which is what makes driving the hardware easy.</p>
+</section>
+
+<!-- ═══ MULTIPLE RETURNS ═══ -->
+<section class="section" id="multi">
+  <div class="section-eyebrow">Topic 7</div>
+  <h2>🎁 Returning Multiple Values</h2>
+  <p>List the values after <code>return</code>, separated by commas, and Python bundles them into a <strong>tuple</strong>. The caller <strong>unpacks</strong> the tuple into the matching number of variables.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">multi_return.py</span></div>
+    <pre><code class="language-python">def cm_to_us_height(cm):
+    inches = cm / 2.54
+    feet = inches // 12          # whole feet
+    inches = inches % 12         # leftover inches
+    return feet, inches          # a tuple of two values
+
+feet, inches = cm_to_us_height(193.04)   # unpack: 6, 4
+one_var = cm_to_us_height(193.04)        # a tuple (6.0, 4.0)</code></pre>
+  </div>
+  <div class="callout callout-warn">
+    <strong>The variable count must match.</strong> If a function returns 3 values, you must unpack into exactly 3 variables — asking for 2 (or 4) raises a <code>ValueError</code> about unpacking. Assign to a <em>single</em> variable and you simply get the whole tuple. This is the same floor-division/modulo digit-splitting idea: <code>// 12</code> gives whole feet, <code>% 12</code> gives leftover inches.
+  </div>
+</section>
+
+<!-- ═══ POLYMORPHISM ═══ -->
+<section class="section" id="poly">
+  <div class="section-eyebrow">Topic 8</div>
+  <h2>🦆 Dynamic Typing, Duck Typing &amp; Operator Overloading</h2>
+  <ul>
+    <li><strong>Dynamic typing:</strong> a variable's type can change as you reassign it — <code>km = 10</code> (int), then <code>km = "ten"</code> (str). You never declare types; Python infers them. (Statically-typed languages lock a variable to one type.)</li>
+    <li><strong>Duck typing:</strong> "if it walks like a duck and quacks like a duck, it's a duck." Python cares what a value can <em>do</em>, not what it's formally declared as.</li>
+    <li><strong>Operator overloading (polymorphism):</strong> the same operator behaves differently by type. <code>+</code> adds numbers, concatenates strings, and joins lists; <code>*</code> multiplies numbers but repeats strings (<code>"ha" * 3</code> → <code>"hahaha"</code>).</li>
+  </ul>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">overload.py</span></div>
+    <pre><code class="language-python">def add(x, y):
+    return x + y
+
+print(add(5, 7))                # 12   (integer add)
+print(add("Tora", "Bora"))      # ToraBora  (concatenate, no space)
+print(add([1, 2], [3, 4]))      # [1, 2, 3, 4]  (list join)
+print(add(5, "x"))              # TypeError — int + str not allowed</code></pre>
+  </div>
+  <div class="callout callout-note">
+    Mixing an <code>int</code> and a <code>float</code> works — the int is coerced to float. But mixing a number and a string is a <code>TypeError</code>; you must convert explicitly with <code>str()</code> or <code>int()</code> first.
+  </div>
+  <div class="callout callout-info">
+    <strong>A peek under the hood (optional):</strong> when an f-string formats a value, it calls that value's built-in <code>__format__</code> method. Floats, ints, and strings all have one, which is why <code>f"{x:.2f}"</code> works on them — and why it fails on <code>None</code>, which has no such method. This is object-oriented machinery we'll explore later; not on any exam.
+  </div>
+</section>
+
+<!-- ═══ STUBBING ═══ -->
+<section class="section" id="stubs">
+  <div class="section-eyebrow">Topic 9</div>
+  <h2>🚧 Incremental Development: Stubbing Out Functions</h2>
+  <p>While building a program, you often want to call a function before you've written it. Three ways to "stub" it:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Stub</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td><code>pass</code></td><td>Does nothing; the function returns <code>None</code>. Lets the program run, but using the result errors.</td></tr>
+        <tr><td><code>print("FIX ME"); return -1</code></td><td>Prints a reminder and returns a sentinel error value the caller can detect.</td></tr>
+        <tr><td><code>raise NotImplementedError</code></td><td>Stops the program with a clear error if the unfinished function is ever called — the safest stub.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>The third is best when you want to <em>guarantee</em> the function isn't used before it's finished, because it can't silently return a wrong answer.</p>
+</section>
+
+<!-- ═══ RECURSION ═══ -->
+<section class="section" id="recursion">
+  <div class="section-eyebrow">Topic 10</div>
+  <h2>🔁 Recursion (Light Touch)</h2>
+  <p>A function can call <em>itself</em> — that's <strong>recursion</strong>. Every recursive function needs two parts:</p>
+  <ul>
+    <li><strong>Base case:</strong> an <code>if</code> at the top that stops the recursion (you've reached the simplest input).</li>
+    <li><strong>Recursive case:</strong> a call to itself with a "smaller" input that moves toward the base case.</li>
+  </ul>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">recursion.py</span></div>
+    <pre><code class="language-python">def countdown(count):
+    if count == 0:           # base case
+        print("GO")
+        return
+    print(count)
+    countdown(count - 1)     # recursive case — moves toward 0
+
+def factorial(n):
+    if n == 1:
+        return 1
+    return n * factorial(n - 1)   # 6! = 720</code></pre>
+  </div>
+  <div class="callout callout-warn">
+    <strong>If the recursive call doesn't approach the base case, you get infinite recursion.</strong> Python caps recursion depth at about 1000 calls and then raises a <code>RecursionError</code>. <code>countdown</code> only works for a positive start; a negative input never reaches 0.
+  </div>
+  <div class="callout callout-info">
+    <strong>What's testable:</strong> just the <em>concept</em> — that a recursive function needs a base case to stop, and that the recursive call must lead toward it. Factorial and the Fibonacci sequence are the classic examples (Fibonacci is recursively defined: each number is the sum of the two before it, and it even shows up in nature, like spiral shells).
+  </div>
+</section>
+
+<!-- ═══ BREAKOUTS ═══ -->
+<section class="section" id="breakouts">
+  <div class="section-eyebrow">In-Class Practice</div>
+  <h2>🧪 Breakout Exercises</h2>
+
+  <div class="activity">
+    <div class="activity-tag">Breakout 1 · Miles to Kilometers</div>
+    <h4>Write and test a conversion function</h4>
+    <ol>
+      <li>Write <code>miles_to_kilometer(miles)</code> that returns <code>miles * 1.60934</code>.</li>
+      <li>Test it by printing the result for 5, 26, and 100 miles, each to two decimal places.</li>
+      <li><strong>Bonus:</strong> write the reverse, <code>kilometers_to_miles(km)</code>, and test it.</li>
+      <li><strong>Extra bonus:</strong> predict (in a comment) what <code>miles_to_kilometer(kilometers_to_miles(100))</code> returns, then check. It should be ~100 — but floating-point rounding may make it not <em>exactly</em> 100.</li>
+    </ol>
+  </div>
+
+  <div class="activity">
+    <div class="activity-tag">Breakout 2 · Classify Speed</div>
+    <h4>Return a string from a range check</h4>
+    <ol>
+      <li>Write <code>classify_speed(mph)</code> returning: <code>"school zone - slow"</code> if under 25; <code>"normal highway"</code> if 25–64; <code>"fast - interstate"</code> if 65 or above.</li>
+      <li>Check the boundaries in ascending order (lowest first), exactly as with the if-statement range checks from Lecture 4.</li>
+      <li>Test it on 15, 45, and 90 by putting the speeds in a list and looping: <code>for mph in speeds:</code>.</li>
+    </ol>
+  </div>
+
+  <div class="activity">
+    <div class="activity-tag">Breakout 3 · (Time permitting)</div>
+    <h4>Extend a function with a loop</h4>
+    <ol>
+      <li>Wrap <code>classify_speed</code> in a sentinel loop: keep asking the user for a speed until they enter <code>-1</code>, classifying and printing each one, then print "goodbye."</li>
+    </ol>
+  </div>
+
+  <p>Full worked solutions are posted in the course repo under <code>solutions/</code>.</p>
+</section>
+
+<!-- ═══ UP NEXT ═══ -->
+<section class="section" id="next">
+  <div class="section-eyebrow">Up Next</div>
+  <h2>⏭️ June 30 — Strings (Ch. 7) + Midterm Review</h2>
+  <p>We'll cover Chapter 7 (Strings) and go over the midterm together. Finish your Chapter 6 readings and labs before then, and clear any missing assignments. Remember: June 30 is the last day to withdraw with a W.</p>
+</section>
+
+</main>
+
+<footer>
+  Questions? Post on the <strong>Class Question Board</strong> in Canvas or email
+  <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+// Keep anchor targets clear of the sticky header, whatever its
+// current height (the nav wraps to extra rows on narrow screens).
+(function () {
+  const header = document.querySelector('header');
+  function setScrollOffset() {
+    document.documentElement.style.scrollPaddingTop = (header.offsetHeight + 12) + 'px';
+  }
+  setScrollOffset();
+  window.addEventListener('resize', setScrollOffset);
+})();
+</script>
+</body>
+</html>
