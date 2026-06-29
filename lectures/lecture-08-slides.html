@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lecture 8 — Chapter 7: Strings | COP 1047C Summer 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080c14;
+      --surface:  #0f1623;
+      --surface2: #162030;
+      --border:   #1e2d42;
+      --amber:    #f59e0b;
+      --amber-d:  #b45309;
+      --blue:     #38bdf8;
+      --green:    #4ade80;
+      --red:      #f87171;
+      --purple:   #c084fc;
+      --text:     #e2e8f0;
+      --text-d:   #94a3b8;
+      --text-f:   #475569;
+      --hdr-h:    64px;
+      --nav-h:    56px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── Progress bar ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--amber);
+      transition: width .3s ease;
+      z-index: 100;
+    }
+
+    /* ── Header ── */
+    .slide-header {
+      position: fixed;
+      top: 3px; left: 0; right: 0;
+      height: var(--hdr-h);
+      background: rgba(8,12,20,.97);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 90;
+      backdrop-filter: blur(8px);
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* Override — header should span full width */
+    .slide-header {
+      max-width: none;
+      left: 0;
+      transform: none;
+    }
+
+    .chapter-tag {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      background: rgba(245,158,11,.1);
+      border: 1px solid rgba(245,158,11,.25);
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    #slide-title-display {
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+      flex: 1;
+      padding: 0 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mdc-badge {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: rgba(56,189,248,.08);
+      border: 1px solid rgba(56,189,248,.2);
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* ── Deck / slide ── */
+    #deck {
+      position: fixed;
+      top: calc(var(--hdr-h) + 3px);
+      bottom: var(--nav-h);
+      left: 0; right: 0;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* hero variant — centred layout, NO display rule on base .slide.hero */
+    .slide.hero {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* ── Slide body ── */
+    .slide-body {
+      flex: 1;
+      padding: 32px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .slide.hero .slide-body {
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    /* ── Typography ── */
+    .eyebrow {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    h1.slide-h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h2.slide-h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .slide-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-d);
+      font-weight: 400;
+      max-width: 580px;
+    }
+
+    /* ── Inline code helper ── */
+    .ic {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-ligatures: none;
+      font-feature-settings: "liga" 0, "calt" 0;
+      font-size: .82em;
+      background: var(--surface2);
+      color: var(--blue);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Concept box ── */
+    .concept {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--amber);
+      border-radius: 8px;
+      padding: 14px 18px;
+    }
+
+    .concept-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 6px;
+    }
+
+    .concept p, .concept li {
+      color: var(--text-d);
+      font-size: .92rem;
+      line-height: 1.65;
+    }
+
+    /* ── Bullet list ── */
+    .bl {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .bl li {
+      display: block;
+      position: relative;
+      padding-left: 22px;
+      font-size: .92rem;
+      color: var(--text-d);
+      line-height: 1.6;
+    }
+
+    .bl li::before {
+      content: '▸';
+      color: var(--amber);
+      position: absolute;
+      left: 4px;
+      top: 0;
+    }
+
+    .bl li strong { color: var(--text); }
+
+    /* ── Two-column ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .two-col.wl { grid-template-columns: 3fr 2fr; }
+    .two-col.rw { grid-template-columns: 2fr 3fr; }
+
+    /* ── Code block ── */
+    .code-wrap {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .code-hdr {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: #161b22;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+
+    .code-wrap pre {
+      margin: 0 !important;
+      background: transparent !important;
+      padding: 14px 16px !important;
+      font-size: .8rem !important;
+      line-height: 1.65 !important;
+      overflow-x: auto;
+    }
+
+    .code-wrap pre code {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-variant-ligatures: none !important;
+      font-feature-settings: "liga" 0, "calt" 0 !important;
+    }
+
+    /* ── Callouts ── */
+    .callout {
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: .88rem;
+      line-height: 1.65;
+    }
+
+    .callout-info   { background: rgba(56,189,248,.07);  border: 1px solid rgba(56,189,248,.22);  color: #bae6fd; }
+    .callout-warn   { background: rgba(245,158,11,.07);  border: 1px solid rgba(245,158,11,.25);  color: #fde68a; }
+    .callout-note   { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.22);  color: #bbf7d0; }
+    .callout-purple { background: rgba(192,132,252,.07); border: 1px solid rgba(192,132,252,.22); color: #e9d5ff; }
+
+    .callout strong { color: inherit; font-weight: 700; }
+
+    /* ── Tag row ── */
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { font-size: .75rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+    .tag-a  { background: rgba(245,158,11,.15); color: #fcd34d; }
+    .tag-b  { background: rgba(56,189,248,.12); color: #7dd3fc; }
+    .tag-g  { background: rgba(74,222,128,.12); color: #86efac; }
+    .tag-p  { background: rgba(192,132,252,.12); color: #d8b4fe; }
+
+    /* ── Optional badge ── */
+    .opt-badge {
+      display: inline-block;
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--purple);
+      background: rgba(192,132,252,.1);
+      border: 1px solid rgba(192,132,252,.25);
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* ── Breakout card ── */
+    .breakout-card {
+      background: rgba(245,158,11,.04);
+      border: 2px solid rgba(245,158,11,.3);
+      border-radius: 12px;
+      padding: 22px 26px;
+      flex: 1;
+    }
+
+    .breakout-hdr {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .breakout-icon { font-size: 1.4rem; }
+
+    .breakout-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--amber);
+    }
+
+    .breakout-time {
+      margin-left: auto;
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--amber-d);
+      background: rgba(245,158,11,.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* ── Quiz / trace ── */
+    .quiz-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .quiz-q {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      font-size: .9rem;
+    }
+
+    .quiz-reveal {
+      font-size: .85rem;
+      color: var(--text-d);
+      background: rgba(245,158,11,.06);
+      border: 1px solid rgba(245,158,11,.15);
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-top: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .2s;
+    }
+
+    .quiz-reveal:hover { background: rgba(245,158,11,.12); }
+
+    .quiz-answer {
+      display: none;
+      margin-top: 8px;
+      color: var(--green);
+      font-weight: 600;
+      font-size: .88rem;
+    }
+
+    .quiz-answer.shown { display: block; }
+
+    /* ── Summary table ── */
+    .sum-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .86rem;
+    }
+
+    .sum-table th {
+      background: var(--surface2);
+      color: var(--amber);
+      font-weight: 700;
+      padding: 9px 14px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .sum-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-d);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .sum-table td:first-child {
+      color: var(--text);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ── Nav ── */
+    .slide-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: rgba(8,12,20,.97);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      z-index: 90;
+    }
+
+    .nav-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-d);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .nav-btn:hover {
+      background: var(--surface2);
+      color: var(--text);
+      border-color: var(--amber);
+    }
+
+    .nav-btn:disabled {
+      opacity: .35;
+      cursor: default;
+    }
+
+    #slide-counter {
+      font-size: .82rem;
+      color: var(--text-f);
+      min-width: 76px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Utility ── */
+    .gap-sm { display: flex; flex-direction: column; gap: 10px; }
+    .small { font-size: .85rem; color: var(--text-d); }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header class="slide-header">
+  <div class="chapter-tag">Ch 7 &middot; Strings</div>
+  <div id="slide-title-display">COP 1047C &mdash; Introduction to Python</div>
+  <div class="mdc-badge">MDC Live &middot; Summer 2026</div>
+</header>
+<!-- ═══════════════════════════════════════════
+     SLIDE 1 — HERO
+════════════════════════════════════════════ -->
+<section class="slide hero active" data-title="Chapter 7: Strings">
+  <div class="slide-body">
+    <div class="eyebrow">COP 1047C &nbsp;&middot;&nbsp; Lecture 8 &nbsp;&middot;&nbsp; Week 8</div>
+    <h1 class="slide-h1">Chapter 7<br>Strings</h1>
+    <p class="slide-subtitle">Slicing, formatting, built-in methods, and splitting &amp; joining text</p>
+    <div class="tag-row" style="justify-content:center;margin-top:10px;">
+      <span class="tag tag-a">slicing</span>
+      <span class="tag tag-b">formatting</span>
+      <span class="tag tag-g">methods</span>
+      <span class="tag tag-b">split</span>
+      <span class="tag tag-a">join</span>
+      <span class="tag tag-p">JSON</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 2 — AGENDA
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Tonight's Agenda">
+  <div class="slide-body">
+    <div class="eyebrow">Lecture 8</div>
+    <h2 class="slide-h2">Tonight's Agenda &amp; Learning Objectives</h2>
+    <p class="small">By the end of class you will be able to:</p>
+    <ul class="bl">
+      <li><strong>Index and slice</strong> strings using <span class="ic">my_str[i]</span> and <span class="ic">my_str[start:end:step]</span>, including negative indices (7.1)</li>
+      <li><strong>Format output</strong> with field widths, alignment, fill characters, and floating-point precision in f-strings (7.2)</li>
+      <li><strong>Search</strong> strings using <span class="ic">find</span>, <span class="ic">rfind</span>, <span class="ic">count</span>, and the <span class="ic">in</span> operator (7.3)</li>
+      <li><strong>Compare</strong> strings character-by-character using ASCII / Unicode values (7.3)</li>
+      <li><strong>Validate</strong> strings using <span class="ic">isdigit</span>, <span class="ic">isalnum</span>, <span class="ic">startswith</span>, <span class="ic">endswith</span> (7.3)</li>
+      <li><strong>Transform</strong> strings with <span class="ic">lower</span>, <span class="ic">upper</span>, <span class="ic">strip</span>, <span class="ic">replace</span>, <span class="ic">title</span> (7.3)</li>
+      <li><strong>Tokenize</strong> a string with <span class="ic">split()</span> and rebuild one with <span class="ic">join()</span> (7.4)</li>
+      <li><strong>Combine</strong> <span class="ic">split()</span> and <span class="ic">join()</span> to edit, replace, or restructure text (7.4)</li>
+      <li style="color:var(--purple);"><strong>Applied:</strong> Load &amp; access JSON data &nbsp;|&nbsp; understand how floating-point values are stored</li>
+    </ul>
+    <div class="callout callout-info">
+      <strong>Competencies 2 &amp; 7</strong> &mdash; mastery of fundamental data types; formatted output and processing of textual data.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 3 — STRINGS AS SEQUENCES / INDEXING
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.1 — Strings as Sequences">
+  <div class="slide-body">
+    <div class="eyebrow">7.1 &mdash; Indexing</div>
+    <h2 class="slide-h2">Strings Are Sequences of Characters</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Index</div>
+          <p>An <strong style="color:var(--text);">index</strong> is an integer that identifies one position in a string. Indices start at <strong style="color:var(--text);">0</strong>, so the first character is at index 0, the second at index 1, and so on.</p>
+        </div>
+        <ul class="bl">
+          <li>Read one character with <span class="ic">my_str[i]</span></li>
+          <li>Use <span class="ic">len(my_str)</span> to get the total length</li>
+          <li>The last valid index is always <span class="ic">len(my_str) - 1</span></li>
+          <li>Going past the end raises an <span class="ic">IndexError</span></li>
+        </ul>
+        <div class="callout callout-warn">
+          <strong>Strings are immutable.</strong>&nbsp;&mdash;&nbsp;you can read <span class="ic">my_str[3]</span>, but you cannot assign to it. Any "change" produces a brand-new string.
+        </div>
+      </div>
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">word = "Python"
+#       P  y  t  h  o  n
+#       0  1  2  3  4  5
+
+print(word[0])     # P
+print(word[5])     # n
+print(word[-1])    # n  (last char)
+print(len(word))   # 6
+
+# IndexError if you go past the end
+# print(word[6])  -> crash!
+
+# Immutable:
+# word[0] = "J"   -> TypeError
+word = "J" + word[1:]   # new string
+print(word)        # Jython</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 4 — SLICE NOTATION
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.1 — Slice Notation [start:end]">
+  <div class="slide-body">
+    <div class="eyebrow">7.1 &mdash; Slicing</div>
+    <h2 class="slide-h2">Slice Notation: <span class="ic" style="font-size:.7em;">my_str[start:end]</span></h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">url = "http://en.wikipedia.org/wiki/Turing"
+
+# Read indices 7 through 22 (NOT 23)
+domain = url[7:23]
+print(domain)          # en.wikipedia.org
+
+# John Doe demo
+my_str = "John Doe"
+print(my_str[0:4])     # "John"
+print(my_str[4:7])     # " Do" (space + Do)
+print(my_str[5:8])     # "Doe"
+print(my_str[5:10])    # "Doe"  (no error)
+
+# Empty slice
+print(my_str[2:1])     # ""   (start &gt; end)</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Slice Rule</div>
+          <p><span class="ic">my_str[start:end]</span> returns a <strong style="color:var(--text);">new string</strong> containing characters from index <strong>start</strong> up to but <em>not including</em> <strong>end</strong>.</p>
+        </div>
+        <ul class="bl">
+          <li><strong>start is inclusive</strong>, <strong>end is exclusive</strong></li>
+          <li>A slice always creates a <strong>new</strong> string&nbsp;&mdash;&nbsp;the original is unchanged</li>
+          <li>End index past the end of the string is OK&nbsp;&mdash;&nbsp;Python stops at the end</li>
+          <li>start &gt;= end produces an <em>empty</em> string (no error)</li>
+        </ul>
+        <div class="callout callout-info">
+          <strong>Counting trick:</strong> length of the slice = <span class="ic">end - start</span> (assuming both are in range).
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 5 — NEGATIVE INDICES & OMITTING BOUNDS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.1 — Negative Indices &amp; Open Slices">
+  <div class="slide-body">
+    <div class="eyebrow">7.1 &mdash; Negative &amp; Open-Ended Slices</div>
+    <h2 class="slide-h2">Counting From the End &amp; Omitting Bounds</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Negative Index</div>
+          <p>Negative numbers count from the <strong style="color:var(--text);">end</strong> of the string. <span class="ic">-1</span> is the last character, <span class="ic">-2</span> is the second-to-last, and so on.</p>
+        </div>
+        <div class="concept">
+          <div class="concept-label">Omitting Bounds</div>
+          <p>Leave <strong>start</strong> off and Python uses <strong>0</strong>. Leave <strong>end</strong> off and Python uses the <strong>length</strong> of the string.</p>
+        </div>
+        <div class="callout callout-note">
+          <strong>Idiom:</strong> <span class="ic">s[:-1]</span> = "everything except the last character" &mdash; very common when stripping a newline or trailing punctuation.
+        </div>
+      </div>
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">name = "Jane Doe!?"
+#       J a n e _ D o e ! ?
+#       0 1 2 3 4 5 6 7 8 9
+#      -10 ...           -2 -1
+
+print(name[0:-2])    # "Jane Doe"  (drop last 2)
+print(name[-3:])     # "e!?"       (last 3)
+print(name[-1])      # "?"
+
+# Omitting bounds
+greet = "Hello, World!"
+print(greet[:5])     # "Hello"
+print(greet[7:])     # "World!"
+print(greet[:])      # whole copy
+print(greet[:-1])    # drop trailing "!"</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 6 — SLICE STRIDE
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.1 — Slice Stride [start:end:step]">
+  <div class="slide-body">
+    <div class="eyebrow">7.1 &mdash; The Third Argument</div>
+    <h2 class="slide-h2">Slice Stride: <span class="ic" style="font-size:.7em;">[start:end:step]</span></h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">numbers = "0123456789"
+
+# Default stride is 1
+print(numbers[::])       # "0123456789"
+
+# Every other character
+print(numbers[::2])      # "02468"
+
+# Every 3rd from index 1 to 8
+print(numbers[1:9:3])    # "147"
+
+# Negative stride = walk backwards
+print(numbers[::-1])     # "9876543210"
+
+# Classic palindrome check
+word = "racecar"
+is_pal = word == word[::-1]
+print(is_pal)            # True</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Stride / Step</div>
+          <p>The <strong style="color:var(--text);">stride</strong> determines how much the index advances after each character. Default is <span class="ic">1</span>.</p>
+        </div>
+        <ul class="bl">
+          <li><span class="ic">[::2]</span> &mdash; every other character</li>
+          <li><span class="ic">[::-1]</span> &mdash; <strong>reverses</strong> the string</li>
+          <li><span class="ic">[1:9:3]</span> &mdash; indices 1, 4, 7</li>
+        </ul>
+        <div class="callout callout-info">
+          <strong>Mental model:</strong> "start at <em>start</em>, stop before <em>end</em>, jump by <em>step</em> each time."
+        </div>
+        <div class="callout callout-warn">
+          Negative stride with positive start/end can be confusing.&nbsp;If in doubt, omit start &amp; end:&nbsp;<span class="ic">s[::-1]</span>.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 7 — BREAKOUT #1
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Breakout #1 — URL Parser">
+  <div class="slide-body">
+    <div class="eyebrow">Now You Try</div>
+    <h2 class="slide-h2">Breakout Activity #1</h2>
+    <div class="breakout-card">
+      <div class="breakout-hdr">
+        <span class="breakout-icon">🔗</span>
+        <span class="breakout-title">URL Parser &mdash; Slicing Practice</span>
+        <span class="breakout-time">⏱ 8 minutes</span>
+      </div>
+      <div class="two-col">
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--text);">Your Task:</strong> Given the string<br><span class="ic">url = "https://en.wikipedia.org/wiki/Python"</span></p>
+          <ul class="bl">
+            <li>Print the <strong>protocol</strong> (the part before <span class="ic">://</span>)</li>
+            <li>Print the <strong>domain</strong> (between <span class="ic">://</span> and the next <span class="ic">/</span>)</li>
+            <li>Print the <strong>topic</strong> (the last segment, after the final <span class="ic">/</span>)</li>
+            <li><strong>Bonus A:</strong> Use only slicing &mdash; no <span class="ic">split()</span> allowed (we will see that later!)</li>
+            <li><strong>Bonus B:</strong> Print the URL <em>without</em> its protocol using <span class="ic">url[8:]</span> &mdash; and explain why 8</li>
+          </ul>
+        </div>
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--amber);">Expected output:</strong></p>
+          <div class="code-wrap">
+            <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-text">Protocol: https
+Domain:   en.wikipedia.org
+Topic:    Python</code></pre>
+          </div>
+          <div class="callout callout-info">
+            <strong>Hint:</strong> use <span class="ic">find()</span> to locate the <span class="ic">://</span> and the <span class="ic">/wiki/</span> markers, then slice around those positions.
+          </div>
+          <div class="callout callout-warn">
+            <strong>Think:</strong> what happens if the URL doesn't start with <span class="ic">https</span>? How would you guard against that?
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 8 — FIELD WIDTH
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.2 — Field Width">
+  <div class="slide-body">
+    <div class="eyebrow">7.2 &mdash; Formatting</div>
+    <h2 class="slide-h2">Field Width in f-strings</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python"># {name:16}  -> reserve 16 chars for "name"
+print(f"{'Player Name':16}{'Goals':8}")
+print("-" * 24)
+print(f"{'Sadio Mane':16}{22:8}")
+print(f"{'Gabriel Jesus':16}{7:8}")
+
+# Output:
+# Player Name     Goals
+# ------------------------
+# Sadio Mane            22
+# Gabriel Jesus          7
+
+# Strings: left-aligned by default
+# Numbers: right-aligned by default</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Field Width</div>
+          <p>A <strong style="color:var(--text);">field width</strong> is the <em>minimum</em> number of characters reserved for a value. Shorter values are padded with spaces.</p>
+        </div>
+        <ul class="bl">
+          <li>Syntax: <span class="ic">{value:WIDTH}</span> &mdash; integer after the colon</li>
+          <li>Strings pad on the <strong>right</strong> (left-aligned)</li>
+          <li>Numbers pad on the <strong>left</strong> (right-aligned)</li>
+          <li>If the value is <em>longer</em> than the width, the width is ignored &mdash; nothing is truncated</li>
+        </ul>
+        <div class="callout callout-note">
+          <strong>Use case:</strong> printing tables, ledgers, receipts, anywhere you want columns to line up.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 9 — ALIGNMENT
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.2 — Alignment &lt; &gt; ^">
+  <div class="slide-body">
+    <div class="eyebrow">7.2 &mdash; Alignment</div>
+    <h2 class="slide-h2">Left, Right, Centered: <span class="ic" style="font-size:.7em;">&lt; &gt; ^</span></h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">name = "Bob"
+
+print(f"|{name:&lt;10}|")   # |Bob       |
+print(f"|{name:&gt;10}|")   # |       Bob|
+print(f"|{name:^10}|")   # |   Bob    |
+
+# Same for numbers
+score = 7
+print(f"|{score:&lt;5}|")   # |7    |
+print(f"|{score:&gt;5}|")   # |    7|
+print(f"|{score:^5}|")   # |  7  |
+
+# Combined in a row
+print(f"{'Player':&lt;15}{'Goals':^8}{'GPG':&gt;6}")
+print(f"{'Sadio Mane':&lt;15}{22:^8}{0.61:&gt;6.2f}")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Alignment Characters</div>
+          <ul class="bl" style="margin-top:6px;">
+            <li><span class="ic">&lt;</span>&nbsp;&mdash;&nbsp;left-align (default for strings)</li>
+            <li><span class="ic">&gt;</span>&nbsp;&mdash;&nbsp;right-align (default for numbers)</li>
+            <li><span class="ic">^</span>&nbsp;&mdash;&nbsp;centered</li>
+          </ul>
+        </div>
+        <div class="callout callout-info">
+          <strong>Placement:</strong> alignment character comes <em>before</em> the width number: <span class="ic">{x:&lt;10}</span>, not <span class="ic">{x:10&lt;}</span>.
+        </div>
+        <div class="callout callout-warn">
+          You can mix alignments across columns&nbsp;&mdash;&nbsp;label left, value right is a classic combo for receipts.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 10 — FILL CHARACTERS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.2 — Fill Characters">
+  <div class="slide-body">
+    <div class="eyebrow">7.2 &mdash; Fill</div>
+    <h2 class="slide-h2">Fill: Pad With Something Other Than Space</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python"># {value:FILL ALIGN WIDTH}
+score = 9
+print(f"{score:0&gt;4}")     # "0009"
+print(f"{score:*&gt;4}")     # "***9"
+print(f"{score:.^6}")     # "..9..."
+
+# Receipts and ID padding
+order_id = 42
+print(f"Order #{order_id:0&gt;6}")   # Order #000042
+
+# Decorative banners
+print(f"{' MENU ':=^30}")
+# =========== MENU ============
+
+# Names that fit a fixed column
+name = "Sally"
+print(f"{name:@&gt;8}")      # @@@Sally</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Fill Character</div>
+          <p>The <strong style="color:var(--text);">fill character</strong> sits <em>before</em> the alignment character. Default is a space.</p>
+        </div>
+        <ul class="bl">
+          <li>Format: <span class="ic">{x:FILL ALIGN WIDTH}</span></li>
+          <li><span class="ic">0&gt;4</span> &mdash; zero-pad on the left to width 4</li>
+          <li><span class="ic">*^20</span> &mdash; center with asterisks to width 20</li>
+          <li><span class="ic">.&gt;10</span> &mdash; dot-leader on the left (price lists!)</li>
+        </ul>
+        <div class="callout callout-note">
+          <strong>Real-world:</strong> zero-padded IDs, dot-leader price lists, banner separators&nbsp;&mdash;&nbsp;all one line of code.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 11 — FLOATING-POINT PRECISION
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.2 — Floating-Point Precision">
+  <div class="slide-body">
+    <div class="eyebrow">7.2 &mdash; Precision</div>
+    <h2 class="slide-h2">Controlling Decimal Places: <span class="ic" style="font-size:.7em;">.Nf</span></h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">import math
+
+print(f"{math.pi}")          # 3.141592653589793
+print(f"{math.pi:.2f}")      # 3.14
+print(f"{math.pi:.5f}")      # 3.14159
+
+# Pad to fixed width AND set precision
+print(f"|{math.pi:10.2f}|")  # |      3.14|
+print(f"|{math.pi:&lt;10.2f}|") # |3.14      |
+
+# Rounding behavior
+print(f"{1.666:.2f}")        # 1.67  (rounded UP)
+print(f"{1.5:.3f}")          # 1.500 (pad zeros)
+
+# Money
+price = 14.5
+print(f"Total: ${price:.2f}")   # Total: $14.50</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Precision</div>
+          <p>A <strong style="color:var(--text);">precision</strong> after a dot controls the number of digits <em>after</em> the decimal point for floating types. End with <span class="ic">f</span>.</p>
+        </div>
+        <ul class="bl">
+          <li><span class="ic">.2f</span> &mdash; 2 digits after the decimal</li>
+          <li>If actual precision is <strong>greater</strong>, the value is <strong>rounded</strong></li>
+          <li>If actual precision is <strong>less</strong>, trailing zeros are <strong>added</strong></li>
+          <li>Combine: <span class="ic">{x:10.2f}</span> &mdash; width 10, 2 decimals</li>
+        </ul>
+        <div class="callout callout-warn">
+          <strong>About rounding:</strong> Python uses <em>banker's rounding</em> (round-half-to-even) plus binary floating-point storage&nbsp;&mdash;&nbsp;more on this in the last slide tonight.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 12 — BREAKOUT #2
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Breakout #2 — Formatted Sales Report">
+  <div class="slide-body">
+    <div class="eyebrow">Now You Try</div>
+    <h2 class="slide-h2">Breakout Activity #2</h2>
+    <div class="breakout-card">
+      <div class="breakout-hdr">
+        <span class="breakout-icon">📊</span>
+        <span class="breakout-title">Formatted Sales Report</span>
+        <span class="breakout-time">⏱ 10 minutes</span>
+      </div>
+      <div class="two-col">
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--text);">Your Task:</strong> Print this exact table using f-strings. Use these data lists:</p>
+          <div class="code-wrap">
+            <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">products = ["Coffee", "Bagel", "Croissant"]
+sold     = [142, 87, 54]
+prices   = [3.5, 2.75, 4.0]</code></pre>
+          </div>
+          <ul class="bl">
+            <li><strong>Product</strong> column &mdash; left-aligned, width 12</li>
+            <li><strong>Sold</strong> column &mdash; right-aligned, width 6</li>
+            <li><strong>Price</strong> column &mdash; right-aligned, width 8, <strong>2 decimal places</strong></li>
+            <li><strong>Bonus:</strong> add a <strong>Revenue</strong> column (sold &times; price), centered, 2 decimals</li>
+          </ul>
+        </div>
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--amber);">Expected output:</strong></p>
+          <div class="code-wrap">
+            <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-text">Product       Sold   Price
+==========================
+Coffee         142    3.50
+Bagel           87    2.75
+Croissant       54    4.00</code></pre>
+          </div>
+          <div class="callout callout-info">
+            <strong>Hint:</strong> the header row and data row use the <em>same</em> width spec &mdash; just different values.
+          </div>
+          <div class="callout callout-warn">
+            <strong>Think:</strong> what is <span class="ic">"=" * 26</span> doing? Can you write the separator without counting?
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 13 — FIND / RFIND / COUNT
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.3 — find, rfind, count">
+  <div class="slide-body">
+    <div class="eyebrow">7.3 &mdash; Searching</div>
+    <h2 class="slide-h2">Finding Things Inside a String</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">my_str = "Boo Hoo!"
+
+print(my_str.find("!"))       # 7
+print(my_str.find("Boo"))     # 0
+print(my_str.find("oo"))      # 1  (first match)
+print(my_str.rfind("oo"))     # 5  (last match)
+print(my_str.find("xyz"))     # -1 (not found)
+
+# Limit the search range
+print(my_str.find("oo", 2))     # 5
+print(my_str.find("oo", 2, 4))  # -1
+
+# Count occurrences
+print(my_str.count("oo"))     # 2
+print(my_str.count("o"))      # 4
+
+# When the exact index doesn't matter, use `in`
+if "Boo" in my_str:
+    print("Found it!")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Search Methods</div>
+          <ul class="bl" style="margin-top:6px;">
+            <li><span class="ic">find(x)</span>&nbsp;&mdash;&nbsp;first index of <span class="ic">x</span>, or <strong>-1</strong></li>
+            <li><span class="ic">rfind(x)</span>&nbsp;&mdash;&nbsp;<em>last</em> index of <span class="ic">x</span></li>
+            <li><span class="ic">count(x)</span>&nbsp;&mdash;&nbsp;how many times <span class="ic">x</span> appears</li>
+            <li><span class="ic">in</span>&nbsp;&mdash;&nbsp;just yes / no, no index</li>
+          </ul>
+        </div>
+        <div class="callout callout-info">
+          <strong>Two-arg / three-arg form:</strong> <span class="ic">find(x, start)</span> begins at <em>start</em>; <span class="ic">find(x, start, end)</span> stops before <em>end</em>.
+        </div>
+        <div class="callout callout-warn">
+          <strong>Watch out:</strong> <span class="ic">find()</span> returns <strong>-1</strong> when not found&nbsp;&mdash;&nbsp;not an error. Always check before using as an index.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ═══════════════════════════════════════════
+     SLIDE 14 — REPLACE & IN
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.3 — replace() &amp; the in operator">
+  <div class="slide-body">
+    <div class="eyebrow">7.3 &mdash; Replacing</div>
+    <h2 class="slide-h2">Replacing Substrings &amp; Membership</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">phrase = "I have one cat and two dogs"
+
+# Replace ALL occurrences
+phrase = phrase.replace("one", "uno")
+phrase = phrase.replace("two", "dos")
+print(phrase)
+# "I have uno cat and dos dogs"
+
+# Replace only the first N occurrences
+text = "ha ha ha ha ha"
+print(text.replace("ha", "HA", 2))
+# "HA HA ha ha ha"
+
+# Remove characters: replace with ""
+phone = "(305) 555-1234"
+digits = phone.replace("(", "").replace(")", "")
+digits = digits.replace(" ", "").replace("-", "")
+print(digits)        # "3055551234"
+
+# Membership
+if "cat" in phrase:
+    print("animal found")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Remember: Strings Are Immutable</div>
+          <p><span class="ic">replace()</span> returns a <strong style="color:var(--text);">new</strong> string. The original is unchanged unless you reassign:&nbsp;<span class="ic">s = s.replace(...)</span>.</p>
+        </div>
+        <ul class="bl">
+          <li><span class="ic">replace(old, new)</span>&nbsp;&mdash;&nbsp;all occurrences</li>
+          <li><span class="ic">replace(old, new, count)</span>&nbsp;&mdash;&nbsp;first <em>count</em> only</li>
+          <li>Replacing with <span class="ic">""</span> effectively <strong>deletes</strong> characters</li>
+          <li>Chain them: <span class="ic">s.replace(...).replace(...)</span></li>
+        </ul>
+        <div class="callout callout-note">
+          <strong>Forgot to reassign?</strong>&nbsp;Most common beginner bug. <span class="ic">s.replace("a","b")</span> alone discards the result.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 15 — STRING COMPARISON & ASCII
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.3 — String Comparison &amp; ASCII">
+  <div class="slide-body">
+    <div class="eyebrow">7.3 &mdash; Comparison</div>
+    <h2 class="slide-h2">Strings Compare Character-by-Character</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python"># Compare each character's ASCII code, left to right
+print("Hello" == "Hello")      # True
+print("Hello" == "Hello!")     # False (different length)
+
+print("apple" &lt; "banana")      # True  ('a' &lt; 'b')
+print("Banana" &lt; "apple")      # True  ('B'=66 &lt; 'a'=97)
+
+# Case matters!
+print("Apple" == "apple")      # False
+
+# Shorter string &lt; longer with same prefix
+print("cat" &lt; "category")      # True
+
+# Membership
+print("seph" in "Joseph")      # True
+print("jo"   in "Joseph")      # False (case)
+
+# Identity vs equality — common bug
+name = "Amy Adams"
+print(name == "Amy Adams")     # True  ← use ==
+print(name is "Amy Adams")     # may be False!</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">How Comparison Works</div>
+          <p>Python compares the corresponding characters at index 0, then 1, etc., stopping as soon as a difference is found. Each character is compared by its <strong style="color:var(--text);">ASCII / Unicode</strong> code.</p>
+        </div>
+        <ul class="bl">
+          <li>Uppercase letters (65&ndash;90) sort <strong>before</strong> lowercase (97&ndash;122)</li>
+          <li>So <span class="ic">"Banana"</span> &lt; <span class="ic">"apple"</span> (capital B beats lowercase a)</li>
+          <li>If strings share a prefix, the <strong>shorter</strong> one is less</li>
+        </ul>
+        <div class="callout callout-warn">
+          <strong>Use <span class="ic">==</span> for values</strong>, not <span class="ic">is</span>. <span class="ic">is</span> checks object identity &mdash; useful for <span class="ic">None</span>, not text.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 16 — BOOLEAN CHECK METHODS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.3 — Boolean Check Methods">
+  <div class="slide-body">
+    <div class="eyebrow">7.3 &mdash; Validation</div>
+    <h2 class="slide-h2">Boolean Check Methods: Is It Valid?</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">"12345".isdigit()      # True
+"12 34".isdigit()      # False (space!)
+"3.14".isdigit()       # False (the dot!)
+
+"Hello".isalnum()      # True
+"Hello!".isalnum()     # False
+
+"hello".islower()      # True
+"HELLO".isupper()      # True
+"abc?".islower()       # True (? is ignored)
+
+"   ".isspace()        # True
+"\n\t".isspace()       # True
+
+url = "https://mdc.edu"
+url.startswith("http") # True
+url.endswith(".edu")   # True
+
+# Classic validation pattern
+age = input("Age: ")
+if age.isdigit():
+    age = int(age)
+else:
+    print("Please enter a number")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Check Methods Return True / False</div>
+          <p>All "is..." methods return a Boolean. They never modify the string.</p>
+        </div>
+        <table class="sum-table">
+          <tr><td><span class="ic">isdigit()</span></td><td>only 0&ndash;9</td></tr>
+          <tr><td><span class="ic">isalnum()</span></td><td>letters or digits</td></tr>
+          <tr><td><span class="ic">islower()</span></td><td>all letters lowercase</td></tr>
+          <tr><td><span class="ic">isupper()</span></td><td>all letters uppercase</td></tr>
+          <tr><td><span class="ic">isspace()</span></td><td>only whitespace</td></tr>
+          <tr><td><span class="ic">startswith(x)</span></td><td>begins with <span class="ic">x</span></td></tr>
+          <tr><td><span class="ic">endswith(x)</span></td><td>ends with <span class="ic">x</span></td></tr>
+        </table>
+        <div class="callout callout-info">
+          <strong>Pattern:</strong> validate before converting&nbsp;&mdash;&nbsp;<span class="ic">if s.isdigit(): int(s)</span> avoids crashes.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 17 — TRANSFORMATION METHODS
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.3 — Transformation Methods">
+  <div class="slide-body">
+    <div class="eyebrow">7.3 &mdash; Transformation</div>
+    <h2 class="slide-h2">Building New Strings: lower / upper / strip</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">"Python".lower()        # "python"
+"Python".upper()        # "PYTHON"
+"python".capitalize()   # "Python"
+"hello world".title()   # "Hello World"
+
+# Whitespace stripping
+"  hello  ".strip()     # "hello"
+"  hi  ".lstrip()       # "hi  "  (left only)
+"  hi  ".rstrip()       # "  hi"  (right only)
+
+# Method chaining — read left to right
+raw = "   BOB Smith\n"
+clean = raw.strip().lower()
+print(clean)            # "bob smith"
+
+# Classic input cleanup
+name = input("Name: ").strip().lower()
+
+# Standardize for comparison
+user = input().strip().lower()
+if user == "yes":
+    print("OK")
+# Accepts "Yes", " YES ", "yes\n" — all equivalent</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">All Transforms Return New Strings</div>
+          <p>None of these modify the original. They return a copy. <strong style="color:var(--text);">Reassign or use the result.</strong></p>
+        </div>
+        <ul class="bl">
+          <li><span class="ic">lower()</span> / <span class="ic">upper()</span>&nbsp;&mdash;&nbsp;change case</li>
+          <li><span class="ic">capitalize()</span>&nbsp;&mdash;&nbsp;first letter only</li>
+          <li><span class="ic">title()</span>&nbsp;&mdash;&nbsp;first letter of <em>every</em> word</li>
+          <li><span class="ic">strip()</span>&nbsp;&mdash;&nbsp;remove leading/trailing whitespace</li>
+        </ul>
+        <div class="callout callout-note">
+          <strong>Best practice:</strong> normalize input <em>immediately</em>: <span class="ic">input().strip().lower()</span>. Saves a thousand bugs later.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 18 — SPLIT
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.4 — split() — Breaking Strings Apart">
+  <div class="slide-body">
+    <div class="eyebrow">7.4 &mdash; split()</div>
+    <h2 class="slide-h2">split(): Turn One String Into a List of Tokens</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python"># Default: split on ANY whitespace
+name = "Martin Luther King Jr."
+print(name.split())
+# ['Martin', 'Luther', 'King', 'Jr.']
+
+# Custom separator
+csv = "Bob,42,Miami,FL"
+print(csv.split(","))
+# ['Bob', '42', 'Miami', 'FL']
+
+# URL path
+url = "http://en.wikipedia.org/wiki/Lucille_ball"
+print(url.split("/"))
+# ['http:', '', 'en.wikipedia.org', 'wiki', 'Lucille_ball']
+#           ↑ empty string from "//"
+
+# Classic input-parsing pattern
+line = input()       # e.g. "Hat 8 16"
+parts = line.split()
+item     = parts[0]
+quantity = int(parts[1])
+price    = int(parts[2])</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">split() &mdash; Default Behavior</div>
+          <p>With <strong>no argument</strong>, splits on any whitespace and drops empty tokens. With an <strong>argument</strong>, splits on exactly that string &mdash; consecutive separators produce empty tokens.</p>
+        </div>
+        <ul class="bl">
+          <li>Always returns a <strong>list of strings</strong></li>
+          <li>The separator <strong>is not</strong> included in the result</li>
+          <li>Want numbers? You still need <span class="ic">int(...)</span> on each token</li>
+        </ul>
+        <div class="callout callout-warn">
+          <strong>Empty tokens:</strong> <span class="ic">"a,,b".split(",")</span> gives <span class="ic">["a","","b"]</span>. Watch for this with CSV-style data.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 19 — JOIN
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.4 — join() — Putting Strings Back Together">
+  <div class="slide-body">
+    <div class="eyebrow">7.4 &mdash; join()</div>
+    <h2 class="slide-h2">join(): Glue a List of Strings With a Separator</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python"># The SEPARATOR calls .join() on the LIST
+parts = ["billgates", "microsoft"]
+print("@".join(parts))
+# "billgates@microsoft"
+
+# Empty separator = pure concatenation
+pieces = ["http://", "www.", "ebay", ".com"]
+print("".join(pieces))
+# "http://www.ebay.com"
+
+# Common: comma-separated output
+names = ["Ana", "Bob", "Carlos"]
+print(", ".join(names))
+# "Ana, Bob, Carlos"
+
+# Build a CSV row
+row = ["Bob", "42", "Miami"]
+print(",".join(row))
+# "Bob,42,Miami"
+
+# Loop version vs. join — same result
+result = ""
+for n in names:
+    result += n + ", "
+# join is shorter AND much faster on large lists</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">join() Is the Inverse of split()</div>
+          <p>Where <span class="ic">split()</span> breaks a string into a list, <span class="ic">join()</span> rebuilds a string from a list.</p>
+        </div>
+        <ul class="bl">
+          <li>Syntax: <span class="ic">SEP.join(LIST)</span></li>
+          <li>The separator goes <em>between</em> elements (not at the ends)</li>
+          <li>All list elements <strong>must be strings</strong> &mdash; numbers raise <span class="ic">TypeError</span></li>
+        </ul>
+        <div class="callout callout-info">
+          <strong>Mental flip:</strong> the separator owns the <span class="ic">.join</span>, not the list. Read it as <em>"glue the list with this separator."</em>
+        </div>
+        <div class="callout callout-warn">
+          Mixed types? Convert first:&nbsp;<span class="ic">",".join(str(x) for x in nums)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 20 — SPLIT + JOIN TOGETHER
+════════════════════════════════════════════ -->
+<section class="slide" data-title="7.4 — split() + join() Together">
+  <div class="slide-body">
+    <div class="eyebrow">7.4 &mdash; The Combo</div>
+    <h2 class="slide-h2">Editing Text: split() &rarr; modify list &rarr; join()</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python"># Pattern 1 — Change the separator
+path = "C:/Users/Wolfman/Documents/report.pdf"
+tokens = path.split("/")
+windows_path = "\\".join(tokens)
+print(windows_path)
+# C:\Users\Wolfman\Documents\report.pdf
+
+# Pattern 2 — Edit one token
+url = "http://en.wikipedia.org/Rome"
+tokens = url.split("/")
+if tokens[3] != "wiki":
+    tokens.insert(3, "wiki")
+print("/".join(tokens))
+# http://en.wikipedia.org/wiki/Rome
+
+# Pattern 3 — Drop a token
+csv = "name,age,ssn,city"
+fields = csv.split(",")
+fields.remove("ssn")            # privacy!
+print(",".join(fields))
+# name,age,city
+
+# Pattern 4 — Reverse word order
+sentence = "the quick brown fox"
+words = sentence.split()
+print(" ".join(words[::-1]))    # "fox brown quick the"</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">The Three-Step Pattern</div>
+          <ol class="bl" style="margin-top:6px;">
+            <li><strong>Split</strong> the string into a list of tokens</li>
+            <li><strong>Modify</strong> the list (replace, insert, remove, reorder)</li>
+            <li><strong>Join</strong> the list back into a single string</li>
+          </ol>
+        </div>
+        <div class="callout callout-info">
+          <strong>When to use it:</strong> any time you would otherwise reach for <span class="ic">replace()</span> but need to be more precise about <em>which</em> occurrence to edit.
+        </div>
+        <div class="callout callout-note">
+          <strong>Industry tie-in:</strong> almost every CSV / log / config parser ever written does some flavor of this.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 21 — BREAKOUT #3
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Breakout #3 — Username Generator">
+  <div class="slide-body">
+    <div class="eyebrow">Now You Try</div>
+    <h2 class="slide-h2">Breakout Activity #3</h2>
+    <div class="breakout-card">
+      <div class="breakout-hdr">
+        <span class="breakout-icon">🧩</span>
+        <span class="breakout-title">Username Generator &mdash; Putting It All Together</span>
+        <span class="breakout-time">⏱ 12 minutes</span>
+      </div>
+      <div class="two-col">
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--text);">Your Task:</strong> Read a full name from input and produce a clean MDC-style username.</p>
+          <ul class="bl">
+            <li>Read one line: e.g. <span class="ic">"   John Paul Masseria  "</span></li>
+            <li><strong>Clean</strong> whitespace with <span class="ic">strip()</span></li>
+            <li><strong>Split</strong> into tokens</li>
+            <li>Build a username:&nbsp;<em>first initial</em>&nbsp;+&nbsp;<em>last name</em>, all lowercase</li>
+            <li>Print it with the email domain: <span class="ic">jmasseria@mdc.edu</span></li>
+            <li><strong>Bonus A:</strong> handle middle names &mdash; always use the <em>last</em> token as the last name</li>
+            <li><strong>Bonus B:</strong> if the cleaned name is empty or has only one word, print <span class="ic">"invalid"</span></li>
+            <li><strong>Bonus C:</strong> pad the username to width 15 with dots:&nbsp;<span class="ic">{user:.&lt;15}</span></li>
+          </ul>
+        </div>
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--amber);">Expected output:</strong></p>
+          <div class="code-wrap">
+            <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-text">Input: "   John Paul Masseria  "
+Username: jmasseria
+Email:    jmasseria@mdc.edu
+
+Bonus C:
+jmasseria......@mdc.edu</code></pre>
+          </div>
+          <div class="callout callout-info">
+            <strong>Hint:</strong> first initial is <span class="ic">tokens[0][0].lower()</span>, last name is <span class="ic">tokens[-1].lower()</span>.
+          </div>
+          <div class="callout callout-warn">
+            <strong>Think:</strong> what edge cases break your code? Empty input? All caps? Extra spaces between words?
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 22 — TRACE DRILL
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Trace Drill — Predict the Output">
+  <div class="slide-body">
+    <div class="eyebrow">Practice &mdash; Trace the Execution</div>
+    <h2 class="slide-h2">Trace Drill &mdash; What Does This Print?</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">s = "Mississippi"
+
+# 1)
+print(s[2:7])
+
+# 2)
+print(s[::-1])
+
+# 3)
+print(s.count("ss"))
+
+# 4)
+print("/".join(s.split("s")))
+
+# 5)
+print(f"{s.upper():*^15}")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="quiz-box">
+          <div class="quiz-q">1)&nbsp;<span class="ic">s[2:7]</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">👆 Tap to reveal</div>
+          <div class="quiz-answer">indices 2&ndash;6 of "Mississippi" &rarr; <strong>"ssiss"</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">2)&nbsp;<span class="ic">s[::-1]</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">👆 Tap to reveal</div>
+          <div class="quiz-answer">reverse: <strong>"ippississiM"</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">3)&nbsp;<span class="ic">s.count("ss")</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">👆 Tap to reveal</div>
+          <div class="quiz-answer">"ss" appears at index 2 and index 5 &rarr; <strong>2</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">4)&nbsp;<span class="ic">"/".join(s.split("s"))</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">👆 Tap to reveal</div>
+          <div class="quiz-answer">split: <span class="ic">['Mi','','i','','ippi']</span> &rarr; <strong>"Mi//i//ippi"</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">5)&nbsp;<span class="ic">f"{s.upper():*^15}"</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">👆 Tap to reveal</div>
+          <div class="quiz-answer">"MISSISSIPPI" (len 11) centered in 15 with * &rarr; <strong>"**MISSISSIPPI**"</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 23 — JSON PLACEHOLDER
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Applied — Loading JSON in Python">
+  <div class="slide-body">
+    <div class="eyebrow">Applied Example &nbsp;<span class="opt-badge">Placeholder &mdash; To Develop</span></div>
+    <h2 class="slide-h2">From Text to Data: Working With JSON</h2>
+    <div class="two-col wl">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">import json
+
+# A JSON document is just a STRING with structure
+text = """
+{
+  "course": "COP 1047C",
+  "instructor": "John Masseria",
+  "credits": 4,
+  "topics": ["strings", "functions", "loops"],
+  "active": true
+}
+"""
+
+# Parse the string into Python objects
+data = json.loads(text)
+
+# Now access it like any dict / list
+print(data["course"])         # COP 1047C
+print(data["credits"])        # 4 (int!)
+print(data["topics"][0])      # strings
+print(len(data["topics"]))    # 3
+
+# Loop through a list inside the JSON
+for topic in data["topics"]:
+    print(f"  - {topic}")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Why This Matters</div>
+          <p>JSON is the <strong style="color:var(--text);">lingua franca</strong> of web APIs, configuration files, and data exchange between systems. Every cloud service speaks it.</p>
+        </div>
+        <ul class="bl">
+          <li><strong>Read:</strong> <span class="ic">json.loads(text)</span> &mdash; string to Python</li>
+          <li><strong>Write:</strong> <span class="ic">json.dumps(obj)</span> &mdash; Python to string</li>
+          <li>JSON objects become Python <span class="ic">dict</span>; JSON arrays become <span class="ic">list</span></li>
+          <li>Once parsed, access with normal <span class="ic">[ ]</span> indexing</li>
+        </ul>
+        <div class="callout callout-purple">
+          <strong>Placeholder slide.</strong>&nbsp;Expand with: live demo using a small JSON file on disk, real cruise-line booking example, and the <span class="ic">json.dumps(..., indent=2)</span> trick for pretty-printing.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 24 — PYTHON ROUNDING + FP STORAGE
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Applied — Python Rounding &amp; Float Storage">
+  <div class="slide-body">
+    <div class="eyebrow">Applied Example &nbsp;&middot;&nbsp; A Correction From Last Week</div>
+    <h2 class="slide-h2">Python Doesn't Round The Way We Learned in School</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python"># Elementary school rule: "round half UP"
+#   0.5 -&gt; 1,  1.5 -&gt; 2,  2.5 -&gt; 3,  3.5 -&gt; 4
+
+# What Python ACTUALLY does — "round half to EVEN":
+# At a tie, pick whichever neighbor is even.
+print(round(0.5))      # 0   even-neighbor: 0
+print(round(1.5))      # 2   even-neighbor: 2
+print(round(2.5))      # 2   even-neighbor: 2  (not 3!)
+print(round(3.5))      # 4   even-neighbor: 4
+print(round(4.5))      # 4   even-neighbor: 4  (not 5!)
+
+# Same rule at any decimal place — look at the
+# LAST kept digit; ties land on an even digit:
+print(round(0.125, 2)) # 0.12   last digit 2 is even
+print(round(0.375, 2)) # 0.38   last digit 8 is even
+print(round(0.625, 2)) # 0.62   last digit 2 is even
+print(round(0.875, 2)) # 0.88   last digit 8 is even
+
+# Why? "Always round up" adds upward bias over many
+# operations. Round-to-even removes that bias —
+# that's why bankers and the IEEE 754 standard use it.
+
+# Now the weird one — banker's rounding plus binary:
+print(round(2.675, 2)) # 2.67   (not 2.68!)
+
+# Why? 2.675 isn't actually stored as 2.675:
+from decimal import Decimal
+print(Decimal(2.675))
+# 2.67499999999999982236431605997495353...
+# So it rounds DOWN — the stored value is genuinely
+# below the halfway point. Two effects compounding.</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Two Things Going On</div>
+          <ul class="bl" style="margin-top:6px;">
+            <li><strong>Banker's rounding</strong>&nbsp;&mdash;&nbsp;ties round to the nearest <em>even</em> digit</li>
+            <li><strong>Binary storage</strong>&nbsp;&mdash;&nbsp;most decimal fractions can't be represented exactly in binary, so the value you typed isn't the value Python stores</li>
+          </ul>
+        </div>
+        <div class="callout callout-info">
+          <strong>The classic gotcha:</strong><br>
+          <span class="ic">0.1 + 0.2 == 0.3</span> is <span class="ic">False</span> in Python &mdash; because <span class="ic">0.1</span>, <span class="ic">0.2</span>, and <span class="ic">0.3</span> are all stored as the <em>nearest</em> 64-bit IEEE 754 approximation. Tiny errors compound.
+        </div>
+        <div class="callout callout-purple">
+          <strong>Visualizing how floats are stored:</strong> Maarten Grootendorst, <a href="https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-quantization" target="_blank" rel="noopener" style="color:#e9d5ff;text-decoration:underline;font-weight:600;">A Visual Guide to Quantization</a>&nbsp;&mdash;&nbsp;walks through <span class="ic">sign &middot; exponent &middot; mantissa</span> bit allocation for FP32, FP16, BF16, and INT8 with ~50 illustrations.<br><br>
+          <em>Same idea, different scale:</em> Python's "0.1 isn't really 0.1" is the <em>same</em> mechanism that lets LLMs shrink a 280&nbsp;GB model down to ~70&nbsp;GB&nbsp;&mdash;&nbsp;trade representational precision for storage.
+        </div>
+        <div class="callout callout-warn">
+          <strong>Take-home for your code:</strong> never compare floats with <span class="ic">==</span>. Use <span class="ic">round()</span> or an f-string <span class="ic">.Nf</span> spec for <em>display</em>; use <span class="ic">math.isclose(a, b)</span> for <em>comparison</em>.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 25 — CHAPTER 7 SUMMARY
+════════════════════════════════════════════ -->
+<section class="slide" data-title="Chapter 7 Summary">
+  <div class="slide-body">
+    <div class="eyebrow">Wrap-Up</div>
+    <h2 class="slide-h2">Chapter 7 &mdash; The Cheat Sheet</h2>
+    <table class="sum-table">
+      <thead>
+        <tr><th style="width:26%;">Concept</th><th style="width:34%;">Syntax</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Indexing</td>
+          <td><span class="ic">s[i]</span>, <span class="ic">s[-1]</span></td>
+          <td>0-based; negative counts from the end</td>
+        </tr>
+        <tr>
+          <td>Slicing</td>
+          <td><span class="ic">s[start:end:step]</span></td>
+          <td>end is exclusive; all parts optional</td>
+        </tr>
+        <tr>
+          <td>Field width</td>
+          <td><span class="ic">{x:10}</span></td>
+          <td>Strings left, numbers right by default</td>
+        </tr>
+        <tr>
+          <td>Alignment</td>
+          <td><span class="ic">{x:&lt;10}</span> <span class="ic">{x:&gt;10}</span> <span class="ic">{x:^10}</span></td>
+          <td>Left, right, centered</td>
+        </tr>
+        <tr>
+          <td>Fill</td>
+          <td><span class="ic">{x:0&gt;4}</span></td>
+          <td>Pad with any character</td>
+        </tr>
+        <tr>
+          <td>Precision</td>
+          <td><span class="ic">{x:.2f}</span></td>
+          <td>Decimals for floats; rounds the display</td>
+        </tr>
+        <tr>
+          <td>Search</td>
+          <td><span class="ic">find</span>, <span class="ic">rfind</span>, <span class="ic">count</span>, <span class="ic">in</span></td>
+          <td><span class="ic">find</span> returns <span class="ic">-1</span> if missing</td>
+        </tr>
+        <tr>
+          <td>Replace</td>
+          <td><span class="ic">s.replace(old, new)</span></td>
+          <td>Returns a <em>new</em> string &mdash; reassign!</td>
+        </tr>
+        <tr>
+          <td>Validate</td>
+          <td><span class="ic">isdigit</span>, <span class="ic">isalnum</span>, <span class="ic">startswith</span></td>
+          <td>Return True / False</td>
+        </tr>
+        <tr>
+          <td>Transform</td>
+          <td><span class="ic">lower</span>, <span class="ic">upper</span>, <span class="ic">strip</span>, <span class="ic">title</span></td>
+          <td>Chain them: <span class="ic">input().strip().lower()</span></td>
+        </tr>
+        <tr>
+          <td>Tokenize</td>
+          <td><span class="ic">s.split(sep)</span></td>
+          <td>Returns a list of strings</td>
+        </tr>
+        <tr>
+          <td>Rebuild</td>
+          <td><span class="ic">sep.join(list)</span></td>
+          <td>Separator owns the method call</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 26 — CLOSING HERO
+════════════════════════════════════════════ -->
+<section class="slide hero" data-title="What's Next — Week 9">
+  <div class="slide-body">
+    <div class="eyebrow">Looking Ahead &nbsp;&middot;&nbsp; Week 9</div>
+    <h1 class="slide-h1" style="font-size:2.8rem;">Chapter 8<br>Exceptions</h1>
+    <p class="slide-subtitle">Handling errors gracefully&nbsp;&mdash;&nbsp;<span class="ic">try</span>, <span class="ic">except</span>, <span class="ic">raise</span>, and writing programs that don't crash</p>
+    <div class="tag-row" style="justify-content:center;margin-top:10px;">
+      <span class="tag tag-a">Ch 7 Labs &amp; Readings &mdash; due tonight 6/30</span>
+      <span class="tag tag-b">Ch 8 Readings &mdash; due 7/7</span>
+    </div>
+    <div class="callout callout-warn" style="max-width:520px;margin-top:20px;text-align:left;">
+      <strong>Reminder:</strong> zyBook Chapter 7 Labs and Readings are due by 11:59 PM tonight. zyBook readings are 25% of your final grade &mdash; keep up each week!
+    </div>
+    <div class="callout callout-info" style="max-width:520px;margin-top:10px;text-align:left;">
+      Questions? Use the <strong>Class Question Board</strong> on Canvas or email <strong>jmasseri@mdc.edu</strong>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ── Nav ── -->
+<nav class="slide-nav">
+  <button class="nav-btn" id="btn-first" onclick="goTo(0)">&#9194; First</button>
+  <button class="nav-btn" id="btn-prev"  onclick="prev()">&#9664; Prev</button>
+  <span id="slide-counter">1 / 26</span>
+  <button class="nav-btn" id="btn-next"  onclick="next()">Next &#9654;</button>
+  <button class="nav-btn" id="btn-last"  onclick="goTo(total-1)">Last &#9193;</button>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total  = slides.length;
+  let cur = 0;
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(n, total - 1));
+    slides[cur].classList.add('active');
+    document.getElementById('slide-counter').textContent = `${cur + 1} / ${total}`;
+    document.getElementById('slide-title-display').textContent =
+      slides[cur].dataset.title || '';
+    document.getElementById('progress-bar').style.width =
+      `${((cur + 1) / total) * 100}%`;
+    document.getElementById('btn-first').disabled = cur === 0;
+    document.getElementById('btn-prev').disabled  = cur === 0;
+    document.getElementById('btn-next').disabled  = cur === total - 1;
+    document.getElementById('btn-last').disabled  = cur === total - 1;
+  }
+
+  function next() { if (cur < total - 1) goTo(cur + 1); }
+  function prev() { if (cur > 0)         goTo(cur - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prev();
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End')  goTo(total - 1);
+  });
+
+  goTo(0);
+</script>
+
+</body>
+</html>
