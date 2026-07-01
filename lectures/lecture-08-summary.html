@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COP 1047C – Lecture 8 Summary: Strings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:#080c14; --surface:#0f1724; --surface2:#16202e; --border:#1e2d42; --border2:#253347;
+    --accent:#f59e0b; --accent-dk:#d97706; --text:#e2e8f0; --muted:#7d93af;
+    --green-bg:#071510; --green-bdr:#0d3322; --green-txt:#34d399;
+    --mono:'JetBrains Mono','Courier New',monospace; --sans:'Outfit',system-ui,sans-serif;
+  }
+  html, body { background:var(--bg); color:var(--text); font-family:var(--sans); font-size:16px; line-height:1.6; min-height:100vh; }
+  html { scroll-padding-top:150px; scroll-behavior:smooth; }
+  pre, code, kbd { font-family:var(--mono)!important; font-variant-ligatures:none!important; font-feature-settings:"liga" 0,"calt" 0!important; }
+
+  header { background:var(--surface); border-bottom:1px solid var(--border); padding:1.5rem 2rem 0; position:sticky; top:0; z-index:100; }
+  .header-top { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:.5rem; margin-bottom:1.25rem; max-width:900px; margin-left:auto; margin-right:auto; }
+  .course-tag { font-family:var(--mono); font-size:.7rem; font-weight:500; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.3); border-radius:4px; padding:3px 10px; display:inline-block; margin-bottom:.4rem; }
+  header h1 { font-size:1.35rem; font-weight:700; color:var(--text); line-height:1.3; }
+  .header-meta { font-family:var(--mono); font-size:.75rem; color:var(--muted); text-align:right; }
+  .header-meta div { margin-bottom:2px; }
+  header nav { display:flex; flex-wrap:wrap; gap:.25rem; padding-bottom:.75rem; max-width:900px; margin:0 auto; }
+  header nav a { font-family:var(--mono); font-size:.72rem; color:var(--muted); text-decoration:none; padding:4px 10px; border-radius:4px; transition:color .15s,background .15s; }
+  header nav a:hover { color:var(--accent); background:var(--surface2); }
+
+  main { max-width:860px; margin:0 auto; padding:2.5rem 1.5rem 4rem; }
+  .section { margin-bottom:3rem; }
+  .section-eyebrow { font-family:var(--mono); font-size:.68rem; font-weight:500; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); margin-bottom:.35rem; }
+  .section h2 { font-size:1.45rem; font-weight:700; margin-bottom:1rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); }
+  .section p { margin-bottom:1rem; color:var(--text); }
+  .section ul { margin:0 0 1rem 1.4rem; }
+  .section ul li { margin-bottom:.45rem; }
+
+  .topic { margin:1.75rem 0; }
+  .topic h3 { font-size:1.08rem; font-weight:600; margin-bottom:.6rem; display:flex; align-items:center; gap:.6rem; }
+  .topic-num { font-family:var(--mono); font-size:.7rem; font-weight:500; color:var(--accent); background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.25); border-radius:4px; padding:2px 8px; flex-shrink:0; }
+
+  .code-wrap { background:#0a0f1a; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin:1rem 0; }
+  .code-bar { background:var(--surface2); border-bottom:1px solid var(--border); padding:8px 12px; display:flex; gap:6px; align-items:center; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .dot-r { background:#ef4444; } .dot-y { background:#f59e0b; } .dot-g { background:#22c55e; }
+  .code-bar .code-label { font-family:var(--mono); font-size:.68rem; color:var(--muted); margin-left:8px; }
+  .code-wrap pre { margin:0!important; padding:1rem 1.25rem!important; background:transparent!important; font-size:.85rem!important; line-height:1.55!important; overflow-x:auto; }
+  code:not(pre code) { background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:.84em; color:#fbbf24; }
+
+  .callout { border-radius:8px; padding:.85rem 1.1rem; margin:1rem 0; font-size:.92rem; }
+  .callout strong { display:inline; }
+  .callout-warn { background:#190b0b; border:1px solid #3d1515; color:#fca5a5; }
+  .callout-info { background:#0a1322; border:1px solid #1b3a5c; color:#93c5fd; }
+  .callout-note { background:#1a1304; border:1px solid #4a3408; color:#fcd34d; }
+
+  .table-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:8px; margin:1rem 0; }
+  table { width:100%; border-collapse:collapse; font-size:.88rem; }
+  th { background:var(--surface2); font-family:var(--mono); font-size:.7rem; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); }
+  td { padding:9px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+  tr:last-child td { border-bottom:none; }
+  td code { white-space:nowrap; }
+
+  .activity { background:var(--green-bg); border:1px solid var(--green-bdr); border-radius:10px; padding:1.25rem 1.4rem; margin:1.25rem 0; }
+  .activity-tag { font-family:var(--mono); font-size:.66rem; font-weight:500; letter-spacing:.13em; text-transform:uppercase; color:var(--green-txt); margin-bottom:.5rem; }
+  .activity h4 { font-size:1rem; margin-bottom:.5rem; }
+  .activity ol { margin:.5rem 0 0 1.3rem; }
+  .activity ol li { margin-bottom:.5rem; font-size:.93rem; }
+
+  .reminder-list { list-style:none; margin-left:0!important; }
+  .reminder-list li { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:6px; padding:.75rem 1rem; margin-bottom:.6rem; font-size:.93rem; }
+  .reminder-list li strong { color:var(--accent); }
+
+  footer { border-top:1px solid var(--border); padding:1.75rem 1.5rem 2.5rem; text-align:center; font-size:.85rem; color:var(--muted); max-width:860px; margin:0 auto; }
+  footer a { color:var(--accent); text-decoration:none; }
+  footer a:hover { text-decoration:underline; }
+
+  @media (max-width:640px) { .header-meta { text-align:left; } header { padding:1.25rem 1.25rem 0; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <span class="course-tag">COP 1047C · Intro to Python · Summer 2026</span>
+      <h1>Lecture 8 Summary — Strings</h1>
+    </div>
+    <div class="header-meta">
+      <div>Tuesday, June 30, 2026</div>
+      <div>zyBook Chapter 7</div>
+      <div>Prof. John Masseria · MDC West</div>
+    </div>
+  </div>
+  <nav>
+    <a href="#objectives">Objectives</a>
+    <a href="#admin">Reminders</a>
+    <a href="#midterm">Midterm Review</a>
+    <a href="#basics">String Basics</a>
+    <a href="#slicing">Slicing</a>
+    <a href="#format">Formatting</a>
+    <a href="#rounding">Rounding</a>
+    <a href="#methods">String Methods</a>
+    <a href="#compare">Comparison</a>
+    <a href="#json">JSON</a>
+    <a href="#breakouts">Breakouts</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ═══ LEARNING OBJECTIVES ═══ -->
+<section class="section" id="objectives">
+  <div class="section-eyebrow">Tonight's Agenda</div>
+  <h2>🎯 By the End of Class You'll Be Able To…</h2>
+  <ul>
+    <li>Index and slice a string, including negative indexes and the third "step" parameter</li>
+    <li>Explain why strings are <strong>immutable</strong> and what that means for building new strings</li>
+    <li>Control field width, alignment, and decimal precision in an f-string</li>
+    <li>Use the core string methods: <code>find</code>/<code>rfind</code>, <code>replace</code>, <code>strip</code>, <code>split</code>/<code>join</code>, <code>upper</code>/<code>lower</code>/<code>title</code>, and the <code>is...()</code> family</li>
+    <li>Compare strings correctly with <code>==</code> and the ordering operators</li>
+    <li>Recognize JSON data and convert it to a Python dictionary with <code>json.loads()</code></li>
+  </ul>
+  <div class="callout callout-info">
+    <strong>Midterm review happened first tonight</strong> (postponed from Lecture 7). We went over the questions the class missed most, and grade statistics were shared: high score 96, median 82, mean 72 — Chapter 5 (loops) was the toughest chapter for the class as a whole.
+  </div>
+</section>
+
+<!-- ═══ ADMIN REMINDERS ═══ -->
+<section class="section" id="admin">
+  <div class="section-eyebrow">Administrative</div>
+  <h2>📋 Reminders</h2>
+  <ul class="reminder-list">
+    <li><strong>Due tonight (6/30): zyBook Chapter 6.</strong> If you haven't finished it, the grade will show as a zero temporarily, but you can still complete it and recover full credit — just don't fall further behind.</li>
+    <li><strong>Due next Tuesday (7/7): zyBook Chapter 7 (Strings).</strong></li>
+    <li><strong>Today was the last day to withdraw with a W.</strong> If you're behind, keep working — there are still 4 weeks left, and completing outstanding assignments matters more than any single grade.</li>
+    <li><strong>New: weekly open office hours</strong> every Wednesday, 6:00–7:00 PM, via a separate Teams meeting (announcement to follow). Drop in any time during the hour with questions on assignments or concepts.</li>
+    <li><strong>DNA Sequence Search project:</strong> this is an individual project, separate from the in-class group project. It requires file-reading (covered next week, 7/7) and likely lists/dictionaries — you should have everything you need after the 7/14 lecture. Start early; office hours and email are available if you get stuck.</li>
+    <li><strong>In-class group project:</strong> not yet scheduled — it needs a lighter lecture night, and the assignment itself will be adjusted once exceptions and file-handling are covered. You'll get advance notice.</li>
+    <li><strong>Final exam:</strong> 50 questions, same format as the midterm, weighted toward the later chapters, with some repeated/similar questions from the midterm. Opens after the last lecture (July 28, which will include a full-course review) and is due by 11:59 PM, July 30.</li>
+  </ul>
+</section>
+
+<!-- ═══ MIDTERM REVIEW ═══ -->
+<section class="section" id="midterm">
+  <div class="section-eyebrow">Review</div>
+  <h2>📝 Midterm Review — What Tripped People Up</h2>
+  <p>A few of the most-missed questions, worth re-tracing:</p>
+
+  <div class="topic">
+    <h3><span class="topic-num">R1</span> The ternary operator, combined with <code>+=</code></h3>
+    <p>Given: <code>if age &lt; 18: x = x + 5 else: x = x + 1</code> — which one-liner is equivalent?</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">ternary_review.py</span></div>
+      <pre><code class="language-python">x = x + 5 if age < 18 else x + 1     # correct
+
+x += 5 if age < 18 else x + 1        # WRONG — this is a
+                                      # regular if/else pattern,
+                                      # not a true ternary</code></pre>
+    </div>
+    <div class="callout callout-warn">
+      <strong>Why it's tricky:</strong> a true ternary always has the shape <code>value_if_true if condition else value_if_false</code> — one expression, evaluated once. Combining it with <code>+=</code> breaks that shape. Know the ternary by its structure, not just by the keywords <code>if</code>/<code>else</code> appearing on one line.
+    </div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">R2</span> <code>range()</code> stop value, again</h3>
+    <p>To get every number from 11 to 21 (inclusive), stepping by 2, you need <code>range(11, 22, 2)</code> — the stop must be <em>past</em> 21, since 21 itself would never be produced by a range that stops <em>at</em> 21. This was the most-missed question on the exam. If a range question shows up on the final, trace it on paper before choosing.</p>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">R3</span> Command-line arguments (<code>sys.argv</code>)</h3>
+    <p>Given <code>python3 analyze.py results.csv</code>, <code>sys.argv</code> is a list where <code>argv[0]</code> is the script name itself (<code>"analyze.py"</code>) and <code>argv[1]</code> is the first real argument (<code>"results.csv"</code>). This wasn't heavily emphasized in earlier lectures — if it's unfamiliar, it's worth a quick look before the final, since a similar question may return.</p>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>Takeaway from the midterm data:</strong> there was a strong correlation between completing the reading assignments and midterm performance. Staying current on zyBook readings is the single best predictor of exam success.
+  </div>
+</section>
+
+<!-- ═══ STRING BASICS ═══ -->
+<section class="section" id="basics">
+  <div class="section-eyebrow">Topic 1</div>
+  <h2>🧵 Strings Are Immutable Sequences</h2>
+  <ul>
+    <li>A string is an ordered sequence of characters — indexed from <code>0</code> to <code>len(s) - 1</code>, or <code>-1</code> (last) down to <code>-len(s)</code> (first).</li>
+    <li><strong>Strings cannot be changed in place.</strong> Any "modification" actually builds a brand-new string in a new memory location — you can prove this with <code>id()</code> before and after.</li>
+    <li>Referencing an index beyond the string's length raises an <code>IndexError</code>, whether you go too far positive or too far negative.</li>
+  </ul>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">immutable.py</span></div>
+    <pre><code class="language-python">word = "Python"
+print(id(word))          # some memory address
+
+word = "J" + word[1:]    # builds a NEW string: "Jython"
+print(word)               # Jython
+print(id(word))          # a DIFFERENT address —
+                           # the old "Python" string still exists
+                           # until Python's garbage collector reclaims it</code></pre>
+  </div>
+</section>
+
+<!-- ═══ SLICING ═══ -->
+<section class="section" id="slicing">
+  <div class="section-eyebrow">Topic 2</div>
+  <h2>✂️ Slicing: <code>s[start:stop:step]</code></h2>
+  <p>Slicing pulls out part of a string. Like <code>range()</code>, the <strong>stop index is never included</strong>.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Slice</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>s[7:23]</code></td><td>Characters 7 through 22</td></tr>
+        <tr><td><code>s[1:]</code></td><td>From index 1 to the end</td></tr>
+        <tr><td><code>s[:-1]</code></td><td>Everything except the last character</td></tr>
+        <tr><td><code>s[:]</code></td><td>A full copy of the string</td></tr>
+        <tr><td><code>s[::2]</code></td><td>Every other character (step = 2)</td></tr>
+        <tr><td><code>s[::-1]</code></td><td><strong>Reverses</strong> the string — a handy trick</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout callout-note">
+    <strong>Slicing is forgiving on the high end:</strong> asking for a stop index past the actual end of the string is <em>not</em> an error — Python just stops at the end. (Asking for a plain out-of-range index like <code>s[100]</code> is still an error; only slice <em>ranges</em> get this leniency.)
+  </div>
+  <div class="callout callout-info">
+    <strong>Real-world example from class:</strong> parsing a URL like <code>https://en.wikipedia.org/wiki/Python</code> into its protocol, domain, and path. Hard-coded slice positions work but only for that exact URL. A more robust approach uses <code>find()</code> to locate the <code>://</code> and the surrounding slashes dynamically, so the same code works for any well-formed URL — including checking that each <code>find()</code> actually succeeded (a result of <code>-1</code> means "not found," so you should treat that as a malformed URL and handle it instead of proceeding).
+  </div>
+</section>
+
+<!-- ═══ FORMATTING ═══ -->
+<section class="section" id="format">
+  <div class="section-eyebrow">Topic 3</div>
+  <h2>📐 f-string Field Width, Alignment &amp; Precision</h2>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">formatting.py</span></div>
+    <pre><code class="language-python">name = "Bob"
+score = 42
+
+print(f"{name:<10}|")     # left-justified,  width 10 (default for strings)
+print(f"{name:>10}|")     # right-justified, width 10
+print(f"{name:^10}|")     # centered,        width 10
+print(f"{score:>6}")      # right-justified (default for numbers), width 6
+print(f"{score:06}")      # zero-padded:  000042
+print(f"{3.14159:8.2f}")  # width 8, 2 decimal places:  "    3.14"</code></pre>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>Alignment</th><th>Default for</th></tr></thead>
+      <tbody>
+        <tr><td><code>&lt;</code></td><td>Left-justified</td><td>Strings</td></tr>
+        <tr><td><code>&gt;</code></td><td>Right-justified</td><td>Numbers</td></tr>
+        <tr><td><code>^</code></td><td>Centered</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout callout-warn">
+    <strong>Width is a minimum, not a maximum.</strong> If the value is longer than the specified width, Python does <em>not</em> truncate it — the width is simply exceeded. If you need a hard maximum, slice the string yourself before formatting it.
+  </div>
+  <div class="callout callout-info">
+    <strong>Why this matters:</strong> aligned, padded output is how receipts, reports, and ledgers line up their columns — and it's the same logic used when generating a formatted email body, an HTML table, or any fixed-width text report. A custom fill character can replace the default space (e.g. dashes or <code>=</code> signs as a section divider, or asterisks on a printed check to prevent tampering).
+  </div>
+</section>
+
+<!-- ═══ ROUNDING ═══ -->
+<section class="section" id="rounding">
+  <div class="section-eyebrow">Correction</div>
+  <h2>🔢 How Python Actually Rounds</h2>
+  <p>An earlier lecture described Python's rounding the way most of us learned it in elementary school: 5 through 9 rounds up, 0 through 4 rounds down. <strong>That description was correct for what most of us were taught, but it is not what Python actually does.</strong></p>
+  <ul>
+    <li><strong>Python uses "banker's rounding"</strong> (round-half-to-even): when a value is exactly halfway, Python rounds to whichever neighbor is <em>even</em>, not always up.</li>
+    <li><strong>Why:</strong> the elementary-school rule rounds up 5 times out of 9 possible digits (5,6,7,8,9) and down only 4 times out of 9 (1,2,3,4) — 0 needs no rounding. Applied over many calculations (like years of interest payments), that asymmetry consistently overpays by fractions of a cent. Rounding to the nearest even digit balances the up-rounds and down-rounds evenly over time.</li>
+  </ul>
+  <div class="callout callout-note">
+    A full worked demonstration of banker's rounding — including how floating-point storage can make a rounding result look "wrong" even when the rule is applied correctly — is coming in an upcoming lecture. For now, know that the concept exists and why it exists; the mechanics will follow.
+  </div>
+</section>
+
+<!-- ═══ STRING METHODS ═══ -->
+<section class="section" id="methods">
+  <div class="section-eyebrow">Topic 4</div>
+  <h2>🧰 The Core String Toolbox</h2>
+
+  <div class="topic">
+    <h3><span class="topic-num">4a</span> Searching: <code>find</code>, <code>rfind</code>, <code>count</code>, <code>in</code></h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Call</th><th>Returns</th></tr></thead>
+        <tbody>
+          <tr><td><code>s.find("x")</code></td><td>Index of the <em>first</em> occurrence, or <code>-1</code> if not found</td></tr>
+          <tr><td><code>s.rfind("x")</code></td><td>Index of the <em>last</em> occurrence (searches from the end)</td></tr>
+          <tr><td><code>s.count("x")</code></td><td>How many times <code>"x"</code> appears</td></tr>
+          <tr><td><code>"x" in s</code></td><td><code>True</code>/<code>False</code> — is it a substring?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-warn">
+      <strong>Always check for <code>-1</code>.</strong> <code>find()</code> returning <code>-1</code> means "not found" — but <code>-1</code> is also a <em>valid</em> negative index, so blindly using an unchecked <code>find()</code> result to slice a string won't crash, it'll just silently give you the wrong slice. Test <code>if position &gt;= 0:</code> before trusting the result.
+    </div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">4b</span> Transforming: <code>replace</code>, <code>strip</code>/<code>lstrip</code>/<code>rstrip</code>, <code>upper</code>/<code>lower</code>/<code>title</code>/<code>capitalize</code></h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">chaining.py</span></div>
+      <pre><code class="language-python">raw = "  Bob Smith  "
+clean = raw.strip().title()      # "Bob Smith" — chained calls
+print(clean)
+
+digits = "(555) 123-4567".replace("(", "").replace(")", "") \
+                          .replace(" ", "").replace("-", "")
+print(digits)                    # "5551234567"</code></pre>
+    </div>
+    <div class="callout callout-info">
+      <strong>Chaining works because each method returns a brand-new string</strong> (never modifies the original) — so you can immediately call another method on that result. <code>replace()</code> defaults to replacing <em>every</em> match; pass a count as the third argument to limit it. None of these methods change the original string — if you don't assign the result to a variable, it's simply discarded.
+    </div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">4c</span> Testing: <code>isdigit</code>, <code>isalpha</code>, <code>isalnum</code>, <code>isspace</code>, <code>startswith</code>, <code>endswith</code></h3>
+    <p>These return <code>True</code>/<code>False</code> and are useful for validating input before converting it. <code>isdigit()</code> requires <em>every</em> character to be a digit — a decimal point makes it <code>False</code>, so it can't validate a float string on its own. Case-insensitive comparisons (e.g. accepting "quit", "QUIT", or "Quit") are usually done by calling <code>.lower()</code> on the input first, then comparing to a lowercase literal.</p>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">4d</span> Splitting and joining</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">split_join.py</span></div>
+      <pre><code class="language-python">name = "Martin Luther King Jr"
+parts = name.split()                  # default delimiter: whitespace
+print(parts)                          # ['Martin', 'Luther', 'King', 'Jr']
+
+row = "apple,12,1.99"
+fields = row.split(",")               # CSV parsing
+print(fields)                         # ['apple', '12', '1.99']
+
+rejoined = ", ".join(parts)           # the reverse of split
+print(rejoined)                       # "Martin, Luther, King, Jr"</code></pre>
+    </div>
+    <div class="callout callout-note">
+      <strong>Unusual syntax to remember:</strong> the delimiter calls <code>.join()</code>, not the list — it's <code>"delimiter".join(list)</code>, backwards from how most other languages do it. Every item in the list must already be a string, or <code>join()</code> raises a <code>TypeError</code>.
+    </div>
+  </div>
+</section>
+
+<!-- ═══ COMPARISON ═══ -->
+<section class="section" id="compare">
+  <div class="section-eyebrow">Topic 5</div>
+  <h2>⚖️ Comparing Strings</h2>
+  <ul>
+    <li><strong><code>==</code></strong> checks that every character matches, in order. Different lengths can never be equal.</li>
+    <li><strong><code>&lt;</code> / <code>&gt;</code></strong> compare character by character (alphabetical / dictionary order). Uppercase letters sort <em>before</em> lowercase letters (<code>"A" &lt; "a"</code>), and a shorter string sorts before a longer string that starts the same way (<code>"CAT" &lt; "CATEGORY"</code>).</li>
+    <li>Comparisons are <strong>case-sensitive</strong> — <code>"Quit" != "quit"</code>. To accept either, normalize the input first: <code>user_input.lower() == "quit"</code>.</li>
+  </ul>
+</section>
+
+<!-- ═══ JSON ═══ -->
+<section class="section" id="json">
+  <div class="section-eyebrow">Real-World Application</div>
+  <h2>🌐 JSON: How Programs Exchange Data</h2>
+  <p><strong>JSON</strong> (JavaScript Object Notation) is the standard format websites and APIs use to send structured data. It looks almost identical to a Python dictionary, and Python's built-in <code>json</code> module converts between the two.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="code-label">json_demo.py</span></div>
+    <pre><code class="language-python">import json
+
+text = '{"name": "Alice", "age": 30, "isActive": true}'
+data = json.loads(text)        # parses the JSON string into a dict
+
+print(type(data))              # &lt;class 'dict'&gt;
+print(data["name"])            # Alice
+print(type(data["isActive"]))  # &lt;class 'bool'&gt; — JSON's true/false
+                                # become real Python booleans</code></pre>
+  </div>
+  <div class="callout callout-info">
+    <strong>Live demo:</strong> we made a real HTTP request (using the <code>requests</code> library) to a public UK carbon-intensity API, got back JSON data, converted it with <code>json.loads()</code>, and pulled out specific fields — <code>region</code>, <code>intensity</code> — exactly the way you'd read any API response. This is genuinely how most modern applications talk to each other: request data over the web, get JSON back, parse it into a dictionary, and use the values. Third-party libraries like <code>requests</code> (for web calls) usually require a <strong>virtual environment</strong> and <code>pip install</code>, since they don't ship with Python by default — we'll cover environment setup in more detail in a future lecture.
+  </div>
+</section>
+
+<!-- ═══ BREAKOUTS ═══ -->
+<section class="section" id="breakouts">
+  <div class="section-eyebrow">In-Class Practice</div>
+  <h2>🧪 Breakout Exercises</h2>
+
+  <div class="activity">
+    <div class="activity-tag">Breakout 1 · Parse a URL</div>
+    <h4>Slice out the protocol, domain, and path</h4>
+    <ol>
+      <li>Given a URL string, output the protocol, domain, and final path segment.</li>
+      <li>One valid approach: hard-code the slice positions for a specific URL. A more flexible approach: use <code>find()</code>/<code>rfind()</code> to locate the <code>://</code> and slash delimiters dynamically, so it works for any well-formed URL.</li>
+      <li><strong>Bonus:</strong> add a check that each <code>find()</code> call actually succeeded (result &gt;= 0) before using its result, and print an error message for a malformed URL instead of proceeding.</li>
+    </ol>
+  </div>
+
+  <div class="activity">
+    <div class="activity-tag">Breakout 2 · Formatted Sales Table</div>
+    <h4>Align columns with field width and justification</h4>
+    <ol>
+      <li>Given parallel lists of products, quantities sold, and prices, print a table: product left-aligned in 12 columns, quantity right-aligned in 6, price right-aligned in 8 with 2 decimal places.</li>
+      <li>Loop with <code>for i in range(len(products)):</code> and index all three lists with <code>i</code>.</li>
+      <li><strong>Bonus:</strong> add a centered "Revenue" column (quantity × price).</li>
+    </ol>
+  </div>
+
+  <div class="activity">
+    <div class="activity-tag">Breakout 3 · Username &amp; Email Generator</div>
+    <h4>Build a username from a full name</h4>
+    <ol>
+      <li>Input a full name; strip leading/trailing whitespace and split on whitespace to get name tokens.</li>
+      <li>Username = first initial (lowercased) + last name (lowercased) — use <code>tokens[0][0]</code> for the first initial and <code>tokens[-1]</code> for the last name, so a middle name doesn't break it.</li>
+      <li>Output the username and an email address (<code>username@mdc.edu</code>).</li>
+      <li><strong>Bonus:</strong> pad the username with periods to a fixed width.</li>
+    </ol>
+  </div>
+
+  <p>Full worked solutions are posted in the course repo under <code>solutions/</code>.</p>
+</section>
+
+<!-- ═══ UP NEXT ═══ -->
+<section class="section" id="next">
+  <div class="section-eyebrow">Up Next</div>
+  <h2>⏭️ July 7 — Exceptions &amp; Files (Ch. 8 &amp; 12)</h2>
+  <p>File-reading is a prerequisite for the DNA Sequence Search project, so this is a good week to get ahead if you can. The banker's-rounding deep dive and virtual-environment walkthrough are also coming in an upcoming lecture.</p>
+</section>
+
+</main>
+
+<footer>
+  Questions? Post on the <strong>Class Question Board</strong> in Canvas, join <strong>open office hours Wednesdays 6–7 PM</strong>, or email
+  <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+(function () {
+  const header = document.querySelector('header');
+  function setScrollOffset() {
+    document.documentElement.style.scrollPaddingTop = (header.offsetHeight + 12) + 'px';
+  }
+  setScrollOffset();
+  window.addEventListener('resize', setScrollOffset);
+})();
+</script>
+</body>
+</html>
