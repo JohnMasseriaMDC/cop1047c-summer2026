@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lecture 9 — Chapters 8 &amp; 12: Exceptions &amp; Files | COP 1047C Summer 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080c14;
+      --surface:  #0f1623;
+      --surface2: #162030;
+      --border:   #1e2d42;
+      --amber:    #f59e0b;
+      --amber-d:  #b45309;
+      --blue:     #38bdf8;
+      --green:    #4ade80;
+      --red:      #f87171;
+      --purple:   #c084fc;
+      --text:     #e2e8f0;
+      --text-d:   #94a3b8;
+      --text-f:   #475569;
+      --hdr-h:    64px;
+      --nav-h:    56px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── Progress bar ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--amber);
+      transition: width .3s ease;
+      z-index: 100;
+    }
+
+    /* ── Header ── */
+    .slide-header {
+      position: fixed;
+      top: 3px; left: 0; right: 0;
+      height: var(--hdr-h);
+      background: rgba(8,12,20,.97);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 90;
+      backdrop-filter: blur(8px);
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* Override — header should span full width */
+    .slide-header {
+      max-width: none;
+      left: 0;
+      transform: none;
+    }
+
+    .chapter-tag {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      background: rgba(245,158,11,.1);
+      border: 1px solid rgba(245,158,11,.25);
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    #slide-title-display {
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+      flex: 1;
+      padding: 0 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mdc-badge {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: rgba(56,189,248,.08);
+      border: 1px solid rgba(56,189,248,.2);
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* ── Deck / slide ── */
+    #deck {
+      position: fixed;
+      top: calc(var(--hdr-h) + 3px);
+      bottom: var(--nav-h);
+      left: 0; right: 0;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* hero variant — centred layout, NO display rule on base .slide.hero */
+    .slide.hero {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* ── Slide body ── */
+    .slide-body {
+      flex: 1;
+      padding: 32px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .slide.hero .slide-body {
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    /* ── Typography ── */
+    .eyebrow {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    h1.slide-h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h2.slide-h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .slide-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-d);
+      font-weight: 400;
+      max-width: 580px;
+    }
+
+    /* ── Inline code helper ── */
+    .ic {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-ligatures: none;
+      font-feature-settings: "liga" 0, "calt" 0;
+      font-size: .82em;
+      background: var(--surface2);
+      color: var(--blue);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Concept box ── */
+    .concept {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--amber);
+      border-radius: 8px;
+      padding: 14px 18px;
+    }
+
+    .concept-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 6px;
+    }
+
+    .concept p, .concept li {
+      color: var(--text-d);
+      font-size: .92rem;
+      line-height: 1.65;
+    }
+
+    /* ── Bullet list ── */
+    .bl {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .bl li {
+      display: block;
+      position: relative;
+      padding-left: 22px;
+      font-size: .92rem;
+      color: var(--text-d);
+      line-height: 1.6;
+    }
+
+    .bl li::before {
+      content: '▸';
+      color: var(--amber);
+      position: absolute;
+      left: 4px;
+      top: 0;
+    }
+
+    .bl li strong { color: var(--text); }
+
+    /* ── Two-column ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .two-col.wl { grid-template-columns: 3fr 2fr; }
+    .two-col.rw { grid-template-columns: 2fr 3fr; }
+
+    /* ── Code block ── */
+    .code-wrap {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .code-hdr {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: #161b22;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+
+    .code-wrap pre {
+      margin: 0 !important;
+      background: transparent !important;
+      padding: 14px 16px !important;
+      font-size: .8rem !important;
+      line-height: 1.65 !important;
+      overflow-x: auto;
+    }
+
+    .code-wrap pre code {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-variant-ligatures: none !important;
+      font-feature-settings: "liga" 0, "calt" 0 !important;
+    }
+
+    /* ── Callouts ── */
+    .callout {
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: .88rem;
+      line-height: 1.65;
+    }
+
+    .callout-info   { background: rgba(56,189,248,.07);  border: 1px solid rgba(56,189,248,.22);  color: #bae6fd; }
+    .callout-warn   { background: rgba(245,158,11,.07);  border: 1px solid rgba(245,158,11,.25);  color: #fde68a; }
+    .callout-note   { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.22);  color: #bbf7d0; }
+    .callout-purple { background: rgba(192,132,252,.07); border: 1px solid rgba(192,132,252,.22); color: #e9d5ff; }
+
+    .callout strong { color: inherit; font-weight: 700; }
+
+    /* ── Tag row ── */
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { font-size: .75rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+    .tag-a  { background: rgba(245,158,11,.15); color: #fcd34d; }
+    .tag-b  { background: rgba(56,189,248,.12); color: #7dd3fc; }
+    .tag-g  { background: rgba(74,222,128,.12); color: #86efac; }
+    .tag-p  { background: rgba(192,132,252,.12); color: #d8b4fe; }
+
+    /* ── Optional badge ── */
+    .opt-badge {
+      display: inline-block;
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--purple);
+      background: rgba(192,132,252,.1);
+      border: 1px solid rgba(192,132,252,.25);
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* ── Breakout card ── */
+    .breakout-card {
+      background: rgba(245,158,11,.04);
+      border: 2px solid rgba(245,158,11,.3);
+      border-radius: 12px;
+      padding: 22px 26px;
+      flex: 1;
+    }
+
+    .breakout-hdr {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .breakout-icon { font-size: 1.4rem; }
+
+    .breakout-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--amber);
+    }
+
+    .breakout-time {
+      margin-left: auto;
+      font-size: .72rem;
+      font-weight: 600;
+      color: #fcd34d;
+      background: rgba(245,158,11,.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* ── Quiz / trace ── */
+    .quiz-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .quiz-q {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      font-size: .9rem;
+    }
+
+    .quiz-reveal {
+      font-size: .85rem;
+      color: var(--text-d);
+      background: rgba(245,158,11,.06);
+      border: 1px solid rgba(245,158,11,.15);
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-top: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .2s;
+    }
+
+    .quiz-reveal:hover { background: rgba(245,158,11,.12); }
+
+    .quiz-answer {
+      display: none;
+      margin-top: 8px;
+      color: var(--green);
+      font-weight: 600;
+      font-size: .88rem;
+    }
+
+    .quiz-answer.shown { display: block; }
+
+    /* ── Summary table ── */
+    .sum-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .86rem;
+    }
+
+    .sum-table th {
+      background: var(--surface2);
+      color: var(--amber);
+      font-weight: 700;
+      padding: 9px 14px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .sum-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-d);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .sum-table td:first-child {
+      color: var(--text);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ── Nav ── */
+    .slide-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: rgba(8,12,20,.97);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      z-index: 90;
+    }
+
+    .nav-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-d);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .nav-btn:hover {
+      background: var(--surface2);
+      color: var(--text);
+      border-color: var(--amber);
+    }
+
+    .nav-btn:disabled {
+      opacity: .35;
+      cursor: default;
+    }
+
+    #slide-counter {
+      font-size: .82rem;
+      color: var(--text-d);
+      min-width: 76px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Utility ── */
+    .gap-sm { display: flex; flex-direction: column; gap: 10px; }
+    .small { font-size: .85rem; color: var(--text-d); }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header class="slide-header">
+  <div class="chapter-tag" id="chapter-tag-display">Ch 8 &middot; Exceptions</div>
+  <div id="slide-title-display">COP 1047C &mdash; Introduction to Python</div>
+  <div class="mdc-badge">MDC Live &middot; Summer 2026</div>
+</header>
+
+<section class="slide hero active" data-title="Chapter 8: Exceptions" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">COP 1047C &nbsp;&middot;&nbsp; Lecture 9 &nbsp;&middot;&nbsp; Week 9</div>
+    <h1 class="slide-h1">Chapter 8<br>Exceptions</h1>
+    <p class="slide-subtitle">Handling errors gracefully &mdash; <span class="ic">try</span>, <span class="ic">except</span>, <span class="ic">raise</span>, <span class="ic">finally</span>, and custom exception types</p>
+    <div class="tag-row" style="justify-content:center;margin-top:10px;">
+      <span class="tag tag-a">try / except</span>
+      <span class="tag tag-b">multiple handlers</span>
+      <span class="tag tag-g">raise</span>
+      <span class="tag tag-b">finally</span>
+      <span class="tag tag-p">custom errors</span>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Tonight's Agenda" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">Lecture 9</div>
+    <h2 class="slide-h2">Tonight's Agenda &amp; Learning Objectives</h2>
+    <p class="small">By the end of class you will be able to:</p>
+    <ul class="bl">
+      <li><strong>Explain</strong> why an unhandled exception crashes a program, and recognize common exception types like <span class="ic">ValueError</span> and <span class="ic">ZeroDivisionError</span> (8.1)</li>
+      <li><strong>Catch</strong> exceptions gracefully using <span class="ic">try</span> / <span class="ic">except</span> so a program keeps running (8.1)</li>
+      <li><strong>Handle</strong> different error types with multiple <span class="ic">except</span> blocks, including a tuple of types in one handler (8.2)</li>
+      <li><strong>Explain</strong> why a bare catchall <span class="ic">except:</span> should generally be avoided (8.2)</li>
+      <li><strong>Raise</strong> an exception with <span class="ic">raise</span> to signal an error without cluttering normal code with if/else (8.3)</li>
+      <li><strong>Capture</strong> exception details using <span class="ic">except ValueError as excpt</span> (8.3)</li>
+      <li><strong>Trace</strong> how an unhandled exception propagates up the function call stack (8.4)</li>
+      <li><strong>Guarantee</strong> clean-up code runs &mdash; with or without an exception &mdash; using <span class="ic">finally</span> (8.5)</li>
+      <li><strong>Define</strong> a custom exception type by inheriting from <span class="ic">Exception</span> (8.6)</li>
+    </ul>
+    <div class="callout callout-info">
+      <strong>Competency 1</strong> &mdash; testing and debugging programming logic and code.
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="8.1 — Why Programs Crash" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">8.1 &mdash; Introduction</div>
+    <h2 class="slide-h2">Errors Happen: Why We Need Exception Handling</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Exception</div>
+          <p>An <strong style="color:var(--text);">exception</strong> is an error detected during execution. Python has special <strong style="color:var(--text);">try</strong> / <strong style="color:var(--text);">except</strong> constructs specifically to handle these exceptional circumstances.</p>
+        </div>
+        <ul class="bl">
+          <li>An unhandled exception <strong>immediately terminates</strong> the program</li>
+          <li>Python prints a <span class="ic">Traceback</span> showing where the error occurred</li>
+          <li>Good programs anticipate bad input and <strong>keep running</strong> instead of crashing</li>
+        </ul>
+        <div class="callout callout-warn">
+          <strong>Real talk:</strong> a user will eventually type something you didn't expect. The question isn't <em>if</em>, it's <em>when</em>.
+        </div>
+      </div>
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">weight = int(input("Enter weight: "))
+height = int(input("Enter height: "))
+bmi = (float(weight) / float(height * height)) * 703
+print(f"BMI: {bmi}")
+
+# --- if the user types letters instead ---
+# Enter weight: One-hundred fifty
+#
+# Traceback (most recent call last):
+#   File "test.py", line 1, in &lt;module&gt;
+#     weight = int(input("Enter weight: "))
+# ValueError: invalid literal for int()
+#             with base 10: 'One-hundred fifty'
+#
+# Program terminates. Nothing after this line runs.</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="8.1 — The try / except Construct" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">8.1 &mdash; Basic Construct</div>
+    <h2 class="slide-h2">The <span class="ic" style="font-size:.7em;">try</span> / <span class="ic" style="font-size:.7em;">except</span> Construct</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">try:
+    weight = int(input("Enter weight: "))
+    height = int(input("Enter height: "))
+    bmi = (float(weight) / float(height * height)) * 703
+    print(f"BMI: {bmi}")
+except:
+    print("Could not calculate health info.")
+
+print("Program keeps going!")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Control Flow</div>
+          <p>Statements in the <span class="ic">try</span> block run first. If <strong style="color:var(--text);">no</strong> exception occurs, <span class="ic">except</span> is skipped entirely.</p>
+        </div>
+        <ul class="bl">
+          <li>If an exception <strong>does</strong> occur, execution jumps immediately to <span class="ic">except</span></li>
+          <li>Any remaining <span class="ic">try</span> statements are <strong>skipped</strong> &mdash; they never run</li>
+          <li>After <span class="ic">except</span> finishes, the program <strong>continues</strong> normally afterward</li>
+        </ul>
+        <div class="callout callout-info">
+          <strong>Mental model:</strong> "try this &mdash; if anything goes wrong anywhere in here, jump down there and recover."
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="8.1 — Common Exception Types" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">8.1 &mdash; Vocabulary</div>
+    <h2 class="slide-h2">Common Built-In Exception Types</h2>
+    <table class="sum-table">
+      <thead>
+        <tr><th style="width:22%;">Type</th><th>Raised when&hellip;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="ic">ValueError</span></td><td>A value has the right type but an invalid value &mdash; ex: <span class="ic">int("abc")</span></td></tr>
+        <tr><td><span class="ic">ZeroDivisionError</span></td><td>Dividing by zero</td></tr>
+        <tr><td><span class="ic">IndexError</span></td><td>A list/string index is out of bounds</td></tr>
+        <tr><td><span class="ic">KeyError</span></td><td>A dictionary key is not found in the set of keys</td></tr>
+        <tr><td><span class="ic">EOFError</span></td><td><span class="ic">input()</span> hits end-of-file without reading any input</td></tr>
+        <tr><td><span class="ic">TypeError</span></td><td>An operation is applied to an object of the wrong type</td></tr>
+        <tr><td><span class="ic">NameError</span></td><td>A variable or function name isn't defined</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-note">
+      <strong>Source:</strong> the full built-in list lives at <span class="ic">docs.python.org</span> &mdash; you'll come to recognize the common ones quickly.
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="8.2 — Multiple Exception Handlers" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">8.2 &mdash; Multiple Handlers</div>
+    <h2 class="slide-h2">Different Errors, Different Handlers</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">try:
+    weight = int(input("Enter weight: "))
+    height = int(input("Enter height: "))
+    bmi = (float(weight) / float(height * height)) * 703
+    print(f"BMI: {bmi}")
+except ValueError:
+    print("Please enter whole numbers only.")
+except ZeroDivisionError:
+    print("Invalid height entered. Must be &gt; 0.")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Why Multiple except Blocks?</div>
+          <p>A single <span class="ic">try</span> block can raise <strong style="color:var(--text);">different</strong> kinds of errors. Each <span class="ic">except</span> can target one specific type with its own recovery message.</p>
+        </div>
+        <ul class="bl">
+          <li>Python checks each <span class="ic">except</span> <strong>top to bottom</strong> and runs the first match</li>
+          <li>Only <strong>one</strong> handler runs per exception &mdash; then execution resumes after the whole block</li>
+          <li>An unspecified exception type with no matching handler is left <strong>unhandled</strong> &mdash; program still crashes</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="8.2 — Tuples of Exceptions &amp; the Catchall Trap" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">8.2 &mdash; Grouping Types &amp; Best Practice</div>
+    <h2 class="slide-h2">One Handler, Several Types &mdash; And Why <span class="ic" style="font-size:.7em;">except:</span> Alone Is Risky</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">try:
+    result = my_lib.magic()
+    f = open(result, "r")
+    print(f.read())
+except (ValueError, TypeError):
+    print("Bad input or bad type.")
+except (NameError, AttributeError):
+    print("That function doesn't exist.")
+except:
+    print("Something else went wrong.")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <ul class="bl">
+          <li>A <strong>tuple</strong> like <span class="ic">(ValueError, TypeError)</span> lets one block handle several types identically</li>
+          <li>An <span class="ic">except:</span> with <strong>no type</strong> is a catchall &mdash; it handles <em>any</em> exception</li>
+        </ul>
+        <div class="callout callout-warn">
+          <strong>Good practice:</strong> avoid a bare catchall when you can. It can hide real bugs by silently swallowing errors you never anticipated &mdash; always prefer naming the specific exception type(s) you expect.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Breakout #1 — Grocery Bill Splitter" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">Now You Try</div>
+    <h2 class="slide-h2">Breakout Activity #1</h2>
+    <div class="breakout-card">
+      <div class="breakout-hdr">
+        <span class="breakout-icon">🧩</span>
+        <span class="breakout-title">Grocery Bill Splitter &mdash; try / except in Action</span>
+        <span class="breakout-time">&#9201; 12 minutes</span>
+      </div>
+      <div class="two-col">
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--text);">Your Task:</strong> Read a total bill amount and a number of diners, then print each person's share.</p>
+          <ul class="bl">
+            <li>Read <span class="ic">total_bill</span> (float) and <span class="ic">num_people</span> (int) from input</li>
+            <li>Compute and print <span class="ic">total_bill / num_people</span>, formatted to 2 decimals</li>
+            <li>Catch <span class="ic">ValueError</span> &mdash; print <span class="ic">"Please enter valid numbers."</span></li>
+            <li>Catch <span class="ic">ZeroDivisionError</span> &mdash; print <span class="ic">"Cannot split among zero people."</span></li>
+            <li>Wrap everything in a <span class="ic">while</span> loop that repeats until the user enters <span class="ic">"q"</span></li>
+            <li><strong>Bonus A:</strong> add a 20% tip before dividing</li>
+            <li><strong>Bonus B:</strong> also catch a negative <span class="ic">num_people</span> by <em>raising</em> a <span class="ic">ValueError</span> yourself (preview of 8.3!)</li>
+          </ul>
+        </div>
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--amber);">Expected output:</strong></p>
+          <div class="code-wrap">
+            <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-text">Enter total bill: 84.00
+Enter number of people: 4
+Each person owes: $21.00
+
+Enter total bill: seventy
+Please enter valid numbers.
+
+Enter total bill: 50
+Enter number of people: 0
+Cannot split among zero people.</code></pre>
+          </div>
+          <div class="callout callout-info">
+            <strong>Hint:</strong> convert <span class="ic">total_bill</span> with <span class="ic">float()</span> and <span class="ic">num_people</span> with <span class="ic">int()</span> &mdash; both inside the same <span class="ic">try</span> block.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="8.3 — Raising Exceptions" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">8.3 &mdash; The raise Statement</div>
+    <h2 class="slide-h2">Raising Your Own Exceptions Keeps Code Clean</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Why raise Instead of if / else?</div>
+          <p>Sprinkling <span class="ic">if</span> / <span class="ic">else</span> checks throughout "normal" code obscures the program's flow. A <span class="ic">raise</span> statement exits the <span class="ic">try</span> block immediately and jumps to the handler.</p>
+        </div>
+        <ul class="bl">
+          <li><span class="ic">raise ValueError("message")</span> creates a new exception with a descriptive string</li>
+          <li>You can raise any built-in type &mdash; pick the one that best fits the problem</li>
+          <li>The normal code flow reads cleanly: <em>"get weight, get height, print BMI"</em> &mdash; not buried in branches</li>
+        </ul>
+      </div>
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">try:
+    weight = int(input("Enter weight: "))
+    if weight &lt; 0:
+        raise ValueError("Invalid weight.")
+
+    height = int(input("Enter height: "))
+    if height &lt;= 0:
+        raise ValueError("Invalid height.")
+
+    bmi = (float(weight) * 703) / (height * height)
+    print(f"BMI: {bmi}")
+except ValueError as excpt:
+    print(excpt)
+    print("Could not calculate health info.")</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="8.3 — Capturing Exception Details with as" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">8.3 &mdash; except ... as</div>
+    <h2 class="slide-h2"><span class="ic" style="font-size:.7em;">except ValueError as excpt</span> &mdash; Inspecting the Error</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">try:
+    user_age = int(input())
+    if user_age &lt; 0:
+        raise ValueError("Invalid age")
+    avg_max_heart_rate = 220 - user_age
+    print(f"Avg: {avg_max_heart_rate}")
+except ValueError as excpt:
+    print(f"Error: {excpt}")
+
+# Input: 50   -> Avg: 170
+# Input: -5   -> Error: Invalid age</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">The as Keyword</div>
+          <p>The keyword <span class="ic">as</span> binds a <strong style="color:var(--text);">name</strong> to the exception object that was raised. Printing that name prints the message string passed to <span class="ic">raise</span>.</p>
+        </div>
+        <ul class="bl">
+          <li>Works the same whether the exception came from <span class="ic">raise</span> or from Python itself (like <span class="ic">int()</span> failing)</li>
+          <li>Great for giving the user a specific, useful message instead of a generic one</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="8.4 — Exceptions Propagate Through Functions" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">8.4 &mdash; Functions &amp; the Call Stack</div>
+    <h2 class="slide-h2">An Unhandled Exception Climbs the Call Stack</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">def get_weight():
+    weight = int(input("Enter weight: "))
+    if weight &lt; 0:
+        raise ValueError("Invalid weight.")
+    return weight
+
+def get_height():
+    height = int(input("Enter height: "))
+    if height &lt;= 0:
+        raise ValueError("Invalid height.")
+    return height
+
+try:
+    weight = get_weight()
+    height = get_height()
+    print(f"BMI: {(weight/(height*height))*703}")
+except ValueError as excpt:
+    print(excpt)</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Propagation</div>
+          <p>If <span class="ic">get_weight()</span> raises an exception and has <strong style="color:var(--text);">no</strong> <span class="ic">try</span> block of its own, the function exits <strong>immediately</strong>. Python looks up the call stack for a handler.</p>
+        </div>
+        <ul class="bl">
+          <li>The exception is caught wherever the <em>call</em> to <span class="ic">get_weight()</span> happens to be wrapped in <span class="ic">try</span></li>
+          <li>Without exceptions, functions would need a special "failure" return value (like <span class="ic">-1</span>) &mdash; and the caller would need extra if/else to check it every time</li>
+        </ul>
+        <div class="callout callout-note">
+          A key goal of exception handling: keep normal code readable, free of scattered error-checking branches.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="8.5 — finally: Guaranteed Clean-Up" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">8.5 &mdash; The finally Clause</div>
+    <h2 class="slide-h2"><span class="ic" style="font-size:.7em;">finally</span> Always Runs</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">def divide(a, b):
+    z = -1
+    try:
+        z = a / b
+    except ZeroDivisionError:
+        print("Cannot divide by zero")
+    finally:
+        print(f"Result is {z}")
+
+divide(4, 2)   # Result is 2.0
+divide(4, 0)   # Cannot divide by zero
+               # Result is -1</code></pre>
+      </div>
+      <div class="gap-sm">
+        <ul class="bl">
+          <li><strong>No exception?</strong> <span class="ic">finally</span> runs right before the <span class="ic">try</span> block finishes</li>
+          <li><strong>Handled exception?</strong> the <span class="ic">except</span> block runs, then <span class="ic">finally</span> runs</li>
+          <li><strong>Unhandled exception?</strong> <span class="ic">finally</span> still runs &mdash; then the exception is re-raised</li>
+          <li><span class="ic">break</span>, <span class="ic">continue</span>, or <span class="ic">return</span> inside the <span class="ic">try</span> also trigger <span class="ic">finally</span> before exiting</li>
+        </ul>
+        <div class="callout callout-info">
+          <strong>Use case:</strong> clean-up code that must run no matter what &mdash; like closing a file, releasing a resource, or printing a status line.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="8.5 — finally in Practice: Closing a File" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">8.5 &mdash; A Realistic Example</div>
+    <h2 class="slide-h2">Closing a File No Matter What Happens</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">nums = []
+my_file = input("Enter file name: ")
+rd_nums = -1
+try:
+    rd_nums = open(my_file, "r")
+    for line in rd_nums:
+        nums.append(int(line))
+except IOError:
+    print(f"Could not find {my_file}")
+except ValueError:
+    print(f"Could not read number from {my_file}")
+finally:
+    print(f"Closing {my_file}")
+    if rd_nums != -1:
+        rd_nums.close()</code></pre>
+      </div>
+      <div class="gap-sm">
+        <ul class="bl">
+          <li>Whether the file is missing, contains bad data, or reads perfectly &mdash; <span class="ic">finally</span> guarantees the close happens</li>
+          <li>Forgetting to close a file can leave it locked so other programs can't use it</li>
+        </ul>
+        <div class="callout callout-note">
+          <strong>Coming up in Chapter 12:</strong> we'll go deep on file objects &mdash; <span class="ic">open()</span>, reading, writing, and an even cleaner alternative to manual <span class="ic">try</span> / <span class="ic">finally</span> called the <span class="ic">with</span> statement.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="8.6 — Custom Exception Types" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">8.6 &mdash; Building Your Own Error Types</div>
+    <h2 class="slide-h2">Custom Exception Types</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python"># Define a custom exception type
+class LessThanZeroError(Exception):
+    def __init__(self, value):
+        self.value = value
+
+my_num = int(input("Enter number: "))
+if my_num &lt; 0:
+    raise LessThanZeroError("my_num must be > 0")
+else:
+    print(f"my_num: {my_num}")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Why Build Your Own?</div>
+          <p>Built-in types like <span class="ic">ValueError</span> are generic. A <strong style="color:var(--text);">custom</strong> type names the exact problem your program cares about.</p>
+        </div>
+        <ul class="bl">
+          <li>Create it by inheriting from the built-in <span class="ic">Exception</span> class</li>
+          <li>Keep it minimal &mdash; a constructor that stores an attribute, or just <span class="ic">pass</span></li>
+          <li><strong>Good practice:</strong> end the class name with <span class="ic">Error</span> &mdash; e.g. <span class="ic">LessThanZeroError</span>, <span class="ic">InvalidGradeError</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Breakout #2 — Grade Validator" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">Now You Try</div>
+    <h2 class="slide-h2">Breakout Activity #2</h2>
+    <div class="breakout-card">
+      <div class="breakout-hdr">
+        <span class="breakout-icon">🧩</span>
+        <span class="breakout-title">Grade Validator &mdash; Custom Exceptions</span>
+        <span class="breakout-time">&#9201; 15 minutes</span>
+      </div>
+      <div class="two-col">
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--text);">Your Task:</strong> Build a small grade-entry tool using a custom exception.</p>
+          <ul class="bl">
+            <li>Define <span class="ic">class InvalidGradeError(Exception):</span> with a constructor that stores the bad value</li>
+            <li>Write <span class="ic">get_grade()</span> &mdash; reads an integer grade from input, and <span class="ic">raise InvalidGradeError(...)</span> if it's outside 0&ndash;100</li>
+            <li>In a <span class="ic">while</span> loop, call <span class="ic">get_grade()</span> inside a <span class="ic">try</span> block</li>
+            <li>Catch <span class="ic">InvalidGradeError</span> and print its message</li>
+            <li>On success, print the letter grade (A/B/C/D/F) using the grade scale from the syllabus</li>
+            <li>Loop until the user enters <span class="ic">"q"</span></li>
+            <li><strong>Bonus:</strong> also catch plain <span class="ic">ValueError</span> for non-numeric input, separately from <span class="ic">InvalidGradeError</span></li>
+          </ul>
+        </div>
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--amber);">Expected output:</strong></p>
+          <div class="code-wrap">
+            <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-text">Enter grade (q to quit): 92
+Grade: A
+
+Enter grade (q to quit): 150
+Invalid grade: 150 is not between 0 and 100.
+
+Enter grade (q to quit): abc
+Please enter a whole number.
+
+Enter grade (q to quit): q</code></pre>
+          </div>
+          <div class="callout callout-warn">
+            <strong>Think:</strong> should <span class="ic">get_grade()</span> have its own <span class="ic">try</span> block, or should the exception propagate up to the caller? (Hint &mdash; 8.4!)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Trace Drill — Predict the Output" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">Practice &mdash; Trace the Execution</div>
+    <h2 class="slide-h2">Trace Drill &mdash; What Does This Print?</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">user_input = input()
+while user_input != "end":
+    try:
+        divisor = int(user_input)
+        print(60 // divisor)
+    except ValueError:
+        print("v")
+    except ZeroDivisionError:
+        print("z")
+    user_input = input()
+print("OK")
+
+# Inputs, one per line:
+# 4
+# three
+# 0
+# 2
+# end</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="quiz-box">
+          <div class="quiz-q">1)&nbsp;Input <span class="ic">4</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">&#128070; Tap to reveal</div>
+          <div class="quiz-answer">60 // 4 &rarr; <strong>15</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">2)&nbsp;Input <span class="ic">three</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">&#128070; Tap to reveal</div>
+          <div class="quiz-answer"><span class="ic">int("three")</span> fails &rarr; <strong>v</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">3)&nbsp;Input <span class="ic">0</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">&#128070; Tap to reveal</div>
+          <div class="quiz-answer">60 // 0 &rarr; <strong>z</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">4)&nbsp;Input <span class="ic">2</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">&#128070; Tap to reveal</div>
+          <div class="quiz-answer">60 // 2 &rarr; <strong>30</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">5)&nbsp;Input <span class="ic">end</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">&#128070; Tap to reveal</div>
+          <div class="quiz-answer">loop exits &rarr; <strong>OK</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Common Pitfalls with Exceptions" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">Applied &mdash; Debugging Habits</div>
+    <h2 class="slide-h2">Common Pitfalls to Avoid</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="callout callout-warn">
+          <strong>Bare <span class="ic">except:</span> hides bugs.</strong> A catchall silently swallows <em>any</em> error, including ones you never intended to handle &mdash; like a typo in a variable name. Name the specific type(s) you expect.
+        </div>
+        <div class="callout callout-info">
+          <strong>Don't use exceptions for normal control flow.</strong> If you can easily check a condition with <span class="ic">if</span> beforehand (like <span class="ic">if height &gt; 0</span>), that's often clearer than relying on a crash to tell you.
+        </div>
+      </div>
+      <div class="gap-sm">
+        <div class="callout callout-note">
+          <strong>Write informative messages.</strong> <span class="ic">raise ValueError("Invalid weight.")</span> is far more useful to a future debugger (probably you!) than a bare <span class="ic">raise ValueError()</span>.
+        </div>
+        <div class="callout callout-purple">
+          <strong>Order matters.</strong> Put more specific <span class="ic">except</span> blocks <em>before</em> more general ones &mdash; Python uses the first match it finds, top to bottom.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Chapter 8 Summary" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">Wrap-Up</div>
+    <h2 class="slide-h2">Chapter 8 &mdash; The Cheat Sheet</h2>
+    <table class="sum-table">
+      <thead>
+        <tr><th style="width:26%;">Concept</th><th style="width:34%;">Syntax</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Basic handling</td>
+          <td><span class="ic">try: / except:</span></td>
+          <td>Catchall &mdash; use sparingly</td>
+        </tr>
+        <tr>
+          <td>Specific type</td>
+          <td><span class="ic">except ValueError:</span></td>
+          <td>Preferred &mdash; only catches what you name</td>
+        </tr>
+        <tr>
+          <td>Multiple types</td>
+          <td><span class="ic">except (ValueError, TypeError):</span></td>
+          <td>One handler, several types</td>
+        </tr>
+        <tr>
+          <td>Inspect the error</td>
+          <td><span class="ic">except ValueError as e:</span></td>
+          <td><span class="ic">print(e)</span> shows the message</td>
+        </tr>
+        <tr>
+          <td>Signal an error</td>
+          <td><span class="ic">raise ValueError("msg")</span></td>
+          <td>Exits try block immediately</td>
+        </tr>
+        <tr>
+          <td>Clean-up</td>
+          <td><span class="ic">finally:</span></td>
+          <td>Always runs &mdash; error or not</td>
+        </tr>
+        <tr>
+          <td>Propagation</td>
+          <td>(no try in function)</td>
+          <td>Exception bubbles up to the caller</td>
+        </tr>
+        <tr>
+          <td>Custom type</td>
+          <td><span class="ic">class MyError(Exception):</span></td>
+          <td>Name ends in "Error" by convention</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="slide hero" data-title="Up Next — Chapter 12: Files" data-chapter="Ch 8 &middot; Exceptions">
+  <div class="slide-body">
+    <div class="eyebrow">Same Lecture &nbsp;&middot;&nbsp; Continuing Tonight</div>
+    <h1 class="slide-h1" style="font-size:2.8rem;">Up Next<br>Chapter 12 &mdash; Files</h1>
+    <p class="slide-subtitle">We're staying in Lecture 9 &mdash; from handling errors gracefully to reading and writing data that outlives the program</p>
+    <div class="tag-row" style="justify-content:center;margin-top:10px;">
+      <span class="tag tag-a">Ch 8 Exceptions Labs &amp; Readings &mdash; due 7/7</span>
+      <span class="tag tag-b">Ch 9 &amp; Ch 12 Files Labs &mdash; due 7/14</span>
+    </div>
+    <div class="callout callout-info" style="max-width:560px;margin-top:20px;text-align:left;">
+      Quick stretch break, then we'll pick up with <strong>Chapter 12: Files</strong> &mdash; reading, writing, and organizing data on disk.
+    </div>
+  </div>
+</section>
+
+<section class="slide hero" data-title="Chapter 12: Files" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">COP 1047C &nbsp;&middot;&nbsp; Lecture 9 &nbsp;&middot;&nbsp; Continued</div>
+    <h1 class="slide-h1">Chapter 12<br>Files</h1>
+    <p class="slide-subtitle">Reading, writing, and organizing data that outlives your program &mdash; text, binary, and CSV</p>
+    <div class="tag-row" style="justify-content:center;margin-top:10px;">
+      <span class="tag tag-a">read / write</span>
+      <span class="tag tag-b">os &amp; os.path</span>
+      <span class="tag tag-g">binary data</span>
+      <span class="tag tag-b">with</span>
+      <span class="tag tag-p">csv</span>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Chapter 12 Agenda" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">Lecture 9 &nbsp;&middot;&nbsp; Chapter 12 Segment</div>
+    <h2 class="slide-h2">Chapter 12 Agenda &amp; Learning Objectives</h2>
+    <p class="small">By the end of class you will be able to:</p>
+    <ul class="bl">
+      <li><strong>Open and read</strong> a text file with <span class="ic">open()</span>, <span class="ic">read()</span>, <span class="ic">readlines()</span>, and <span class="ic">for line in f</span> (12.1)</li>
+      <li><strong>Write</strong> to a file with <span class="ic">write()</span>, choosing the right mode &mdash; <span class="ic">"r"</span>, <span class="ic">"w"</span>, <span class="ic">"a"</span> (12.2)</li>
+      <li><strong>Explain</strong> output buffering and force a flush with <span class="ic">flush()</span> (12.2)</li>
+      <li><strong>Build portable file paths</strong> with <span class="ic">os.path.join()</span> instead of hardcoded separators (12.3)</li>
+      <li><strong>Query and manipulate</strong> the file system with <span class="ic">os.path.exists</span>, <span class="ic">isfile</span>, <span class="ic">getsize</span>, and <span class="ic">os.walk()</span> (12.3)</li>
+      <li><strong>Distinguish</strong> text mode from binary mode and read raw <span class="ic">bytes</span> objects (12.4)</li>
+      <li><strong>Use</strong> command-line arguments with <span class="ic">sys.argv</span> to specify a file at runtime (12.5)</li>
+      <li><strong>Use</strong> the <span class="ic">with</span> statement so files are always closed automatically (12.6)</li>
+      <li><strong>Read and write</strong> comma-separated values with the <span class="ic">csv</span> module (12.7)</li>
+    </ul>
+    <div class="callout callout-info">
+      <strong>Competency 7</strong> &mdash; reading an existing sequential file, creating a sequential file, and producing formatted output.
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.1 — Reading From a File" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.1 &mdash; open() and read()</div>
+    <h2 class="slide-h2">Reading From a File</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">The File Object</div>
+          <p><span class="ic">open("myfile.txt")</span> creates a <strong style="color:var(--text);">file object</strong> connected to that file on disk. Reading input this way replaces keyboard entry with data already saved somewhere.</p>
+        </div>
+        <ul class="bl">
+          <li><span class="ic">f.read()</span> returns the <strong>entire</strong> file as one string</li>
+          <li><span class="ic">f.close()</span> releases the file &mdash; always do this when finished</li>
+          <li>Path can be relative (<span class="ic">"myfile.txt"</span>) or absolute (<span class="ic">"C:\\Users\\...</span>)</li>
+        </ul>
+      </div>
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">print("Opening file myfile.txt.")
+f = open("myfile.txt")        # create file object
+print("Reading file myfile.txt.")
+contents = f.read()           # read entire file as a string
+print("Closing file myfile.txt.")
+f.close()                     # close the file
+
+print("\nContents of myfile.txt:")
+print(contents)
+
+# Because he's the hero Gotham deserves,
+# but not the one it needs right now.</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.1 — readlines(), readline(), and Iteration" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.1 &mdash; Three Ways to Read</div>
+    <h2 class="slide-h2">read() vs. readlines() vs. Iterating a File</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python"># read() -> one big string
+f = open("myfile.txt")
+contents = f.read()
+
+# readlines() -> a list, one element per line
+f2 = open("myfile.txt")
+lines = f2.readlines()
+print(lines[1])          # second line
+
+# Iterate directly over the file object
+f3 = open("myfile.txt")
+for line in f3:
+    print(line, end="")  # each line already has \n
+f3.close()</code></pre>
+      </div>
+      <div class="gap-sm">
+        <ul class="bl">
+          <li><span class="ic">read()</span> &rarr; one string with the whole file</li>
+          <li><span class="ic">readlines()</span> &rarr; a list of strings, one per line (each keeps its trailing <span class="ic">\n</span>)</li>
+          <li><span class="ic">readline()</span> &rarr; a single line at a time &mdash; useful for huge files that won't fit in memory</li>
+          <li>File objects support <span class="ic">for line in f:</span> directly &mdash; the most common pattern</li>
+        </ul>
+        <div class="callout callout-info">
+          All three stop automatically at end-of-file (EOF) &mdash; no more data means the loop or read simply ends.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.1 — Processing Data From a File" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.1 &mdash; A Common Pattern</div>
+    <h2 class="slide-h2">Read &rarr; Iterate &rarr; Compute</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python"># mydata.txt has 100 integers, one per line
+f = open("mydata.txt")
+lines = f.readlines()
+f.close()
+
+total = 0
+for ln in lines:
+    total += int(ln)   # must convert string -> int
+
+avg = total / len(lines)
+print(f"Average value: {avg}")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">The Three-Step Pattern</div>
+          <p>1) Read the file's contents. 2) Iterate over each line to process values. 3) Compute a result, such as a total or average.</p>
+        </div>
+        <div class="callout callout-warn">
+          <strong>Remember:</strong> everything read from a file is a <strong>string</strong> &mdash; even a line that looks like <span class="ic">"105"</span>. You must convert it with <span class="ic">int()</span> or <span class="ic">float()</span> before doing math.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.2 — Writing to a File" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.2 &mdash; write() and File Modes</div>
+    <h2 class="slide-h2">Writing to a File</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">f = open("myfile.txt", "w")     # open for writing
+f.write("Example string:\n")
+f.write("test....")
+f.close()
+
+# write() only accepts strings --
+# convert numbers first!
+num1, num2 = 5, 7.5
+f = open("myfile.txt", "w")
+f.write(str(num1) + " + " + str(num2))
+f.write(" = " + str(num1 + num2))
+f.close()</code></pre>
+      </div>
+      <div class="gap-sm">
+        <table class="sum-table">
+          <thead><tr><th>Mode</th><th>Read?</th><th>Write?</th><th>Creates?</th><th>Overwrites?</th></tr></thead>
+          <tbody>
+            <tr><td><span class="ic">"r"</span></td><td>Yes</td><td>No</td><td>No</td><td>No</td></tr>
+            <tr><td><span class="ic">"w"</span></td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td><span class="ic">"a"</span></td><td>No</td><td>Yes</td><td>Yes</td><td>No &mdash; appends</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-warn">
+          <strong>"w" mode erases existing content</strong> the instant the file is opened &mdash; use <span class="ic">"a"</span> if you want to keep what's already there.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.2 — Output Buffering &amp; flush()" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.2 &mdash; Behind the Scenes</div>
+    <h2 class="slide-h2">Why write() Doesn't Always Write Immediately</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Output Is Buffered</div>
+          <p>By default, data is <strong style="color:var(--text);">line-buffered</strong> &mdash; the interpreter holds written text in memory and only flushes it to disk when it sees a newline character.</p>
+        </div>
+        <ul class="bl">
+          <li>There can be a short delay between calling <span class="ic">write()</span> and the data actually landing on disk</li>
+          <li><span class="ic">f.flush()</span> forces the buffer to disk immediately</li>
+          <li><span class="ic">f.close()</span> also flushes automatically &mdash; another reason to always close (or use <span class="ic">with</span>, coming up in 12.6)</li>
+        </ul>
+      </div>
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">import os
+
+f = open("myfile.txt", "w")
+f.write("Write me, please!")  # not on disk yet
+
+f.flush()          # force the buffer out
+os.fsync(f.fileno())  # some OSes need this too
+# now guaranteed to be on disk</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Breakout #1 — Class Attendance Log" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">Now You Try</div>
+    <h2 class="slide-h2">Breakout Activity #1</h2>
+    <div class="breakout-card">
+      <div class="breakout-hdr">
+        <span class="breakout-icon">🧩</span>
+        <span class="breakout-title">Attendance Log &mdash; Reading &amp; Writing Text Files</span>
+        <span class="breakout-time">&#9201; 12 minutes</span>
+      </div>
+      <div class="two-col">
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--text);">Your Task:</strong> Build a tiny attendance logger that appends names to a file, then reports on it.</p>
+          <ul class="bl">
+            <li>Open <span class="ic">"attendance.txt"</span> in <span class="ic">"a"</span> mode</li>
+            <li>Read a student name from input, <span class="ic">write()</span> it followed by <span class="ic">"\n"</span></li>
+            <li>Loop until the user types <span class="ic">"done"</span>, then <span class="ic">close()</span> the file</li>
+            <li>Re-open the file in <span class="ic">"r"</span> mode, use <span class="ic">readlines()</span>, and print the <strong>total number</strong> of names logged</li>
+            <li>Wrap the whole thing in <span class="ic">try</span> / <span class="ic">except</span> to catch <span class="ic">ValueError</span>/<span class="ic">IOError</span> gracefully (callback to Chapter 8!)</li>
+            <li><strong>Bonus:</strong> use <span class="ic">try / finally</span> to guarantee the write file always closes, even if input crashes</li>
+          </ul>
+        </div>
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--amber);">Expected output:</strong></p>
+          <div class="code-wrap">
+            <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-text">Enter name (done to finish): Ana
+Enter name (done to finish): Beto
+Enter name (done to finish): done
+
+Attendance recorded: 2 students</code></pre>
+          </div>
+          <div class="callout callout-info">
+            <strong>Hint:</strong> if you re-run the program, appended names should <em>add</em> to the file, not erase previous entries &mdash; that's why we use <span class="ic">"a"</span>, not <span class="ic">"w"</span>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.3 — Interacting with the File System" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.3 &mdash; The os Module</div>
+    <h2 class="slide-h2">Talking to the Operating System</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">import os
+
+my_file = open("myfile.txt", "r")
+file_info = os.stat("myfile.txt")   # size, access time...
+my_file.close()
+
+os.remove("myfile.txt")             # delete from disk</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Why It Matters</div>
+          <p>The <strong style="color:var(--text);">operating system</strong> (Windows, macOS, Linux) actually controls the file system. The <span class="ic">os</span> module is Python's interface to those operating-system function calls.</p>
+        </div>
+        <ul class="bl">
+          <li><span class="ic">os.stat(path)</span> &mdash; returns metadata about a file</li>
+          <li><span class="ic">os.remove(path)</span> &mdash; deletes a file from disk (permanent!)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.3 — Portable File Paths" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.3 &mdash; os.path.join()</div>
+    <h2 class="slide-h2">Write Portable Paths, Not Hardcoded Separators</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">The Problem</div>
+          <p>Windows uses <span class="ic">"\\"</span> between directories; macOS/Linux use <span class="ic">"/"</span>. Hardcoding either one breaks your program on the other operating system.</p>
+        </div>
+        <ul class="bl">
+          <li><span class="ic">os.path.join("logs", "2026", "log.txt")</span> uses the <strong>correct</strong> separator automatically</li>
+          <li><span class="ic">os.path.sep</span> stores the current OS's separator character</li>
+          <li><span class="ic">"path".split(os.path.sep)</span> does the reverse &mdash; splits a path into tokens</li>
+        </ul>
+        <div class="callout callout-warn">
+          Avoid <span class="ic">path = "subdir\\file.txt"</span> &mdash; instead write <span class="ic">path = os.path.join("subdir", "file.txt")</span>.
+        </div>
+      </div>
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">import os
+
+path = os.path.join("logs", "2026", "log.txt")
+print(path)
+# Windows: logs\2026\log.txt
+# Mac/Linux: logs/2026/log.txt
+
+f = open(path, "r")
+print(f.read())
+f.close()</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.3 — os.path Helpers &amp; os.walk()" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.3 &mdash; More os.path Tools</div>
+    <h2 class="slide-h2">Checking, Measuring, and Walking Directories</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">import os
+
+p = os.path.join("logs", "2026", "log.txt")
+
+if os.path.exists(p):
+    print("Found it.")
+
+if os.path.isfile(p):
+    print(f"Size: {os.path.getsize(p)} bytes")
+
+print(os.path.split(p))
+# ('logs/2026', 'log.txt')
+
+for dirname, subdirs, files in os.walk("logs"):
+    print(dirname, subdirs, files)</code></pre>
+      </div>
+      <div class="gap-sm">
+        <ul class="bl">
+          <li><span class="ic">os.path.exists(path)</span> &mdash; <span class="ic">True</span>/<span class="ic">False</span> if the path exists at all</li>
+          <li><span class="ic">os.path.isfile(path)</span> &mdash; is it specifically a file (not a directory)?</li>
+          <li><span class="ic">os.path.getsize(path)</span> &mdash; size in bytes</li>
+          <li><span class="ic">os.path.split(path)</span> &mdash; splits into <span class="ic">(head, tail)</span></li>
+          <li><span class="ic">os.walk(path)</span> &mdash; visits every subdirectory, yielding <span class="ic">(dirname, subdirs, files)</span> each time</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.4 — Binary Data &amp; bytes" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.4 &mdash; Beyond Text</div>
+    <h2 class="slide-h2">Binary Data: When a File Isn't Text</h2>
+    <div class="two-col">
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">bytes Object</div>
+          <p>Images, videos, and PDFs are stored as raw <strong style="color:var(--text);">binary data</strong> &mdash; not encoded text. A <span class="ic">bytes</span> object represents that sequence of raw byte values.</p>
+        </div>
+        <ul class="bl">
+          <li>Add <span class="ic">"b"</span> to the mode to open in binary: <span class="ic">open("img.bmp", "rb")</span></li>
+          <li>In binary mode, <span class="ic">read()</span> returns a <span class="ic">bytes</span> object, not a string</li>
+          <li>A bytes literal looks like <span class="ic">b"hello"</span></li>
+          <li>Binary mode skips Windows' automatic <span class="ic">\n</span> &rarr; <span class="ic">\r\n</span> translation &mdash; important so binary data isn't corrupted</li>
+        </ul>
+      </div>
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">f = open("ball.bmp", "rb")   # binary mode
+contents = f.read()
+f.close()
+
+print(type(contents))
+# &lt;class 'bytes'&gt;
+
+print(contents[:4])
+# b'BMb\xe6'   -- raw header bytes</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.5 — Command-Line Arguments" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.5 &mdash; sys.argv</div>
+    <h2 class="slide-h2">Letting the User Name the File at Runtime</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">import sys, os
+
+if len(sys.argv) != 2:
+    print(f"Usage: {sys.argv[0]} input_file")
+    sys.exit(1)
+
+if not os.path.exists(sys.argv[1]):
+    print("File does not exist.")
+    sys.exit(1)
+
+f = open(sys.argv[1], "r")
+print(f.read())
+f.close()
+
+# > python my_script.py myfile1.txt</code></pre>
+      </div>
+      <div class="gap-sm">
+        <ul class="bl">
+          <li><span class="ic">sys.argv</span> is a <strong>list</strong> of strings typed after the script name on the command line</li>
+          <li><span class="ic">sys.argv[0]</span> is always the script's own name; <span class="ic">sys.argv[1]</span> is the first real argument</li>
+          <li><span class="ic">sys.exit(1)</span> ends the program and signals an error to the operating system</li>
+        </ul>
+        <div class="callout callout-info">
+          Always check <span class="ic">os.path.exists()</span> before opening a user-supplied path &mdash; don't assume it's there.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.6 — The with Statement" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.6 &mdash; Context Managers</div>
+    <h2 class="slide-h2">Never Forget to Close a File Again</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">print("Opening myfile.txt")
+with open("myfile.txt", "r+") as f:
+    num1 = int(f.readline())
+    num2 = int(f.readline())
+    product = num1 * num2
+    f.write("\n")
+    f.write(str(product))
+# No need to call f.close() -- closed automatically!
+print("Closed myfile.txt")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">Context Manager</div>
+          <p><span class="ic">with</span> opens the file, binds it to a name via <span class="ic">as</span>, and guarantees it's <strong style="color:var(--text);">closed</strong> the moment the indented block ends &mdash; even if an exception occurs inside.</p>
+        </div>
+        <ul class="bl">
+          <li>Same idea as <span class="ic">try / finally</span> from Chapter 8, but built in and automatic</li>
+          <li>A forgotten <span class="ic">close()</span> can leave a file locked for other programs</li>
+        </ul>
+        <div class="callout callout-note">
+          <strong>Good practice:</strong> use <span class="ic">with</span> for essentially every file you open from here on.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Breakout #2 — Safe File Copier" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">Now You Try</div>
+    <h2 class="slide-h2">Breakout Activity #2</h2>
+    <div class="breakout-card">
+      <div class="breakout-hdr">
+        <span class="breakout-icon">🧩</span>
+        <span class="breakout-title">Safe File Copier &mdash; with + Exception Handling</span>
+        <span class="breakout-time">&#9201; 12 minutes</span>
+      </div>
+      <div class="two-col">
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--text);">Your Task:</strong> Copy the contents of one file into a new file, safely.</p>
+          <ul class="bl">
+            <li>Read a source filename from input</li>
+            <li>Use <span class="ic">os.path.exists()</span> to check it first &mdash; if missing, print an error and stop</li>
+            <li>Use two <span class="ic">with</span> statements (or one nested) to open the source in <span class="ic">"r"</span> mode and a new file <span class="ic">"copy_of_" + filename</span> in <span class="ic">"w"</span> mode</li>
+            <li>Loop <span class="ic">for line in source:</span> and <span class="ic">write()</span> each line to the new file</li>
+            <li>Print how many lines were copied</li>
+            <li>Wrap the read/convert steps in <span class="ic">try / except</span> to catch <span class="ic">ValueError</span> if you also try to sum any numeric lines</li>
+            <li><strong>Bonus:</strong> use <span class="ic">os.path.join()</span> to build the output path instead of string concatenation</li>
+          </ul>
+        </div>
+        <div class="gap-sm">
+          <p class="small"><strong style="color:var(--amber);">Expected output:</strong></p>
+          <div class="code-wrap">
+            <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-text">Enter file to copy: notes.txt
+Copied 14 lines to copy_of_notes.txt
+
+Enter file to copy: ghost.txt
+File does not exist.</code></pre>
+          </div>
+          <div class="callout callout-info">
+            <strong>Hint:</strong> <span class="ic">with open(a) as f1, open(b, "w") as f2:</span> opens both files in one <span class="ic">with</span> statement, separated by a comma.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.7 — Comma-Separated Values" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.7 &mdash; The csv Module</div>
+    <h2 class="slide-h2">Reading Spreadsheet-Style Data</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">import csv
+
+with open("grades.csv", "r") as csvfile:
+    grades_reader = csv.reader(csvfile, delimiter=",")
+    for row in grades_reader:
+        print(row)
+
+# ['name', 'hw1', 'hw2', 'midterm', 'final']
+# ['Petr Little', '9', '8', '85', '78']
+# ['Sam Tarley', '10', '10', '99', '100']</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="concept">
+          <div class="concept-label">CSV = Comma-Separated Values</div>
+          <p>Each line is a <strong style="color:var(--text);">row</strong>; commas separate <strong style="color:var(--text);">fields</strong>. The <span class="ic">csv</span> module's <span class="ic">reader</span> object is <em>iterable</em> &mdash; each iteration returns one row as a list of strings.</p>
+        </div>
+        <ul class="bl">
+          <li><span class="ic">delimiter=","</span> is the default &mdash; can be changed if fields contain commas</li>
+          <li>Every field comes back as a <strong>string</strong>, just like reading regular text</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="12.7 — CSV Calculations &amp; Writing Rows" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">12.7 &mdash; Reading Numbers &amp; Writing Rows</div>
+    <h2 class="slide-h2">From Rows of Strings to Real Calculations</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">import csv
+
+with open("grades.csv", "r") as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader)  # skip header row
+    for row in reader:
+        name = row[0]
+        scores = [float(c) for c in row[1:]]
+        print(f"{name}: {sum(scores):.1f}")
+
+# Writing rows back out:
+with open("out.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["100", "50", "29"])</code></pre>
+      </div>
+      <div class="gap-sm">
+        <ul class="bl">
+          <li>Convert each field with <span class="ic">float()</span> or <span class="ic">int()</span> before doing math &mdash; same rule as any text file</li>
+          <li>Skip a header row with <span class="ic">next(reader)</span> or a simple <span class="ic">first_row</span> flag</li>
+          <li><span class="ic">csv.writer(csvfile)</span> creates a writer object; <span class="ic">writerow()</span> writes one row, <span class="ic">writerows()</span> writes several</li>
+          <li>Use <span class="ic">newline=""</span> when opening a file for csv writing &mdash; it prevents extra blank lines on Windows</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Trace Drill — Predict the Output" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">Practice &mdash; Trace the Execution</div>
+    <h2 class="slide-h2">Trace Drill &mdash; What Does This Print?</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">import os
+
+path = os.path.join("data", "scores.csv")
+
+# scores.csv contains:
+# name,score
+# Ana,88
+# Beto,73
+
+with open(path, "r") as f:
+    lines = f.readlines()
+
+print(len(lines))
+print(lines[1].strip().split(","))
+print(lines[-1].strip().split(",")[1])
+total = 0
+for ln in lines[1:]:
+    total += int(ln.strip().split(",")[1])
+print(total)</code></pre>
+      </div>
+      <div class="gap-sm">
+        <div class="quiz-box">
+          <div class="quiz-q">1)&nbsp;<span class="ic">len(lines)</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">&#128070; Tap to reveal</div>
+          <div class="quiz-answer">3 lines total (header + 2 rows) &rarr; <strong>3</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">2)&nbsp;<span class="ic">lines[1].strip().split(",")</span></div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">&#128070; Tap to reveal</div>
+          <div class="quiz-answer"><strong>['Ana', '88']</strong></div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">3)&nbsp;last line, field [1]</div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">&#128070; Tap to reveal</div>
+          <div class="quiz-answer"><strong>"73"</strong> (still a string!)</div>
+        </div>
+        <div class="quiz-box">
+          <div class="quiz-q">4)&nbsp;<span class="ic">total</span> after the loop</div>
+          <div class="quiz-reveal" onclick="this.nextElementSibling.classList.toggle('shown')">&#128070; Tap to reveal</div>
+          <div class="quiz-answer">88 + 73 &rarr; <strong>161</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Applied — Combining Files with Chapter 8 Exceptions" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">Applied &mdash; Tying It Back to Chapter 8</div>
+    <h2 class="slide-h2">Real Programs Combine Files <em>and</em> Exceptions</h2>
+    <div class="two-col">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+<pre><code class="language-python">filename = input("Enter file name: ")
+try:
+    with open(filename, "r") as f:
+        total = 0
+        for line in f:
+            total += int(line)
+    print(f"Total: {total}")
+except FileNotFoundError:
+    print(f"{filename} does not exist.")
+except ValueError:
+    print("File contains a non-numeric line.")</code></pre>
+      </div>
+      <div class="gap-sm">
+        <ul class="bl">
+          <li><span class="ic">with</span> still guarantees the file closes, even if <span class="ic">int(line)</span> raises inside the loop</li>
+          <li><span class="ic">FileNotFoundError</span> is a more specific subclass of <span class="ic">IOError</span> &mdash; prefer it when you know exactly what you're checking for</li>
+          <li>This is the pattern you'll lean on for the rest of the course: <strong>open safely, process defensively</strong></li>
+        </ul>
+        <div class="callout callout-note">
+          Every good file-processing program answers two questions: <em>"What if the file isn't there?"</em> and <em>"What if the data inside is bad?"</em>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Chapter 12 Summary" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">Wrap-Up</div>
+    <h2 class="slide-h2">Chapter 12 &mdash; The Cheat Sheet</h2>
+    <table class="sum-table">
+      <thead>
+        <tr><th style="width:26%;">Concept</th><th style="width:34%;">Syntax</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Open</td><td><span class="ic">open(path, mode)</span></td><td>Modes: <span class="ic">"r"</span>, <span class="ic">"w"</span>, <span class="ic">"a"</span>, add <span class="ic">"b"</span> for binary</td></tr>
+        <tr><td>Read all</td><td><span class="ic">f.read()</span></td><td>One string, whole file</td></tr>
+        <tr><td>Read lines</td><td><span class="ic">f.readlines()</span></td><td>List of strings, one per line</td></tr>
+        <tr><td>Iterate</td><td><span class="ic">for line in f:</span></td><td>Most common read pattern</td></tr>
+        <tr><td>Write</td><td><span class="ic">f.write(str(x))</span></td><td>Strings only &mdash; convert numbers first</td></tr>
+        <tr><td>Flush</td><td><span class="ic">f.flush()</span></td><td>Forces buffered output to disk</td></tr>
+        <tr><td>Portable path</td><td><span class="ic">os.path.join(a, b)</span></td><td>Correct separator on any OS</td></tr>
+        <tr><td>Walk a tree</td><td><span class="ic">os.walk(path)</span></td><td>Yields (dirname, subdirs, files)</td></tr>
+        <tr><td>Command-line arg</td><td><span class="ic">sys.argv[1]</span></td><td>[0] is always the script name</td></tr>
+        <tr><td>Auto-close</td><td><span class="ic">with open(path) as f:</span></td><td>Closes automatically &mdash; use by default</td></tr>
+        <tr><td>Read CSV</td><td><span class="ic">csv.reader(csvfile)</span></td><td>Each row &rarr; list of strings</td></tr>
+        <tr><td>Write CSV</td><td><span class="ic">csv.writer(csvfile)</span></td><td><span class="ic">writerow()</span> / <span class="ic">writerows()</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="slide hero" data-title="What's Next — Final Project" data-chapter="Ch 12 &middot; Files">
+  <div class="slide-body">
+    <div class="eyebrow">Looking Ahead</div>
+    <h1 class="slide-h1" style="font-size:2.8rem;">Final Project<br>DNA Sequence Search</h1>
+    <p class="slide-subtitle">Bringing together strings, exceptions, and file I/O for the course's capstone project</p>
+    <div class="tag-row" style="justify-content:center;margin-top:10px;">
+      <span class="tag tag-a">Ch 12 Files Labs &amp; Readings &mdash; catch up if not yet complete</span>
+      <span class="tag tag-b">DNA Sequence Search project &mdash; due 7/30</span>
+    </div>
+    <div class="callout callout-warn" style="max-width:560px;margin-top:20px;text-align:left;">
+      <strong>Reminder:</strong> the final project draws directly on file reading &mdash; make sure <span class="ic">open()</span>, <span class="ic">with</span>, and safe exception handling all feel comfortable before you start.
+    </div>
+    <div class="callout callout-info" style="max-width:560px;margin-top:10px;text-align:left;">
+      Questions? Use the <strong>Class Question Board</strong> on Canvas or email <strong>jmasseri@mdc.edu</strong>
+    </div>
+  </div>
+</section>
+
+<!-- ── Nav ── -->
+<nav class="slide-nav">
+  <button class="nav-btn" id="btn-first" onclick="goTo(0)">&#9194; First</button>
+  <button class="nav-btn" id="btn-prev"  onclick="prev()">&#9664; Prev</button>
+  <span id="slide-counter">1 / 40</span>
+  <button class="nav-btn" id="btn-next"  onclick="next()">Next &#9654;</button>
+  <button class="nav-btn" id="btn-last"  onclick="goTo(total-1)">Last &#9193;</button>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total  = slides.length;
+  let cur = 0;
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(n, total - 1));
+    slides[cur].classList.add('active');
+    document.getElementById('slide-counter').textContent = `${cur + 1} / ${total}`;
+    document.getElementById('slide-title-display').textContent =
+      slides[cur].dataset.title || '';
+    document.getElementById('chapter-tag-display').innerHTML =
+      slides[cur].dataset.chapter || '';
+    document.getElementById('progress-bar').style.width =
+      `${((cur + 1) / total) * 100}%`;
+    document.getElementById('btn-first').disabled = cur === 0;
+    document.getElementById('btn-prev').disabled  = cur === 0;
+    document.getElementById('btn-next').disabled  = cur === total - 1;
+    document.getElementById('btn-last').disabled  = cur === total - 1;
+  }
+
+  function next() { if (cur < total - 1) goTo(cur + 1); }
+  function prev() { if (cur > 0)         goTo(cur - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prev();
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End')  goTo(total - 1);
+  });
+
+  goTo(0);
+</script>
+
+</body>
+</html>

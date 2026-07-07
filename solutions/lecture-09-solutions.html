@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lecture 9 Breakout Solutions — Chapter 8: Exceptions | COP 1047C</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+  <style>
+
+    /* ── Reset & tokens ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080c14;
+      --surface:  #0f1623;
+      --surface2: #162030;
+      --border:   #1e2d42;
+      --amber:    #f59e0b;
+      --amber-d:  #b45309;
+      --blue:     #38bdf8;
+      --green:    #4ade80;
+      --red:      #f87171;
+      --purple:   #c084fc;
+      --text:     #e2e8f0;
+      --text-d:   #94a3b8;
+      --text-f:   #475569;
+    }
+
+    html {
+      scroll-padding-top: 150px; /* patched by JS on resize */
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      line-height: 1.7;
+      padding-top: 0;
+    }
+
+    /* ── Sticky header ──────────────────────────────────────── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 80;
+      background: rgba(8,12,20,.97);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+    }
+
+    .header-top {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      gap: 12px;
+    }
+
+    .header-course {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    .header-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .header-badge {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: rgba(56,189,248,.08);
+      border: 1px solid rgba(56,189,248,.2);
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* section nav */
+    .header-nav {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 6px 24px 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .header-nav a {
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--text-d);
+      text-decoration: none;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid transparent;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .header-nav a:hover {
+      color: var(--amber);
+      border-color: rgba(245,158,11,.3);
+      background: rgba(245,158,11,.06);
+    }
+
+    /* ── Page wrapper ───────────────────────────────────────── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── Hero intro ─────────────────────────────────────────── */
+    .doc-hero {
+      margin-bottom: 56px;
+    }
+
+    .eyebrow {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 10px;
+    }
+
+    .doc-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 14px;
+    }
+
+    .doc-subtitle {
+      font-size: 1rem;
+      color: var(--text-d);
+      max-width: 580px;
+      margin-bottom: 18px;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .meta-pill {
+      font-size: .72rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .pill-a  { background: rgba(245,158,11,.12); color: #fcd34d; }
+    .pill-b  { background: rgba(56,189,248,.1);  color: #7dd3fc; }
+    .pill-g  { background: rgba(74,222,128,.1);  color: #86efac; }
+    .pill-p  { background: rgba(192,132,252,.1); color: #d8b4fe; }
+
+    /* ── Section headings ───────────────────────────────────── */
+    .section {
+      margin-bottom: 64px;
+    }
+
+    .section-eyebrow {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 6px;
+    }
+
+    h2.section-h2 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .topic-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-d);
+      margin-bottom: 10px;
+      margin-top: 28px;
+    }
+
+    .topic-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(245,158,11,.15);
+      color: var(--amber);
+      font-size: .7rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* ── Code blocks ────────────────────────────────────────── */
+    .code-wrap {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 14px 0;
+    }
+
+    .code-hdr {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: #161b22;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-hdr-label {
+      margin-left: auto;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-d);
+    }
+
+    .dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+
+    .code-wrap pre {
+      margin: 0 !important;
+      background: transparent !important;
+      padding: 16px !important;
+      font-size: .82rem !important;
+      line-height: 1.7 !important;
+      overflow-x: auto;
+    }
+
+    .code-wrap pre code {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-variant-ligatures: none !important;
+      font-feature-settings: "liga" 0, "calt" 0 !important;
+    }
+
+    /* output block */
+    .output-wrap {
+      background: #040810;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      margin: 10px 0;
+    }
+
+    .output-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .output-wrap pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-ligatures: none;
+      font-feature-settings: "liga" 0, "calt" 0;
+      font-size: .82rem;
+      line-height: 1.7;
+      color: #86efac;
+      white-space: pre;
+      margin: 0;
+    }
+
+    /* ── Inline code ─────────────────────────────────────────── */
+    .ic {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-ligatures: none;
+      font-feature-settings: "liga" 0, "calt" 0;
+      font-size: .83em;
+      background: var(--surface2);
+      color: var(--blue);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Callouts ────────────────────────────────────────────── */
+    .callout {
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: .9rem;
+      line-height: 1.65;
+      margin: 14px 0;
+    }
+
+    .callout-info   { background: rgba(56,189,248,.07);  border: 1px solid rgba(56,189,248,.22);  color: #bae6fd; }
+    .callout-warn   { background: rgba(245,158,11,.07);  border: 1px solid rgba(245,158,11,.25);  color: #fde68a; }
+    .callout-note   { background: rgba(74,222,128,.07);  border: 1px solid rgba(74,222,128,.22);  color: #bbf7d0; }
+    .callout-purple { background: rgba(192,132,252,.07); border: 1px solid rgba(192,132,252,.22); color: #e9d5ff; }
+    .callout-red    { background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.22); color: #fecaca; }
+
+    .callout strong { color: inherit; font-weight: 700; }
+
+    /* ── Concept box ─────────────────────────────────────────── */
+    .concept {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--amber);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 14px 0;
+    }
+
+    .concept-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 6px;
+    }
+
+    .concept p { color: var(--text-d); font-size: .92rem; line-height: 1.65; }
+
+    /* ── Annotation list ─────────────────────────────────────── */
+    .annot-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .annot-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: .9rem;
+      color: var(--text-d);
+      line-height: 1.6;
+    }
+
+    .annot-list li .lnum {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-ligatures: none;
+      font-feature-settings: "liga" 0, "calt" 0;
+      font-size: .72rem;
+      background: var(--surface2);
+      color: var(--amber);
+      border: 1px solid rgba(245,158,11,.2);
+      padding: 1px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .annot-list li strong { color: var(--text); }
+
+    /* ── Common mistakes table ───────────────────────────────── */
+    .mistake-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 14px 0;
+    }
+
+    .mistake-card {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .mistake-card-hdr {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    .mistake-card.wrong .mistake-card-hdr {
+      background: rgba(248,113,113,.12);
+      color: var(--red);
+      border-bottom: 1px solid rgba(248,113,113,.2);
+    }
+
+    .mistake-card.right .mistake-card-hdr {
+      background: rgba(74,222,128,.08);
+      color: var(--green);
+      border-bottom: 1px solid rgba(74,222,128,.2);
+    }
+
+    .mistake-card .code-wrap {
+      border-radius: 0;
+      border: none;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin: 0;
+    }
+
+    .mistake-card .code-wrap pre {
+      font-size: .76rem !important;
+      padding: 12px 14px !important;
+    }
+
+    /* ── Bonus section ───────────────────────────────────────── */
+    .bonus-block {
+      background: rgba(192,132,252,.04);
+      border: 1px solid rgba(192,132,252,.18);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin-top: 28px;
+    }
+
+    .bonus-label {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-bottom: 10px;
+    }
+
+    /* ── Key takeaway banner ─────────────────────────────────── */
+    .takeaway {
+      background: linear-gradient(135deg, rgba(245,158,11,.08) 0%, rgba(56,189,248,.06) 100%);
+      border: 1px solid rgba(245,158,11,.2);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-top: 28px;
+    }
+
+    .takeaway-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 8px;
+    }
+
+    .takeaway p {
+      font-size: .92rem;
+      color: var(--text-d);
+      line-height: 1.65;
+    }
+
+    /* ── Divider ─────────────────────────────────────────────── */
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 56px 0;
+    }
+
+    /* ── Problem recap ───────────────────────────────────────── */
+    .problem-recap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 22px;
+    }
+
+    .problem-recap-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-d);
+      margin-bottom: 10px;
+    }
+
+    .problem-recap ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .problem-recap ul li {
+      font-size: .88rem;
+      color: var(--text-d);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .problem-recap ul li::before {
+      content: '▸';
+      color: var(--amber);
+      flex-shrink: 0;
+    }
+
+    .problem-recap ul li strong { color: var(--text); }
+
+    /* ── Breakout section header bar ─────────────────────────── */
+    .breakout-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(245,158,11,.05);
+      border: 1px solid rgba(245,158,11,.2);
+      border-radius: 10px;
+      padding: 16px 22px;
+      margin-bottom: 22px;
+    }
+
+    .breakout-bar .icon { font-size: 1.6rem; }
+
+    .breakout-bar .info .num {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #fcd34d;
+      margin-bottom: 2px;
+    }
+
+    .breakout-bar .info .name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--amber);
+    }
+
+    .breakout-bar .chips {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      font-size: .65rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+
+    .chip-a { background: rgba(245,158,11,.12); color: #fcd34d; }
+    .chip-b { background: rgba(56,189,248,.1);  color: #7dd3fc; }
+
+    /* ── Prose paragraphs ────────────────────────────────────── */
+    p.prose {
+      font-size: .92rem;
+      color: var(--text-d);
+      line-height: 1.7;
+      margin: 10px 0;
+    }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 24px;
+      text-align: center;
+      font-size: .78rem;
+      color: var(--text-d);
+    }
+
+    .site-footer a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .site-footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 680px) {
+      .doc-title { font-size: 1.8rem; }
+      .mistake-grid { grid-template-columns: 1fr; }
+      .breakout-bar { flex-wrap: wrap; }
+      .breakout-bar .chips { margin-left: 0; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ══ STICKY HEADER ══════════════════════════════════════════ -->
+<header class="site-header" id="site-header">
+  <div class="header-top">
+    <span class="header-course">COP 1047C &nbsp;&middot;&nbsp; Summer 2026</span>
+    <span class="header-title">Lecture 9 — Breakout Solutions</span>
+    <span class="header-badge">Chapter 8: Exceptions</span>
+  </div>
+  <nav class="header-nav" aria-label="Jump to section">
+    <a href="#breakout-1">&#129513; Breakout #1 — Grocery Bill Splitter</a>
+    <a href="#breakout-2">&#129513; Breakout #2 — Grade Validator</a>
+  </nav>
+</header>
+
+<!-- ══ PAGE ═══════════════════════════════════════════════════ -->
+<main class="page">
+
+  <!-- HERO -->
+  <div class="doc-hero">
+    <div class="eyebrow">Lecture 9 &nbsp;&middot;&nbsp; Week 9</div>
+    <h1 class="doc-title">Breakout Activity Solutions</h1>
+    <p class="doc-subtitle">Complete, annotated solutions for both in-class breakout activities from Chapter 8. Use these to check your work, understand <em>why</em> each choice was made, and learn from common mistakes.</p>
+    <div class="meta-row">
+      <span class="meta-pill pill-a">Chapter 8 — Exceptions</span>
+      <span class="meta-pill pill-b">2 Activities</span>
+      <span class="meta-pill pill-g">Competency 1</span>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       BREAKOUT #1 — GROCERY BILL SPLITTER
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="section" id="breakout-1">
+    <div class="section-eyebrow">Breakout Activity #1</div>
+    <h2 class="section-h2">&#129513; Grocery Bill Splitter &mdash; try / except in Action</h2>
+
+    <div class="breakout-bar">
+      <span class="icon">&#129513;</span>
+      <div class="info">
+        <div class="num">Breakout #1 &nbsp;&middot;&nbsp; 12 minutes</div>
+        <div class="name">Grocery Bill Splitter</div>
+      </div>
+      <div class="chips">
+        <span class="chip chip-a">try / except</span>
+        <span class="chip chip-b">ZeroDivisionError</span>
+        <span class="chip chip-a">raise</span>
+        <span class="chip chip-b">while loop</span>
+      </div>
+    </div>
+
+    <div class="problem-recap">
+      <div class="problem-recap-label">Problem Recap</div>
+      <ul>
+        <li>Read <span class="ic">total_bill</span> (float) and <span class="ic">num_people</span> (int) from input</li>
+        <li>Compute and print <span class="ic">total_bill / num_people</span>, formatted to 2 decimals</li>
+        <li>Catch <span class="ic">ValueError</span> &mdash; print <span class="ic">"Please enter valid numbers."</span></li>
+        <li>Catch <span class="ic">ZeroDivisionError</span> &mdash; print <span class="ic">"Cannot split among zero people."</span></li>
+        <li>Repeat in a <span class="ic">while</span> loop until the user enters <span class="ic">"q"</span></li>
+        <li><strong>Bonus A:</strong> add a 20% tip before dividing</li>
+        <li><strong>Bonus B:</strong> catch a negative <span class="ic">num_people</span> by <em>raising</em> a <span class="ic">ValueError</span> yourself</li>
+      </ul>
+    </div>
+
+    <!-- Base solution -->
+    <div class="topic-label"><span class="topic-num">1</span>Base Solution</div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="code-hdr-label">breakout_grocery_bill.py</span>
+      </div>
+      <pre><code class="language-python">while True:
+    total_bill_input = input("Enter total bill (q to quit): ")
+    if total_bill_input.lower() == "q":
+        break
+
+    try:
+        total_bill = float(total_bill_input)
+        num_people = int(input("Enter number of people: "))
+        share = total_bill / num_people
+        print(f"Each person owes: ${share:.2f}")
+    except ValueError:
+        print("Please enter valid numbers.")
+    except ZeroDivisionError:
+        print("Cannot split among zero people.")
+
+print("Goodbye!")</code></pre>
+    </div>
+
+    <div class="output-wrap">
+      <div class="output-label">Sample run</div>
+      <pre>Enter total bill (q to quit): 84.00
+Enter number of people: 4
+Each person owes: $21.00
+
+Enter total bill (q to quit): seventy
+Please enter valid numbers.
+
+Enter total bill (q to quit): 50
+Enter number of people: 0
+Cannot split among zero people.
+
+Enter total bill (q to quit): q
+Goodbye!</pre>
+    </div>
+
+    <!-- Annotations -->
+    <div class="topic-label"><span class="topic-num">2</span>Line-by-Line Explanation</div>
+
+    <ul class="annot-list">
+      <li>
+        <span class="lnum">Line 2</span>
+        <span><strong><span class="ic">total_bill_input = input(...)</span></strong> &mdash; read as a <em>string first</em>, before any conversion. This is what lets us check for <span class="ic">"q"</span> safely &mdash; if we converted to <span class="ic">float()</span> immediately, typing <span class="ic">"q"</span> would crash before we ever got the chance to check for it.</span>
+      </li>
+      <li>
+        <span class="lnum">Lines 6&ndash;9</span>
+        <span><strong>Two conversions, one try block</strong> &mdash; <span class="ic">float(total_bill_input)</span> and <span class="ic">int(input(...))</span> can each raise <span class="ic">ValueError</span> independently. Since both should be handled the same way, one shared <span class="ic">try</span> covering both is cleaner than two separate ones.</span>
+      </li>
+      <li>
+        <span class="lnum">Line 10</span>
+        <span><strong><span class="ic">total_bill / num_people</span></strong> &mdash; this is where <span class="ic">ZeroDivisionError</span> can occur, but only <em>after</em> both conversions already succeeded. Python doesn't know which line will fail until it runs &mdash; that's exactly why we let one <span class="ic">try</span> block cover the whole sequence.</span>
+      </li>
+      <li>
+        <span class="lnum">Lines 12&ndash;15</span>
+        <span><strong>Two separate <span class="ic">except</span> blocks</strong> &mdash; each one names a <em>specific</em> exception type and gives a message tailored to that exact problem, instead of one vague catchall.</span>
+      </li>
+    </ul>
+
+    <div class="callout callout-info">
+      <strong>Why check for "q" as a string?</strong>&nbsp;Converting user input happens <em>after</em> we've already decided the user wants to keep going. Sentinel checks like this should always happen on the raw string, before any <span class="ic">int()</span> or <span class="ic">float()</span> conversion.
+    </div>
+
+    <!-- Common mistakes -->
+    <div class="topic-label"><span class="topic-num">3</span>Common Mistakes</div>
+
+    <div class="mistake-grid">
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">&#10060; Converted before checking for "q"</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">total_bill = float(input("Enter total bill (q to quit): "))
+if total_bill == "q":
+    break
+# ValueError crashes the program the moment
+# the user types "q" -- float("q") fails
+# before the if-statement ever runs.</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card right">
+        <div class="mistake-card-hdr">&#9989; Check the raw string first</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">total_bill_input = input("Enter total bill (q to quit): ")
+if total_bill_input.lower() == "q":
+    break
+# Only convert AFTER we know it's not the
+# sentinel value.
+total_bill = float(total_bill_input)</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">&#10060; One bare <span class="ic">except:</span> for everything</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">try:
+    total_bill = float(total_bill_input)
+    num_people = int(input("Enter number of people: "))
+    share = total_bill / num_people
+    print(f"Each person owes: ${share:.2f}")
+except:
+    print("Something went wrong.")
+# The user has no idea WHICH thing went wrong.</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card right">
+        <div class="mistake-card-hdr">&#9989; Specific handlers, specific messages</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">except ValueError:
+    print("Please enter valid numbers.")
+except ZeroDivisionError:
+    print("Cannot split among zero people.")
+# Each message tells the user exactly
+# what to fix.</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bonus A -->
+    <div class="bonus-block">
+      <div class="bonus-label">&#11088; Bonus A &mdash; Add a 20% Tip Before Dividing</div>
+      <p style="color:var(--text-d);">This is pure arithmetic &mdash; no new exception-handling concepts &mdash; but it has to happen <em>inside</em> the <span class="ic">try</span> block, since it depends on <span class="ic">total_bill</span> having already converted successfully.</p>
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-hdr-label">breakout_grocery_bonus_a.py</span>
+        </div>
+        <pre><code class="language-python">try:
+    total_bill = float(total_bill_input)
+    tip = total_bill * 0.20
+    total_with_tip = total_bill + tip
+    num_people = int(input("Enter number of people: "))
+    share = total_with_tip / num_people
+    print(f"Each person owes (with tip): ${share:.2f}")
+except ValueError:
+    print("Please enter valid numbers.")
+except ZeroDivisionError:
+    print("Cannot split among zero people.")</code></pre>
+      </div>
+
+      <div class="output-wrap">
+        <div class="output-label">Sample run &mdash; total_bill = 84.00, num_people = 4</div>
+        <pre>Each person owes (with tip): $25.20</pre>
+      </div>
+    </div>
+
+    <!-- Bonus B -->
+    <div class="bonus-block">
+      <div class="bonus-label">&#11088; Bonus B &mdash; Reject a Negative Number of People</div>
+      <p style="color:var(--text-d);">Python's <span class="ic">int()</span> happily converts <span class="ic">"-3"</span> to <span class="ic">-3</span> &mdash; it's a perfectly valid integer, just not a valid <em>number of people</em>. This is a business rule, not a type error, so we <span class="ic">raise</span> our own <span class="ic">ValueError</span> to enforce it.</p>
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-hdr-label">breakout_grocery_bonus_b.py</span>
+        </div>
+        <pre><code class="language-python">try:
+    total_bill = float(total_bill_input)
+    num_people = int(input("Enter number of people: "))
+    if num_people &lt; 0:
+        raise ValueError("Number of people cannot be negative.")
+    share = total_bill / num_people
+    print(f"Each person owes: ${share:.2f}")
+except ValueError as excpt:
+    print(excpt)
+except ZeroDivisionError:
+    print("Cannot split among zero people.")</code></pre>
+      </div>
+
+      <div class="output-wrap">
+        <div class="output-label">Test cases</div>
+        <pre>total_bill=50, num_people=-2  -&gt; Number of people cannot be negative.
+total_bill=fifty              -&gt; invalid literal for int() with base 10: 'fifty'
+total_bill=50, num_people=2   -&gt; Each person owes: $25.00</pre>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>Notice:</strong> both our own <span class="ic">raise</span> and Python's own conversion failures land in the <em>same</em> <span class="ic">except ValueError as excpt</span> block. Whatever message the exception was created with &mdash; ours or Python's &mdash; is what <span class="ic">print(excpt)</span> shows.
+      </div>
+    </div>
+
+    <!-- All together -->
+    <div class="topic-label"><span class="topic-num">4</span>Both Bonuses Together</div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="code-hdr-label">breakout_grocery_complete.py</span>
+      </div>
+      <pre><code class="language-python">while True:
+    total_bill_input = input("Enter total bill (q to quit): ")
+    if total_bill_input.lower() == "q":
+        break
+
+    try:
+        total_bill = float(total_bill_input)
+        num_people = int(input("Enter number of people: "))
+
+        if num_people &lt; 0:
+            raise ValueError("Number of people cannot be negative.")
+
+        tip = total_bill * 0.20
+        total_with_tip = total_bill + tip
+        share = total_with_tip / num_people
+        print(f"Each person owes (with tip): ${share:.2f}")
+    except ValueError as excpt:
+        print(excpt)
+    except ZeroDivisionError:
+        print("Cannot split among zero people.")
+
+print("Goodbye!")</code></pre>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key Takeaway &mdash; Breakout #1</div>
+      <p>Not every "error" comes from Python itself &mdash; <span class="ic">raise</span> lets you enforce your own business rules (like "people can't be negative") using the exact same <span class="ic">try</span> / <span class="ic">except</span> machinery that catches built-in errors. Whether an exception was raised by <span class="ic">int()</span> failing or by your own <span class="ic">raise</span> statement, the calling code doesn't need to know or care &mdash; it just catches <span class="ic">ValueError</span> either way.</p>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       BREAKOUT #2 — GRADE VALIDATOR
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="section" id="breakout-2">
+    <div class="section-eyebrow">Breakout Activity #2</div>
+    <h2 class="section-h2">&#129513; Grade Validator &mdash; Custom Exceptions</h2>
+
+    <div class="breakout-bar">
+      <span class="icon">&#129513;</span>
+      <div class="info">
+        <div class="num">Breakout #2 &nbsp;&middot;&nbsp; 15 minutes</div>
+        <div class="name">Grade Validator</div>
+      </div>
+      <div class="chips">
+        <span class="chip chip-a">custom exception</span>
+        <span class="chip chip-b">raise</span>
+        <span class="chip chip-a">functions</span>
+        <span class="chip chip-b">propagation</span>
+      </div>
+    </div>
+
+    <div class="problem-recap">
+      <div class="problem-recap-label">Problem Recap</div>
+      <ul>
+        <li>Define <span class="ic">class InvalidGradeError(Exception):</span> with a constructor that stores the bad value</li>
+        <li>Write <span class="ic">get_grade()</span> &mdash; reads/validates an integer grade, <span class="ic">raise InvalidGradeError(...)</span> if outside 0&ndash;100</li>
+        <li>In a <span class="ic">while</span> loop, call <span class="ic">get_grade()</span> inside a <span class="ic">try</span> block</li>
+        <li>Catch <span class="ic">InvalidGradeError</span> and print its message</li>
+        <li>On success, print the letter grade (A/B/C/D/F) using the syllabus grade scale</li>
+        <li>Loop until the user enters <span class="ic">"q"</span></li>
+        <li><strong>Bonus:</strong> also catch plain <span class="ic">ValueError</span> for non-numeric input, separately from <span class="ic">InvalidGradeError</span></li>
+      </ul>
+    </div>
+
+    <!-- Base solution -->
+    <div class="topic-label"><span class="topic-num">1</span>Base Solution</div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="code-hdr-label">breakout_grade_validator.py</span>
+      </div>
+      <pre><code class="language-python">class InvalidGradeError(Exception):
+    '''Raised when a grade is outside the valid 0-100 range.'''
+    def __init__(self, value):
+        self.value = value
+        super().__init__(f"Invalid grade: {value} is not between 0 and 100.")
+
+
+def get_grade(raw_input):
+    grade = int(raw_input)               # may raise ValueError
+    if grade &lt; 0 or grade &gt; 100:
+        raise InvalidGradeError(grade)
+    return grade
+
+
+def letter_for(grade):
+    if grade &gt;= 90:
+        return "A"
+    elif grade &gt;= 80:
+        return "B"
+    elif grade &gt;= 70:
+        return "C"
+    elif grade &gt;= 60:
+        return "D"
+    else:
+        return "F"
+
+
+while True:
+    raw = input("Enter grade (q to quit): ")
+    if raw.lower() == "q":
+        break
+
+    try:
+        grade = get_grade(raw)
+        print(f"Grade: {letter_for(grade)}")
+    except InvalidGradeError as excpt:
+        print(excpt)</code></pre>
+    </div>
+
+    <div class="output-wrap">
+      <div class="output-label">Sample run</div>
+      <pre>Enter grade (q to quit): 92
+Grade: A
+
+Enter grade (q to quit): 150
+Invalid grade: 150 is not between 0 and 100.
+
+Enter grade (q to quit): abc
+Traceback (most recent call last):
+  ...
+ValueError: invalid literal for int() with base 10: 'abc'
+&nbsp;&nbsp;&nbsp;&nbsp;-- crashes! This is exactly what the Bonus below fixes.</pre>
+    </div>
+
+    <!-- Annotations -->
+    <div class="topic-label"><span class="topic-num">2</span>Line-by-Line Explanation</div>
+
+    <ul class="annot-list">
+      <li>
+        <span class="lnum">Lines 1&ndash;5</span>
+        <span><strong><span class="ic">class InvalidGradeError(Exception):</span></strong> &mdash; inherits from the built-in <span class="ic">Exception</span> class, per 8.6. The constructor stores the bad <span class="ic">value</span> as an attribute, then calls <span class="ic">super().__init__(...)</span> to set the message that <span class="ic">print(excpt)</span> will display.</span>
+      </li>
+      <li>
+        <span class="lnum">Line 9</span>
+        <span><strong><span class="ic">grade = int(raw_input)</span></strong> &mdash; this line can still raise a plain <span class="ic">ValueError</span> if <span class="ic">raw_input</span> isn't numeric at all. <span class="ic">get_grade()</span> doesn't catch it &mdash; it just lets it propagate to whoever calls the function (8.4!).</span>
+      </li>
+      <li>
+        <span class="lnum">Lines 10&ndash;11</span>
+        <span><strong>The range check</strong> &mdash; only runs if <span class="ic">int()</span> already succeeded. If the grade is out of range, we <span class="ic">raise InvalidGradeError(grade)</span> instead of returning &mdash; the function exits immediately.</span>
+      </li>
+      <li>
+        <span class="lnum">Lines 33&ndash;36</span>
+        <span><strong><span class="ic">try: grade = get_grade(raw)</span></strong> &mdash; because <span class="ic">get_grade()</span> has no <span class="ic">try</span> of its own, <em>both</em> possible exceptions (<span class="ic">ValueError</span> from <span class="ic">int()</span>, or our own <span class="ic">InvalidGradeError</span>) climb the call stack to this <span class="ic">try</span> block &mdash; the same propagation idea from 8.4's <span class="ic">get_weight()</span> / <span class="ic">get_height()</span> example.</span>
+      </li>
+    </ul>
+
+    <div class="callout callout-warn">
+      <strong>Why does the base solution crash on "abc"?</strong>&nbsp;Because it only has <span class="ic">except InvalidGradeError</span> &mdash; there's no handler for the plain <span class="ic">ValueError</span> that <span class="ic">int("abc")</span> raises. That gap is exactly what the Bonus below closes.
+    </div>
+
+    <!-- Common mistakes -->
+    <div class="topic-label"><span class="topic-num">3</span>Common Mistakes</div>
+
+    <div class="mistake-grid">
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">&#10060; Forgot <span class="ic">super().__init__(...)</span></div>
+        <div class="code-wrap">
+          <pre><code class="language-python">class InvalidGradeError(Exception):
+    def __init__(self, value):
+        self.value = value
+        # no super().__init__() call!
+
+# print(excpt) now prints an EMPTY string --
+# Exception's default message is blank unless
+# you set one.</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card right">
+        <div class="mistake-card-hdr">&#9989; Call <span class="ic">super().__init__(message)</span></div>
+        <div class="code-wrap">
+          <pre><code class="language-python">class InvalidGradeError(Exception):
+    def __init__(self, value):
+        self.value = value
+        super().__init__(
+            f"Invalid grade: {value} is not between 0 and 100."
+        )
+# Now print(excpt) shows this exact message.</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">&#10060; Reading "q" through <span class="ic">int(input())</span> directly</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">while True:
+    try:
+        grade = get_grade(input("Enter grade (q to quit): "))
+    except InvalidGradeError as excpt:
+        print(excpt)
+# Typing "q" now raises a plain ValueError that
+# ISN'T caught here -- the loop crashes instead
+# of quitting cleanly.</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card right">
+        <div class="mistake-card-hdr">&#9989; Check the sentinel before converting</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">while True:
+    raw = input("Enter grade (q to quit): ")
+    if raw.lower() == "q":
+        break
+    try:
+        grade = get_grade(raw)
+    except InvalidGradeError as excpt:
+        print(excpt)</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bonus -->
+    <div class="bonus-block">
+      <div class="bonus-label">&#11088; Bonus &mdash; Catch Plain ValueError Too</div>
+      <p style="color:var(--text-d);">Add a second, more general <span class="ic">except</span> block <em>after</em> the specific one. Since <span class="ic">InvalidGradeError</span> inherits from <span class="ic">Exception</span> (not <span class="ic">ValueError</span>), the two are independent &mdash; order between them doesn't matter here. It <em>would</em> matter if <span class="ic">InvalidGradeError</span> had been defined as a subclass of <span class="ic">ValueError</span> instead &mdash; then the more specific type must come first, or the general handler would catch it first and the specific one would never run.</p>
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-hdr-label">breakout_grade_validator_bonus.py</span>
+        </div>
+        <pre><code class="language-python">while True:
+    raw = input("Enter grade (q to quit): ")
+    if raw.lower() == "q":
+        break
+
+    try:
+        grade = get_grade(raw)
+        print(f"Grade: {letter_for(grade)}")
+    except InvalidGradeError as excpt:
+        print(excpt)
+    except ValueError:
+        print("Please enter a whole number.")</code></pre>
+      </div>
+
+      <div class="output-wrap">
+        <div class="output-label">Sample run</div>
+        <pre>Enter grade (q to quit): 92
+Grade: A
+
+Enter grade (q to quit): 150
+Invalid grade: 150 is not between 0 and 100.
+
+Enter grade (q to quit): abc
+Please enter a whole number.
+
+Enter grade (q to quit): q</pre>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>This now matches the full spec exactly:</strong> a valid grade prints a letter, an out-of-range grade prints our custom message, non-numeric input prints a friendly message instead of crashing, and <span class="ic">"q"</span> exits cleanly.
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key Takeaway &mdash; Breakout #2</div>
+      <p><span class="ic">get_grade()</span> intentionally has <strong>no <span class="ic">try</span> block of its own</strong> &mdash; it's the caller's job to decide how to react to a bad grade. This is the propagation idea from 8.4 in action: a function can raise (or let propagate) an exception without knowing or caring how it will eventually be handled. Keeping validation logic and error-handling logic in separate places is exactly why exceptions exist.</p>
+    </div>
+  </section>
+
+
+</main>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <p>COP 1047C &nbsp;&middot;&nbsp; Introduction to Python Programming &nbsp;&middot;&nbsp; Summer 2026 &nbsp;&middot;&nbsp; Miami Dade College West Campus</p>
+  <p style="margin-top:6px;">Instructor: John Masseria &nbsp;&middot;&nbsp; <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a></p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+<script>
+  function updateScrollPadding() {
+    const hdr = document.getElementById('site-header');
+    if (hdr) {
+      const h = hdr.getBoundingClientRect().height;
+      document.documentElement.style.scrollPaddingTop = (h + 16) + 'px';
+    }
+  }
+  updateScrollPadding();
+  window.addEventListener('resize', updateScrollPadding);
+</script>
+
+</body>
+</html>
