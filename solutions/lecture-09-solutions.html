@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lecture 9 Breakout Solutions — Chapter 8: Exceptions | COP 1047C</title>
+  <title>Lecture 9 Breakout Solutions — Chapters 8 &amp; 12 | COP 1047C</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
   <style>
@@ -610,11 +610,13 @@
   <div class="header-top">
     <span class="header-course">COP 1047C &nbsp;&middot;&nbsp; Summer 2026</span>
     <span class="header-title">Lecture 9 — Breakout Solutions</span>
-    <span class="header-badge">Chapter 8: Exceptions</span>
+    <span class="header-badge">Ch 8 &amp; Ch 12</span>
   </div>
   <nav class="header-nav" aria-label="Jump to section">
     <a href="#breakout-1">&#129513; Breakout #1 — Grocery Bill Splitter</a>
     <a href="#breakout-2">&#129513; Breakout #2 — Grade Validator</a>
+    <a href="#breakout-3">&#129513; Breakout #3 — Attendance Log</a>
+    <a href="#breakout-4">&#129513; Breakout #4 — Safe File Copier</a>
   </nav>
 </header>
 
@@ -625,16 +627,16 @@
   <div class="doc-hero">
     <div class="eyebrow">Lecture 9 &nbsp;&middot;&nbsp; Week 9</div>
     <h1 class="doc-title">Breakout Activity Solutions</h1>
-    <p class="doc-subtitle">Complete, annotated solutions for both in-class breakout activities from Chapter 8. Use these to check your work, understand <em>why</em> each choice was made, and learn from common mistakes.</p>
+    <p class="doc-subtitle">Complete, annotated solutions for all four in-class breakout activities from Lecture 9 &mdash; Chapter 8 (Exceptions) and Chapter 12 (Files). Use these to check your work, understand <em>why</em> each choice was made, and learn from common mistakes.</p>
     <div class="meta-row">
       <span class="meta-pill pill-a">Chapter 8 — Exceptions</span>
-      <span class="meta-pill pill-b">2 Activities</span>
-      <span class="meta-pill pill-g">Competency 1</span>
+      <span class="meta-pill pill-b">Chapter 12 — Files</span>
+      <span class="meta-pill pill-g">4 Activities</span>
+      <span class="meta-pill pill-p">Competencies 1 &amp; 7</span>
     </div>
   </div>
 
-
-  <!-- ════════════════════════════════════════════════════════
+<!-- ════════════════════════════════════════════════════════
        BREAKOUT #1 — GROCERY BILL SPLITTER
   ═══════════════════════════════════════════════════════════ -->
   <section class="section" id="breakout-1">
@@ -890,9 +892,8 @@ print("Goodbye!")</code></pre>
       <p>Not every "error" comes from Python itself &mdash; <span class="ic">raise</span> lets you enforce your own business rules (like "people can't be negative") using the exact same <span class="ic">try</span> / <span class="ic">except</span> machinery that catches built-in errors. Whether an exception was raised by <span class="ic">int()</span> failing or by your own <span class="ic">raise</span> statement, the calling code doesn't need to know or care &mdash; it just catches <span class="ic">ValueError</span> either way.</p>
     </div>
   </section>
-
-
-  <!-- ════════════════════════════════════════════════════════
+  <hr class="divider">
+<!-- ════════════════════════════════════════════════════════
        BREAKOUT #2 — GRADE VALIDATOR
   ═══════════════════════════════════════════════════════════ -->
   <section class="section" id="breakout-2">
@@ -1119,8 +1120,393 @@ Enter grade (q to quit): q</pre>
       <p><span class="ic">get_grade()</span> intentionally has <strong>no <span class="ic">try</span> block of its own</strong> &mdash; it's the caller's job to decide how to react to a bad grade. This is the propagation idea from 8.4 in action: a function can raise (or let propagate) an exception without knowing or caring how it will eventually be handled. Keeping validation logic and error-handling logic in separate places is exactly why exceptions exist.</p>
     </div>
   </section>
+  <hr class="divider">
 
+  <div class="doc-hero" style="margin-bottom:32px;">
+    <div class="eyebrow">Still Lecture 9 &nbsp;&middot;&nbsp; Continuing Tonight</div>
+    <h2 class="section-h2" style="margin-bottom:8px;">Chapter 12 &mdash; Files</h2>
+    <p class="doc-subtitle" style="margin-bottom:0;">The two breakouts below shift from exception handling to reading and writing files &mdash; but keep leaning on try / except and finally along the way.</p>
+  </div>
+<!-- ════════════════════════════════════════════════════════
+       BREAKOUT #1 — ATTENDANCE LOG
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="section" id="breakout-3">
+    <div class="section-eyebrow">Breakout Activity #3</div>
+    <h2 class="section-h2">&#129513; Attendance Log &mdash; Reading &amp; Writing Text Files</h2>
 
+    <div class="breakout-bar">
+      <span class="icon">&#129513;</span>
+      <div class="info">
+        <div class="num">Breakout #3 &nbsp;&middot;&nbsp; 12 minutes</div>
+        <div class="name">Attendance Log</div>
+      </div>
+      <div class="chips">
+        <span class="chip chip-a">append mode</span>
+        <span class="chip chip-b">write() / readlines()</span>
+        <span class="chip chip-a">try / finally</span>
+      </div>
+    </div>
+
+    <div class="problem-recap">
+      <div class="problem-recap-label">Problem Recap</div>
+      <ul>
+        <li>Open <span class="ic">"attendance.txt"</span> in <span class="ic">"a"</span> mode</li>
+        <li>Read a student name from input, <span class="ic">write()</span> it followed by <span class="ic">"\n"</span></li>
+        <li>Loop until the user types <span class="ic">"done"</span>, then <span class="ic">close()</span> the file</li>
+        <li>Re-open in <span class="ic">"r"</span> mode, use <span class="ic">readlines()</span>, and print the total number of names logged</li>
+        <li>Wrap the whole thing in <span class="ic">try</span> / <span class="ic">except</span> to catch <span class="ic">ValueError</span> / <span class="ic">IOError</span> gracefully</li>
+        <li><strong>Bonus:</strong> use <span class="ic">try / finally</span> to guarantee the write file always closes, even if something crashes mid-loop</li>
+      </ul>
+    </div>
+
+    <!-- Base solution -->
+    <div class="topic-label"><span class="topic-num">1</span>Base Solution</div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="code-hdr-label">breakout_attendance_log.py</span>
+      </div>
+      <pre><code class="language-python">try:
+    write_file = open("attendance.txt", "a")
+
+    while True:
+        name = input("Enter name (done to finish): ")
+        if name.lower() == "done":
+            break
+        write_file.write(name + "\n")
+
+    write_file.close()
+
+    read_file = open("attendance.txt", "r")
+    lines = read_file.readlines()
+    read_file.close()
+
+    print(f"\nAttendance recorded: {len(lines)} students")
+except IOError:
+    print("Could not open attendance.txt.")
+except ValueError:
+    print("Unexpected input error.")</code></pre>
+    </div>
+
+    <div class="output-wrap">
+      <div class="output-label">Sample run (fresh attendance.txt)</div>
+      <pre>Enter name (done to finish): Ana
+Enter name (done to finish): Beto
+Enter name (done to finish): done
+
+Attendance recorded: 2 students</pre>
+    </div>
+
+    <!-- Annotations -->
+    <div class="topic-label"><span class="topic-num">2</span>Line-by-Line Explanation</div>
+
+    <ul class="annot-list">
+      <li>
+        <span class="lnum">Line 2</span>
+        <span><strong><span class="ic">open("attendance.txt", "a")</span></strong> &mdash; append mode creates the file if it's missing, and adds new writes to the <em>end</em> of whatever is already there.</span>
+      </li>
+      <li>
+        <span class="lnum">Line 8</span>
+        <span><strong><span class="ic">write_file.write(name + "\n")</span></strong> &mdash; <span class="ic">write()</span> does <em>not</em> add a newline automatically. Forget the <span class="ic">"\n"</span> and every name runs together on one line.</span>
+      </li>
+      <li>
+        <span class="lnum">Lines 11&ndash;13</span>
+        <span><strong>Close, then re-open</strong> &mdash; we must <span class="ic">close()</span> the append-mode file before reopening the <em>same</em> file for reading, so any buffered writes are flushed to disk first (recall 12.2's output buffering).</span>
+      </li>
+      <li>
+        <span class="lnum">Line 15</span>
+        <span><strong><span class="ic">len(lines)</span></strong> &mdash; <span class="ic">readlines()</span> returns one list element per line, so its length is exactly the number of names logged <em>all-time</em>, not just this run.</span>
+      </li>
+    </ul>
+
+    <div class="callout callout-note">
+      <strong>Cumulative by design:</strong> because we use <span class="ic">"a"</span> mode, running this program multiple times keeps <em>adding</em> to <span class="ic">attendance.txt</span>. The count reported reflects everyone ever logged, across every run &mdash; delete the file first if you want a clean demo.
+    </div>
+
+    <!-- Common mistakes -->
+    <div class="topic-label"><span class="topic-num">3</span>Common Mistakes</div>
+
+    <div class="mistake-grid">
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">&#10060; Used <span class="ic">"w"</span> instead of <span class="ic">"a"</span></div>
+        <div class="code-wrap">
+          <pre><code class="language-python">write_file = open("attendance.txt", "w")
+# Every run ERASES all previous names
+# before writing new ones.</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card right">
+        <div class="mistake-card-hdr">&#9989; <span class="ic">"a"</span> preserves history</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">write_file = open("attendance.txt", "a")
+# New names are appended -- previous
+# sessions' names stay intact.</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">&#10060; Forgot the newline</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">write_file.write(name)
+# "Ana" + "Beto" + "Cleo" all run together
+# on one line: "AnaBetoCleo"
+# readlines() later returns ONE element,
+# not three.</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card right">
+        <div class="mistake-card-hdr">&#9989; Add <span class="ic">"\n"</span> after every write</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">write_file.write(name + "\n")
+# Each name lands on its own line, so
+# readlines() correctly returns one
+# element per student.</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bonus -->
+    <div class="bonus-block">
+      <div class="bonus-label">&#11088; Bonus &mdash; Guarantee the Write File Closes</div>
+      <p style="color:var(--text-d);">If <span class="ic">input()</span> hits an unexpected end-of-file, or any other error interrupts the loop, the base solution's <span class="ic">write_file.close()</span> on line 9 would never run &mdash; leaving the file open. Wrapping the loop in <span class="ic">try / finally</span> guarantees the close happens no matter what.</p>
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-hdr-label">breakout_attendance_log_bonus.py</span>
+        </div>
+        <pre><code class="language-python">write_file = open("attendance.txt", "a")
+try:
+    while True:
+        name = input("Enter name (done to finish): ")
+        if name.lower() == "done":
+            break
+        write_file.write(name + "\n")
+finally:
+    write_file.close()
+    print("Write file closed.")
+
+with open("attendance.txt", "r") as read_file:
+    lines = read_file.readlines()
+
+print(f"\nAttendance recorded: {len(lines)} students")</code></pre>
+      </div>
+
+      <div class="output-wrap">
+        <div class="output-label">Sample run</div>
+        <pre>Enter name (done to finish): Ana
+Enter name (done to finish): Beto
+Enter name (done to finish): done
+Write file closed.
+
+Attendance recorded: 2 students</pre>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Nice preview:</strong> the read side already uses <span class="ic">with</span>, which you just learned in 12.6 &mdash; it's the modern replacement for manual <span class="ic">try / finally</span> cleanup, and you'll default to it for nearly every file you open from here on.
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key Takeaway &mdash; Breakout #3</div>
+      <p>Mode choice isn't a small detail &mdash; <span class="ic">"a"</span> vs. <span class="ic">"w"</span> is the difference between a growing log and a file that resets every run. And a resource like an open file needs a guaranteed cleanup path: <span class="ic">finally</span> (or, better still, <span class="ic">with</span>) makes sure that happens even when something goes wrong mid-loop.</p>
+    </div>
+  </section>
+  <hr class="divider">
+<!-- ════════════════════════════════════════════════════════
+       BREAKOUT #2 — SAFE FILE COPIER
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="section" id="breakout-4">
+    <div class="section-eyebrow">Breakout Activity #4</div>
+    <h2 class="section-h2">&#129513; Safe File Copier &mdash; with + Exception Handling</h2>
+
+    <div class="breakout-bar">
+      <span class="icon">&#129513;</span>
+      <div class="info">
+        <div class="num">Breakout #4 &nbsp;&middot;&nbsp; 12 minutes</div>
+        <div class="name">Safe File Copier</div>
+      </div>
+      <div class="chips">
+        <span class="chip chip-a">os.path.exists</span>
+        <span class="chip chip-b">with statement</span>
+        <span class="chip chip-a">os.path.join</span>
+      </div>
+    </div>
+
+    <div class="problem-recap">
+      <div class="problem-recap-label">Problem Recap</div>
+      <ul>
+        <li>Read a source filename from input</li>
+        <li>Use <span class="ic">os.path.exists()</span> to check it first &mdash; if missing, print an error and stop</li>
+        <li>Use two <span class="ic">with</span> statements (or one, comma-separated) to open the source in <span class="ic">"r"</span> mode and a new file <span class="ic">"copy_of_" + filename</span> in <span class="ic">"w"</span> mode</li>
+        <li>Loop <span class="ic">for line in source:</span> and <span class="ic">write()</span> each line to the new file</li>
+        <li>Print how many lines were copied</li>
+        <li>Wrap any numeric-summing step in <span class="ic">try / except</span> to catch <span class="ic">ValueError</span></li>
+        <li><strong>Bonus:</strong> use <span class="ic">os.path.join()</span> to build the output path instead of string concatenation</li>
+      </ul>
+    </div>
+
+    <!-- Base solution -->
+    <div class="topic-label"><span class="topic-num">1</span>Base Solution</div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="code-hdr-label">breakout_safe_file_copier.py</span>
+      </div>
+      <pre><code class="language-python">import os
+
+filename = input("Enter file to copy: ")
+
+if not os.path.exists(filename):
+    print("File does not exist.")
+else:
+    output_name = "copy_of_" + filename
+    line_count = 0
+    total = 0
+
+    with open(filename, "r") as source, open(output_name, "w") as destination:
+        for line in source:
+            destination.write(line)
+            line_count += 1
+            try:
+                total += int(line)
+            except ValueError:
+                pass   # not every line has to be a number
+
+    print(f"Copied {line_count} lines to {output_name}")
+    print(f"Sum of numeric lines: {total}")</code></pre>
+    </div>
+
+    <div class="output-wrap">
+      <div class="output-label">Sample run</div>
+      <pre>Enter file to copy: notes.txt
+Copied 14 lines to copy_of_notes.txt
+Sum of numeric lines: 245
+
+Enter file to copy: ghost.txt
+File does not exist.</pre>
+    </div>
+
+    <!-- Annotations -->
+    <div class="topic-label"><span class="topic-num">2</span>Line-by-Line Explanation</div>
+
+    <ul class="annot-list">
+      <li>
+        <span class="lnum">Line 5</span>
+        <span><strong><span class="ic">os.path.exists(filename)</span></strong> &mdash; check <em>before</em> opening. This avoids ever calling <span class="ic">open()</span> on a path that isn't there, and lets us print a friendly message and stop cleanly.</span>
+      </li>
+      <li>
+        <span class="lnum">Line 12</span>
+        <span><strong><span class="ic">with open(filename, "r") as source, open(output_name, "w") as destination:</span></strong> &mdash; a single <span class="ic">with</span> statement can open <em>multiple</em> files, separated by commas. Both are guaranteed to close together when the block ends.</span>
+      </li>
+      <li>
+        <span class="lnum">Lines 13&ndash;18</span>
+        <span><strong>One pass, two jobs</strong> &mdash; each line is written to the copy <em>and</em> optionally added to a running total, all in a single <span class="ic">for</span> loop. Reading the file twice would be wasteful.</span>
+      </li>
+      <li>
+        <span class="lnum">Lines 16&ndash;18</span>
+        <span><strong>A nested <span class="ic">try / except</span></strong> &mdash; the inner <span class="ic">try</span> only wraps the <span class="ic">int(line)</span> conversion. A line that isn't numeric simply doesn't add to <span class="ic">total</span>; it doesn't stop the copy from continuing.</span>
+      </li>
+    </ul>
+
+    <div class="callout callout-info">
+      <strong>Why check <span class="ic">os.path.exists()</span> instead of just wrapping <span class="ic">open()</span> in a <span class="ic">try</span>?</strong>&nbsp;Either approach works here. Checking first reads a little more naturally when you plan to print one specific message and stop; catching <span class="ic">FileNotFoundError</span> around <span class="ic">open()</span> (recall the Chapter 8 tie-in from Lecture 9's deck) is the better choice once <em>multiple</em> things could go wrong with the open itself.
+    </div>
+
+    <!-- Common mistakes -->
+    <div class="topic-label"><span class="topic-num">3</span>Common Mistakes</div>
+
+    <div class="mistake-grid">
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">&#10060; Skipped the existence check</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">filename = input("Enter file to copy: ")
+with open(filename, "r") as source:
+    ...
+# Typo the filename and you get a raw
+# FileNotFoundError traceback instead of
+# a friendly message.</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card right">
+        <div class="mistake-card-hdr">&#9989; Check first, act second</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">if not os.path.exists(filename):
+    print("File does not exist.")
+else:
+    with open(filename, "r") as source:
+        ...</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card wrong">
+        <div class="mistake-card-hdr">&#10060; Reading the whole file twice</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">for line in source:
+    destination.write(line)
+for line in source:          # source is already exhausted!
+    total += int(line)        # this loop does nothing at all</code></pre>
+        </div>
+      </div>
+      <div class="mistake-card right">
+        <div class="mistake-card-hdr">&#9989; One loop, both jobs</div>
+        <div class="code-wrap">
+          <pre><code class="language-python">for line in source:
+    destination.write(line)
+    try:
+        total += int(line)
+    except ValueError:
+        pass</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bonus -->
+    <div class="bonus-block">
+      <div class="bonus-label">&#11088; Bonus &mdash; Build the Output Path with os.path.join()</div>
+      <p style="color:var(--text-d);">String concatenation (<span class="ic">"copy_of_" + filename</span>) works fine when everything lives in the current directory. The moment you want the copy somewhere else &mdash; like a <span class="ic">"backups"</span> folder &mdash; <span class="ic">os.path.join()</span> keeps the path portable across operating systems.</p>
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-hdr-label">breakout_safe_file_copier_bonus.py</span>
+        </div>
+        <pre><code class="language-python">import os
+
+filename = input("Enter file to copy: ")
+
+if not os.path.exists(filename):
+    print("File does not exist.")
+else:
+    # os.path.join builds a portable path -- correct
+    # separator on Windows ("\") vs. Mac/Linux ("/")
+    output_name = os.path.join(".", "copy_of_" + filename)
+    line_count = 0
+
+    with open(filename, "r") as source, open(output_name, "w") as destination:
+        for line in source:
+            destination.write(line)
+            line_count += 1
+
+    print(f"Copied {line_count} lines to {output_name}")</code></pre>
+      </div>
+
+      <div class="output-wrap">
+        <div class="output-label">Output (Mac/Linux vs. Windows)</div>
+        <pre>Mac/Linux:  Copied 14 lines to ./copy_of_notes.txt
+Windows:    Copied 14 lines to .\copy_of_notes.txt</pre>
+      </div>
+
+      <div class="callout callout-note">
+        <strong>Same code, different separator</strong> &mdash; <span class="ic">os.path.join()</span> picked the right one automatically for whichever OS ran the program. This becomes essential the moment you introduce real subdirectories, like <span class="ic">os.path.join("backups", "copy_of_" + filename)</span>.
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key Takeaway &mdash; Breakout #4</div>
+      <p>A safe file operation checks its assumptions <em>before</em> acting (<span class="ic">os.path.exists()</span>), guarantees cleanup regardless of outcome (<span class="ic">with</span>), and never hardcodes something the operating system should decide for you (<span class="ic">os.path.join()</span> over string concatenation). These three habits will show up in almost every file-handling program you write from here on &mdash; including the course's final project.</p>
+    </div>
+  </section>
 </main>
 
 <!-- ══ FOOTER ══════════════════════════════════════════════════ -->
