@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 9: Exceptions &amp; Files — COP 1047C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c14; --surface:#0f1724; --surface2:#16202e; --border:#1e2d42; --border2:#253347;
+  --accent:#f59e0b; --accent-dk:#d97706; --text:#e2e8f0; --muted:#7d93af;
+  --green-bg:#071510; --green-bdr:#0d3322; --green-txt:#34d399;
+  --mono:'JetBrains Mono','Courier New',monospace; --sans:'Outfit',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;}
+pre, code, kbd{
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "calt" 0 !important;
+}
+header{position:sticky;top:0;z-index:100;background:rgba(8,12,20,0.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:16px 24px;}
+.header-inner{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;}
+.course-tag{display:inline-block;background:var(--accent);color:#1a1005;font-weight:700;font-size:0.72rem;letter-spacing:0.06em;padding:3px 10px;border-radius:20px;text-transform:uppercase;}
+h1{font-size:1.3rem;margin:6px 0 2px;font-weight:700;}
+.meta{color:var(--muted);font-size:0.85rem;text-align:right;}
+nav{max-width:860px;margin:10px auto 0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:0.85rem;}
+nav a{color:var(--muted);text-decoration:none;border-bottom:1px dotted transparent;}
+nav a:hover{color:var(--accent);border-bottom-color:var(--accent);}
+main{max-width:860px;margin:0 auto;padding:20px 24px 80px;}
+html{scroll-padding-top:150px;scroll-behavior:smooth;}
+.section{padding:38px 0;border-bottom:1px solid var(--border);}
+.section:last-of-type{border-bottom:none;}
+.section-eyebrow{font-family:var(--mono);color:var(--accent);font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+h2{font-size:1.5rem;margin:0 0 18px;}
+h3{font-size:1.1rem;color:var(--text);margin:26px 0 10px;}
+p{color:#c9d5e3;}
+.topic-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--surface2);color:var(--accent);border-radius:6px;font-family:var(--mono);font-size:0.75rem;margin-right:8px;}
+.callout-warn, .callout-info, .callout-note{border-radius:10px;padding:16px 18px;margin:18px 0;font-size:0.94rem;}
+.callout-warn{background:#1a0d0d;border:1px solid #4a1f1f;color:#fca5a5;}
+.callout-info{background:#0a1420;border:1px solid #1e3a5f;color:#93c5fd;}
+.callout-note{background:#1a1408;border:1px solid #4a3a1a;color:#fcd34d;}
+.callout-warn strong, .callout-info strong, .callout-note strong{color:#fff;}
+.code-wrap{background:var(--surface);border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin:16px 0;}
+.code-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface2);border-bottom:1px solid var(--border2);}
+.dot-r{width:10px;height:10px;border-radius:50%;background:#ef4444;}
+.dot-y{width:10px;height:10px;border-radius:50%;background:#f59e0b;}
+.dot-g{width:10px;height:10px;border-radius:50%;background:#22c55e;}
+.code-filename{color:var(--muted);font-family:var(--mono);font-size:0.78rem;margin-left:4px;}
+pre{margin:0;padding:16px;overflow-x:auto;background:transparent !important;}
+code{font-family:var(--mono);font-size:0.87rem;}
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:0.9rem;}
+th{background:var(--surface2);color:var(--accent);text-align:left;padding:10px 12px;border-bottom:2px solid var(--border2);}
+td{padding:9px 12px;border-bottom:1px solid var(--border);color:#c9d5e3;}
+.activity{background:var(--green-bg);border:1px solid var(--green-bdr);border-radius:10px;padding:18px 20px;margin:18px 0;}
+.activity-tag{display:inline-block;background:var(--green-bdr);color:var(--green-txt);font-family:var(--mono);font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
+.reminder-list{margin:16px 0;}
+.reminder-list div{border-left:3px solid var(--accent);background:var(--surface);padding:10px 14px;margin-bottom:8px;border-radius:0 8px 8px 0;color:#c9d5e3;font-size:0.92rem;}
+footer{max-width:860px;margin:0 auto;padding:30px 24px 60px;color:var(--muted);font-size:0.85rem;border-top:1px solid var(--border);}
+footer a{color:var(--accent);text-decoration:none;}
+ul{color:#c9d5e3;}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;}
+.chip{background:var(--surface2);border:1px solid var(--border2);color:#c9d5e3;font-family:var(--mono);font-size:0.8rem;padding:4px 10px;border-radius:6px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <span class="course-tag">COP 1047C</span>
+      <h1>Lecture 9: Exceptions &amp; Files</h1>
+    </div>
+    <div class="meta">July 7, 2026 &middot; Chapters 8 &amp; 12 &middot; John Masseria</div>
+  </div>
+  <nav>
+    <a href="#objectives">Objectives</a>
+    <a href="#rounding">Banker's Rounding</a>
+    <a href="#exceptions-basics">Exception Basics</a>
+    <a href="#try-except">Try/Except</a>
+    <a href="#raising">Raising Exceptions</a>
+    <a href="#custom-exceptions">Custom Exceptions</a>
+    <a href="#finally">Finally &amp; Global Vars</a>
+    <a href="#breakout-tip">Breakout: Tip Splitter</a>
+    <a href="#files-basics">Files: Opening &amp; Reading</a>
+    <a href="#files-writing">Writing &amp; Buffering</a>
+    <a href="#paths">Portable Paths</a>
+    <a href="#breakout-attendance">Breakout: Attendance Log</a>
+    <a href="#csv">CSV Files</a>
+    <a href="#looking-ahead">Looking Ahead</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="section" id="objectives">
+  <div class="section-eyebrow">Agenda</div>
+  <h2>🎯 What You'll Be Able to Do After Tonight</h2>
+  <p>By the end of this lecture, you should be able to:</p>
+  <ul>
+    <li>Explain what an exception is and why an unhandled exception crashes a program</li>
+    <li>Use <code>try</code> / <code>except</code> to catch and handle specific error types</li>
+    <li>Raise your own exceptions with <code>raise</code>, including custom exception classes</li>
+    <li>Use <code>finally</code> to guarantee cleanup code always runs</li>
+    <li>Open, read, and write text files using <code>open()</code>, <code>read()</code>, <code>readlines()</code>, and <code>write()</code></li>
+    <li>Explain the difference between read (<code>r</code>), write (<code>w</code>), append (<code>a</code>), and binary (<code>rb</code>) file modes</li>
+    <li>Build machine-independent file paths with <code>os.path.join</code></li>
+    <li>Read and process CSV files with the <code>csv</code> module</li>
+  </ul>
+  <div class="reminder-list">
+    <div>📌 zyBook Chapter 7 (Strings) assignments were due tonight. Chapters 8 &amp; 12 assignments are due <strong>next week, July 14</strong>.</div>
+    <div>📌 Three lectures remain in the course.</div>
+    <div>📌 Office hours: Wednesdays 6–7 PM via Teams, or schedule a time individually.</div>
+  </div>
+</section>
+
+<section class="section" id="rounding">
+  <div class="section-eyebrow">A Promise Kept</div>
+  <h2>🏦 Banker's Rounding — Explained in Full</h2>
+  <p>This is a correction from earlier in the course, finally given the full treatment it deserved: Python's <code>round()</code> and <code>:.2f</code> formatting do <strong>not</strong> use the "round half up" rule most of us learned in elementary school.</p>
+  <div class="callout-note">
+    <strong>Elementary school rule (what Python does NOT do):</strong> if the digit being rounded is 5 or higher, always round up. This rule rounds up more often than it rounds down (5 out of 9 possible nonzero digits vs. 4), which introduces a small systematic bias — historically a real concern for banks calculating interest across millions of accounts.
+  </div>
+  <div class="callout-note">
+    <strong>Banker's rounding (what Python actually does):</strong> when a value is exactly halfway, round to the <em>nearest even</em> digit. <code>0.5</code> rounds to <code>0</code> (even), <code>1.5</code> rounds to <code>2</code> (even), <code>2.5</code> rounds to <code>2</code>, <code>3.5</code> rounds to <code>4</code>. This evens out the rounding bias over a large number of calculations.
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">banker_rounding.py</span></div>
+    <pre><code class="language-python">print(round(0.125, 2))   # 0.12  (2 is even, 3 is odd)
+print(round(0.375, 2))   # 0.38  (8 is even, 7 is odd)</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>The floating-point trap:</strong> <code>2.675</code> looks like it should round to <code>2.68</code>. It doesn't — it prints <code>2.67</code>. That's because <code>2.675</code> cannot be stored exactly in binary floating point. Internally it's stored as approximately <code>2.67499999999999982236...</code>, so when Python rounds, it's really rounding <code>2.6749...</code>, and the digit being rounded is a 4, which rounds down. This is <em>not</em> a Python bug — it's a consequence of how floating-point numbers are represented in binary, and it's worth being aware of any time you're working with money or precise decimals.
+  </div>
+  <p style="color:var(--muted);font-size:0.9rem;">This will not be tested with a "what does bankers' rounding output" style question — it's background knowledge, not exam material. But understanding <em>why</em> floating-point math can surprise you is genuinely useful.</p>
+</section>
+
+<section class="section" id="exceptions-basics">
+  <div class="section-eyebrow">Chapter 8 &middot; Exceptions</div>
+  <h2>💥 What Is an Exception?</h2>
+  <p><span class="topic-num">1</span>An <strong>exception</strong> is an error detected during the execution of your program. If it's not handled, the program crashes ("terminates") and Python prints a traceback.</p>
+  <p>Some of the exceptions you've already met without necessarily naming them:</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Exception</th><th>Typical Cause</th></tr>
+      <tr><td><code>ValueError</code></td><td>Converting a non-numeric string to <code>int()</code> or <code>float()</code></td></tr>
+      <tr><td><code>ZeroDivisionError</code></td><td>Dividing by zero</td></tr>
+      <tr><td><code>IndexError</code></td><td>Accessing a list or string index that's out of range</td></tr>
+      <tr><td><code>KeyError</code></td><td>Accessing a dictionary key that doesn't exist</td></tr>
+      <tr><td><code>EOFError</code></td><td>Reaching end-of-file unexpectedly during input/file reads</td></tr>
+      <tr><td><code>TypeError</code></td><td>Using an operation on an incompatible type</td></tr>
+      <tr><td><code>NameError</code></td><td>Referencing a variable or function that doesn't exist</td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="section" id="try-except">
+  <h2>🛟 Handling Exceptions with try / except</h2>
+  <p><span class="topic-num">2</span>Just like <code>if</code> and <code>while</code>, the <code>try</code> statement introduces an indented block. Statements in the <code>try</code> block run one at a time; the moment one raises an exception, control jumps immediately to the matching <code>except</code> clause.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">bmi_basic.py</span></div>
+    <pre><code class="language-python">try:
+    weight = int(input("Enter weight: "))
+    height = int(input("Enter height: "))
+    bmi = (weight / (height ** 2)) * 703
+    print(f"Your BMI is {bmi:.1f}")
+except:
+    print("We could not calculate your health information.")</code></pre>
+  </div>
+  <p>You can target specific exception types instead of catching everything blindly. Multiple exception types can be grouped as a tuple:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">bmi_specific.py</span></div>
+    <pre><code class="language-python">try:
+    weight = int(input("Enter weight: "))
+    height = int(input("Enter height: "))
+    bmi = (weight / (height ** 2)) * 703
+except (ValueError, TypeError):
+    print("Please enter whole numbers only.")
+except ZeroDivisionError:
+    print("Invalid height entered — must be greater than zero.")
+except (NameError, AttributeError):
+    print("That function doesn't exist.")
+except:
+    print("An unexpected error occurred.")</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>Order matters.</strong> Python checks <code>except</code> clauses top to bottom and stops at the first match. Put your most specific clauses first and a bare <code>except:</code> last — if a catch-all comes first, none of the more specific clauses below it will ever run.
+  </div>
+  <div class="callout-info">
+    <strong>C / C++ / Java note:</strong> Python's <code>except</code> plays the same role as <code>catch</code> in those languages. If your instructor slips and says "catch" during lecture, that's why — decades of muscle memory from other languages.
+  </div>
+</section>
+
+<section class="section" id="raising">
+  <h2>🚩 Raising Your Own Exceptions</h2>
+  <p><span class="topic-num">3</span>You can trigger an existing exception type yourself with <code>raise</code>, and pass it a custom message:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">bmi_raise.py</span></div>
+    <pre><code class="language-python">try:
+    weight = int(input("Enter weight: "))
+    if weight < 0:
+        raise ValueError("invalid weight")
+
+    height = int(input("Enter height: "))
+    if height <= 0:
+        raise ValueError("invalid height")
+
+    bmi = (weight / (height ** 2)) * 703
+except ValueError as e:
+    print(f"Error: {e}")</code></pre>
+  </div>
+  <p>Capturing the exception object itself (<code>as e</code>) lets you print exactly what went wrong instead of a generic message — much more useful for debugging, and a good habit if you're logging errors to a file rather than just printing them.</p>
+  <div class="callout-info">
+    <strong>Exceptions cross function boundaries.</strong> If a <code>try</code> block calls a function, and that function (or one it calls) raises an exception, the calling <code>try</code>/<code>except</code> still catches it — even several function calls deep. Wrapping logic in functions and calling them from inside a <code>try</code> block is often cleaner than writing all the exception-handling inline, and it's a legitimate way for a function to signal an error back to its caller (an alternative to returning error codes or tuples of <code>(error_code, value)</code>).
+  </div>
+</section>
+
+<section class="section" id="custom-exceptions">
+  <h2>🏗️ Building a Custom Exception Class</h2>
+  <p><span class="topic-num">4</span>You can define your own exception type by inheriting from <code>Exception</code>. This is a preview of class syntax we'll cover formally in two weeks — enough to use it here, not to fully explain the mechanics yet.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">grade_checker.py</span></div>
+    <pre><code class="language-python">class InvalidGradeError(Exception):
+    def __init__(self, value):
+        self.value = value
+        super().__init__(f"{value} is not between 0 and 100")
+
+while True:
+    entry = input("Enter a grade (or Q to quit): ")
+    if entry.upper() == "Q":
+        print("Goodbye")
+        break
+    try:
+        grade = int(entry)
+        if grade < 0 or grade > 100:
+            raise InvalidGradeError(grade)
+
+        if grade >= 90:
+            letter = "A"
+        elif grade >= 80:
+            letter = "B"
+        elif grade >= 70:
+            letter = "C"
+        elif grade >= 60:
+            letter = "D"
+        else:
+            letter = "F"
+        print(f"Grade: {letter}")
+    except InvalidGradeError as e:
+        print(f"Error: {e}")
+    except ValueError:
+        print("Please enter a whole number.")</code></pre>
+  </div>
+  <p>When <code>InvalidGradeError(grade)</code> is raised, its <code>__init__</code> stores the value and calls <code>Exception</code>'s own <code>__init__</code> with a formatted message — that message is what gets printed when you catch it with <code>as e</code>.</p>
+  <div class="callout-note">
+    <strong>Cascading comparisons, largest first:</strong> when checking a range with <code>if</code>/<code>elif</code> using <code>&gt;=</code>, start with the largest threshold and work down — otherwise a 95 would match your first "&gt;= 60" branch and never reach the "A" check.
+  </div>
+</section>
+
+<section class="section" id="finally">
+  <h2>🔒 finally, and a Global Variable Gotcha</h2>
+  <p><span class="topic-num">5</span>Code inside a <code>finally</code> block always runs — whether or not an exception occurred.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">finally_demo.py</span></div>
+    <pre><code class="language-python">def divide(a, b):
+    z = -1
+    try:
+        z = a / b
+    except ZeroDivisionError:
+        print("Cannot divide by zero.")
+    finally:
+        print(f"The result is {z}")</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>Live-caught gotcha (worth knowing):</strong> if instead you write <code>z = -1</code> <em>outside</em> the function without declaring it <code>global</code>, and then try <code>z = a / b</code> inside a <code>try</code> block without a prior local assignment, a division-by-zero on the very first call can leave <code>z</code> completely unassigned inside the function — because the assignment statement's right-hand side is evaluated first, and if that evaluation raises an exception, the assignment never happens. The <code>finally</code> block's attempt to print <code>z</code> then raises its own <code>UnboundLocalError</code>, since Python treats any variable assigned inside a function as local unless you explicitly write <code>global z</code>. The fix: initialize the variable inside the function (or before the try block) so it always has a value, regardless of whether the assignment inside <code>try</code> succeeds.
+  </div>
+</section>
+
+<section class="section" id="breakout-tip">
+  <div class="section-eyebrow">Now You Try</div>
+  <h2>🧮 Breakout: Restaurant Bill Splitter</h2>
+  <div class="activity">
+    <span class="activity-tag">Breakout Activity</span>
+    <p>Write a program that prompts for a total bill amount and a number of people, then prints how much each person owes.</p>
+    <ul>
+      <li>If the person enters a non-numeric value, print <code>Enter valid numbers</code></li>
+      <li>If the number of people is 0, print <code>Cannot split among 0 people</code></li>
+      <li>Doesn't need to loop — one pass is fine</li>
+      <li><strong>Bonus:</strong> add a 20% tip before dividing. Hint: multiplying by <code>1.2</code> adds 20% in one step (multiplying by <code>0.2</code> alone gives you just the tip amount)</li>
+    </ul>
+  </div>
+  <p>Reviewing student solutions in Padlet surfaced one refinement worth remembering: checking <code>number_of_people == 0</code> catches the zero case, but a <em>negative</em> number of people would sail through and produce a nonsensical (negative) per-person amount. A more defensive check is <code>number_of_people &lt;= 0</code>.</p>
+</section>
+
+<section class="section" id="files-basics">
+  <div class="section-eyebrow">Chapter 12 &middot; Files</div>
+  <h2>📂 Opening and Reading Files</h2>
+  <p><span class="topic-num">6</span><code>open()</code> takes a filename and a mode string, and returns a <strong>file object</strong>:</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Mode</th><th>Meaning</th></tr>
+      <tr><td><code>'r'</code></td><td>Read (default if no mode is given)</td></tr>
+      <tr><td><code>'w'</code></td><td>Write — creates the file, or overwrites it if it exists</td></tr>
+      <tr><td><code>'a'</code></td><td>Append — writes are added to the end of the existing file</td></tr>
+      <tr><td><code>'rb'</code></td><td>Read binary — returns a <code>bytes</code> object rather than a string</td></tr>
+    </table>
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">read_whole_file.py</span></div>
+    <pre><code class="language-python">f = open("notes.txt")     # defaults to read mode
+contents = f.read()       # entire file as one big string
+f.close()
+print(contents)</code></pre>
+  </div>
+  <p><code>read()</code> pulls in the entire file as a single string — fine for small files. <code>readlines()</code> instead returns a <strong>list of strings</strong>, one per line, which is usually more useful for processing a file line by line:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">readlines_demo.py</span></div>
+    <pre><code class="language-python">f = open("notes.txt")
+lines = f.readlines()
+print(lines[0])   # first line
+print(lines[1])   # second line
+f.close()</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>Watch for IndexError.</strong> If the file has fewer lines than you expect (or is empty), indexing into <code>readlines()</code>'s result past the end raises an <code>IndexError</code>, same as with any list.
+  </div>
+</section>
+
+<section class="section" id="files-writing">
+  <h2>✍️ Writing, Appending, and Buffering</h2>
+  <p><span class="topic-num">7</span>Everything written to a text file is converted to a string first — numbers must be explicitly converted with <code>str()</code> before writing:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">write_demo.py</span></div>
+    <pre><code class="language-python">num1, num2 = 5, 7.5
+f = open("results.txt", "w")
+f.write(str(num1) + " = " + str(num1 + num2) + "\n")
+f.close()</code></pre>
+  </div>
+  <div class="callout-info">
+    <strong>Buffering — why your data might not be on disk yet.</strong> Python (and the operating system underneath it) buffers writes for efficiency rather than hitting the disk on every single <code>write()</code> call. If you're logging sensor data — say, from a Raspberry Pi Pico — and it's critical that a value survives a power failure, call <code>f.flush()</code> to force Python to hand the data to the OS, and <code>os.fsync(f.fileno())</code> to force the OS itself to commit it to disk. How often you flush is a tradeoff: flushing every millisecond wears out flash storage; flushing too rarely risks losing data if power is lost.
+  </div>
+</section>
+
+<section class="section" id="paths">
+  <h2>🗂️ Writing Portable File Paths</h2>
+  <p><span class="topic-num">8</span>Windows uses backslashes as its directory separator, but backslash is also Python's escape character — so a hardcoded Windows path needs escaping, and won't work on macOS or Linux anyway.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">escape_check.py</span></div>
+    <pre><code class="language-python">s = "\t"
+print(len(s))   # 1 — the escape sequence counts as ONE character</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>Exam-relevant:</strong> escape sequences like <code>\t</code>, <code>\n</code>, and <code>\\</code> each count as exactly one character in a string's length, regardless of how many characters you typed to write them.
+  </div>
+  <p>The portable, OS-independent way to build a path is <code>os.path.join()</code>, which uses the correct separator for whatever operating system the code is actually running on:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">portable_path.py</span></div>
+    <pre><code class="language-python">import os
+path = os.path.join("logs", "2026", "07", "readings.txt")</code></pre>
+  </div>
+  <p>Writing machine-independent code — code that runs the same whether it's on Windows, macOS, Linux, or a specific cloud provider's flavor of Linux — is a core software design goal: it keeps you from being locked into one platform.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">with_statement.py</span></div>
+    <pre><code class="language-python">with open("data.txt", "r") as f:
+    for line in f:
+        print(line.strip())
+# file is automatically closed here — even if an exception occurred</code></pre>
+  </div>
+  <div class="callout-info">
+    <strong>The <code>with</code> statement</strong> is the preferred, modern way to open a file. It guarantees the file is closed when the block exits — no matter whether that's normal completion or an exception — the same guarantee <code>finally</code> gives you, but built in automatically.
+  </div>
+</section>
+
+<section class="section" id="breakout-attendance">
+  <div class="section-eyebrow">Now You Try</div>
+  <h2>📋 Breakout: Attendance Log</h2>
+  <div class="activity">
+    <span class="activity-tag">Breakout Activity</span>
+    <p>Open a file called <code>attendance.txt</code> in append mode (it should be created automatically if it doesn't exist). Loop, reading student names and writing each one to the file, until the user types <code>done</code>. Then print how many names were recorded.</p>
+    <ul>
+      <li>Wrap the logic in a <code>try</code> / <code>except</code> — catch <code>ValueError</code> and any I/O-related error separately</li>
+      <li>Use <code>finally</code> to close the file</li>
+      <li>Run the program multiple times and confirm names accumulate across runs (append mode, not write mode)</li>
+    </ul>
+  </div>
+  <p>One clean approach seen in the breakout: close the file after writing, then reopen it in read mode and count the lines — rather than tracking a counter manually while writing.</p>
+</section>
+
+<section class="section" id="csv">
+  <h2>📊 Reading CSV Files</h2>
+  <p><span class="topic-num">9</span>A CSV (comma-separated values) file is a plain text file structured like a spreadsheet — one row per line, fields separated by commas. (If your data itself might contain commas, a tab-separated file, using <code>\t</code> as the delimiter, avoids the conflict.)</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">read_grades.py</span></div>
+    <pre><code class="language-python">import csv
+
+with open("grades.csv", "r") as csv_file:
+    reader = csv.reader(csv_file, delimiter=",")
+    for row in reader:
+        name = row[0]
+        scores = [float(x) for x in row[1:]]
+        print(name, sum(scores))</code></pre>
+  </div>
+  <p>Each <code>row</code> comes back as a <strong>list of strings</strong>. The line <code>[float(x) for x in row[1:]]</code> is a <strong>list comprehension</strong> — for every item in the row starting from index 1 (skipping the name), convert it from a string to a <code>float</code>, and build a new list out of the results in one line.</p>
+  <div class="callout-note">
+    <strong>Combining exceptions and files:</strong> a robust file-reading program typically wraps the whole read in a <code>try</code> that catches both <code>FileNotFoundError</code> (the file doesn't exist) and <code>ValueError</code> (a value in the file wasn't the type you expected) — giving a clean error message either way instead of a crash.
+  </div>
+</section>
+
+<section class="section" id="looking-ahead">
+  <div class="section-eyebrow">Coming Up</div>
+  <h2>🧬 Looking Ahead: DNA Sequence Search Project</h2>
+  <p>With exceptions and file handling now covered, you have everything you need to start the DNA Sequence Search assignment (due July 30). You'll be given a <strong>known sequences</strong> file and an <strong>unknown sequences</strong> file:</p>
+  <ul>
+    <li>Read the known sequences into two parallel lists — one of species names, one of sequences</li>
+    <li>For each unknown sequence, check whether it appears within any known sequence</li>
+    <li>Report the matching species name, or report the sequence as unknown</li>
+  </ul>
+  <div class="callout-info">
+    <strong>Submission requirements:</strong> your <code>.py</code> file, a screenshot of it running correctly, and a screen-recorded video of you presenting and explaining your code line by line. Roughly half of your grade on this assignment comes from the quality of that explanation — writing correct code isn't enough on its own.
+  </div>
+</section>
+
+</main>
+
+<footer>
+  COP 1047C &middot; Introduction to Python Programming &middot; Summer 2026 &middot; Miami Dade College West Campus<br>
+  Questions? <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+(function () {
+  const header = document.querySelector('header');
+  function setScrollOffset() {
+    document.documentElement.style.scrollPaddingTop = (header.offsetHeight + 12) + 'px';
+  }
+  setScrollOffset();
+  window.addEventListener('resize', setScrollOffset);
+})();
+</script>
+</body>
+</html>
