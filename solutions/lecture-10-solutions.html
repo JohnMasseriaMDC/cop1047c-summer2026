@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INSTRUCTOR ONLY — Lecture 10 Breakout Solutions | COP 1047C</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c14; --card:#0e1523; --card2:#101a2c; --border:#22304a;
+  --text:#e8eef6; --muted:#a9b4c4; --amber:#fbbf24; --teal:#5eead4;
+  --green:#7ee787; --red:#ff8f8f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.6}
+/* JetBrains Mono ligature suppression — REQUIRED */
+pre,code,kbd{
+  font-family:'JetBrains Mono',monospace !important;
+  font-variant-ligatures:none !important;
+  font-feature-settings:"liga" 0,"calt" 0 !important;
+}
+header{position:sticky;top:0;z-index:50;background:rgba(8,12,20,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);padding:14px 24px}
+.header-top{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.course-tag{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--red);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--red);border-radius:6px;padding:4px 10px;background:var(--card)}
+.mdc-badge{font-size:13px;font-weight:700;letter-spacing:.04em}
+.mdc-badge span{color:var(--amber)}
+nav.toc{max-width:900px;margin:0 auto;padding:10px 24px 0;display:flex;flex-wrap:wrap;gap:8px}
+nav.toc a{font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:999px;padding:4px 12px;background:var(--card)}
+nav.toc a:hover{color:var(--amber);border-color:var(--amber)}
+main{max-width:860px;margin:0 auto;padding:36px 24px 60px}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+h1{font-size:34px;font-weight:800;line-height:1.15;margin-bottom:10px}
+h1 .accent,h2 .accent{color:var(--amber)}
+h2{font-size:25px;font-weight:700;margin:40px 0 12px;scroll-margin-top:90px}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--amber);margin-right:8px}
+p,li{font-size:17.5px;color:var(--text)}
+.lead{font-size:19px;color:var(--muted);margin-bottom:8px}
+ul{margin:10px 0 14px 24px}
+li{margin-bottom:8px}
+li b{color:var(--amber);font-weight:600}
+.callout-info,.callout-note,.callout-warn{border-radius:0 10px 10px 0;padding:14px 16px;margin:16px 0;background:var(--card)}
+.callout-info{border-left:4px solid var(--teal)}
+.callout-note{border-left:4px solid var(--amber)}
+.callout-warn{border-left:4px solid var(--red)}
+.callout-info b{color:var(--teal)} .callout-note b{color:var(--amber)} .callout-warn b{color:var(--red)}
+.code-wrap{background:#0b111d;border:1px solid var(--border);border-radius:10px;margin:14px 0;overflow:hidden}
+.code-head{display:flex;align-items:center;gap:7px;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--card2)}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot-r{background:#f87171}.dot-y{background:var(--amber)}.dot-g{background:#4ade80}
+.code-head .fname{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);margin-left:6px}
+pre[class*="language-"]{margin:0;background:transparent !important;padding:14px 16px;font-size:15px;line-height:1.55}
+.token.comment{color:#9aa7b8 !important}
+.token.punctuation{color:#c3ccd9 !important}
+.out{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--green);background:#0b111d;border:1px dashed var(--border);border-radius:10px;padding:12px 16px;margin:12px 0;white-space:pre-wrap}
+.table-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--border);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{background:var(--card2);color:var(--amber);text-align:left;padding:10px 14px;font-weight:600;border-bottom:1px solid var(--border)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code,li code,p code{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:1px 7px;font-size:14px;color:var(--teal)}
+footer{border-top:1px solid var(--border);margin-top:50px;padding:24px;text-align:center;color:var(--muted);font-size:14.5px}
+footer a{color:var(--amber);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <span class="course-tag">Instructor Only — Do Not Distribute</span>
+    <span class="mdc-badge">MDC <span>COP 1047C</span> · Summer 2026</span>
+  </div>
+</header>
+<nav class="toc">
+  <a href="#b1">Breakout 1</a>
+  <a href="#b2">Breakout 2</a>
+  <a href="#b3">Breakout 3</a>
+  <a href="#b4">Breakout 4</a>
+</nav>
+<main>
+
+<p class="eyebrow">Lecture 10 · Tuesday, July 14, 2026 · Chapter 9</p>
+<h1>Breakout Solutions — <span class="accent">Instructor Reference</span></h1>
+<p class="lead">Solutions and debrief notes for the four Chapter 9 breakout activities. These were removed from the student-facing deck; screen-share sections of this page during each debrief, or talk from it off-screen.</p>
+
+<h2 id="b1"><span class="topic-num">B1</span>Guest Manifest Stats <span class="accent">(after 9.3)</span></h2>
+<div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">manifest_stats.py</span></div>
+<pre><code class="language-python">ages = [34, 8, 71, 45, 12, 67, 29, 88, 15, 52, 41, 6]
+
+print(f"Guests: {len(ages)}  Youngest: {min(ages)}  Oldest: {max(ages)}")
+print(f"Average: {sum(ages) / len(ages):.1f}")
+
+minors = 0
+for age in ages:
+    if age < 18:
+        minors += 1
+print(f"Minors: {minors}")
+
+for pos, age in enumerate(ages):
+    if age >= 65:
+        print(f"Position {pos}: age {age}")
+
+print(all(age >= 5 for age in ages))   # stretch — a preview of 9.12!</code></pre></div>
+<div class="callout-info"><p><b>Debrief talking point:</b> task 1 used built-ins, task 2 used the tracking pattern, task 3 used <code>enumerate()</code> — three iteration tools, one dataset. The stretch answer is secretly a comprehension; call back to it at 7:30 when 9.12 lands.</p></div>
+<div class="callout-note"><p><b>Expected wrong answers:</b> average printed as an int (missing <code>/ len</code> or missing <code>:.1f</code>); minors counted with <code>&lt;=</code> 18 (off-by-one on "under 18"); seniors printed without positions (skipped <code>enumerate</code>).</p></div>
+
+<h2 id="b2"><span class="topic-num">B2</span>The Standby List Bug <span class="accent">(after 9.7)</span></h2>
+<p>Buggy program output: <code>Boarding: ['ana', 'cruz', 'dana', 'flo']</code> — cruz and flo survive because each <code>remove()</code> shifts elements left past the loop's position.</p>
+<div class="table-wrap"><table>
+  <tr><th>Loop pos</th><th>Sees</th><th>Action</th><th>List afterward</th></tr>
+  <tr><td>0</td><td>ana</td><td>keep</td><td><code>[ana, ben, cruz, dana, eli, flo]</code></td></tr>
+  <tr><td>1</td><td>ben</td><td>remove → shift!</td><td><code>[ana, cruz, dana, eli, flo]</code></td></tr>
+  <tr><td>2</td><td>dana <b>(cruz skipped)</b></td><td>keep</td><td>unchanged</td></tr>
+  <tr><td>3</td><td>eli</td><td>remove → shift!</td><td><code>[ana, cruz, dana, flo]</code></td></tr>
+  <tr><td>4</td><td>— past the end <b>(flo skipped)</b></td><td>loop ends</td><td></td></tr>
+</table></div>
+<div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">the four-character fix</span></div>
+<pre><code class="language-python">for guest in standby[:]:       # iterate a COPY, modify the original
+    if guest in no_shows:
+        standby.remove(guest)   # -> Boarding: ['ana', 'dana']</code></pre></div>
+<p><b style="color:var(--amber)">Stretch:</b> <code>fare = fare * 0.9</code> rebinds the loop variable — fix is index assignment: <code>for i in range(len(fares)): fares[i] *= 0.9</code>.</p>
+<div class="callout-note"><p><b>Grading note:</b> the trace table is the deliverable that matters — same artifact style as tonight's Part 2 project and the DNA project's process evidence. A correct fix with no trace earns partial credit; a correct trace with a wrong fix earns most of it.</p></div>
+
+<h2 id="b3"><span class="topic-num">B3</span>Deck Directory <span class="accent">(after 9.11)</span></h2>
+<div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">deck_directory.py</span></div>
+<pre><code class="language-python">directory = {"A101": "Rivera", "A102": "Chen", "B201": "Okafor"}
+
+directory["B202"] = "Dubois"        # same syntax adds…
+directory["A102"] = "Vacant"        # …and updates
+
+print(directory.get("A101", "Unassigned"))   # Rivera
+print(directory.get("C303", "Unassigned"))   # Unassigned — no crash
+
+for cabin, guest in directory.items():
+    print(f"Cabin {cabin} -> {guest}")
+
+for cabin, guest in sorted(directory.items()):   # stretch
+    print(f"Cabin {cabin} -> {guest}")</code></pre></div>
+<div class="callout-info"><p><b>The stretch trick:</b> <code>sorted()</code> accepts the <code>items()</code> view directly and returns a sorted <i>list of tuples</i>, which the for loop unpacks. Watch for teams trying <code>directory.items().sort()</code> — that error is the teachable moment (views aren't lists).</p></div>
+
+<h2 id="b4"><span class="topic-num">B4</span>Comprehension Conversion Drill <span class="accent">(after 9.12 — lightning)</span></h2>
+<div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">drill answers</span></div>
+<pre><code class="language-python">doubled    = [n * 2 for n in [3, 7, 11]]
+prices     = [float(tok) for tok in input().split()]
+comp_fares = [fare * 0.9 for fare in fares if fare != -1]</code></pre></div>
+<div class="callout-note"><p><b>Judging the race:</b> accept any loop-variable name; #2 must call <code>float()</code> (not <code>int()</code> — they're prices); #3 must have the filter on the <i>right</i> and the transform on the <i>left</i>. Teams that write <code>if fare != -1 for fare in fares</code> have the clauses reversed — most common error.</p></div>
+
+</main>
+<footer>
+  CONFIDENTIAL — Instructor reference · COP 1047C · Lecture 10<br>
+  John Masseria · <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

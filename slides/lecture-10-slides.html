@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 10 — Chapter 9: Lists &amp; Dictionaries | COP 1047C</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+/* ============================================================
+   ACCESSIBILITY / CONTRAST NOTES (WCAG 2.1 AA)
+   Background: #080c14 (near-black navy)
+   All body/small text colors verified >= 4.5:1 against #080c14
+   and against card background #0e1523:
+     --text      #e8eef6  -> ~16.5:1
+     --muted     #a9b4c4  -> ~ 8.9:1   (safe for small text)
+     --amber     #fbbf24  -> ~10.9:1
+     --teal      #5eead4  -> ~11.9:1
+     --green     #7ee787  -> ~11.6:1
+     --red       #ff8f8f  -> ~ 8.2:1
+     --code-com  #9aa7b8  -> ~ 7.6:1   (Prism comment override)
+   Nothing smaller than 18px uses a color below 4.5:1.
+   ============================================================ */
+:root{
+  --bg:#080c14;
+  --card:#0e1523;
+  --card2:#101a2c;
+  --border:#22304a;
+  --text:#e8eef6;
+  --muted:#a9b4c4;
+  --amber:#fbbf24;
+  --teal:#5eead4;
+  --green:#7ee787;
+  --red:#ff8f8f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Outfit',sans-serif;
+  overflow:hidden;
+}
+/* JetBrains Mono ligature suppression — REQUIRED so <=, >=, ==, != render literally */
+pre,code,kbd{
+  font-family:'JetBrains Mono',monospace !important;
+  font-variant-ligatures:none !important;
+  font-feature-settings:"liga" 0,"calt" 0 !important;
+}
+/* progress bar */
+#progress{position:fixed;top:0;left:0;height:4px;background:var(--amber);width:0%;z-index:60;transition:width .25s ease}
+/* fixed slide header */
+.slide-header{
+  position:fixed;top:4px;left:0;right:0;height:58px;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;background:rgba(8,12,20,.92);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--border);
+}
+.header-top{max-width:900px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
+.chapter-tag{
+  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+  color:var(--amber);letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid var(--border);border-radius:6px;padding:4px 10px;background:var(--card);
+}
+.slide-title-hdr{font-size:15px;font-weight:600;color:var(--muted)}
+.mdc-badge{font-size:13px;font-weight:700;color:var(--text);letter-spacing:.04em}
+.mdc-badge span{color:var(--amber)}
+/* slide body */
+.deck{height:100vh;padding:78px 28px 74px;display:flex;justify-content:center}
+.slide{display:none;width:100%;max-width:960px;overflow-y:auto;padding-bottom:12px}
+.slide.active{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h1{font-size:34px;font-weight:800;line-height:1.15;margin-bottom:14px}
+h2{font-size:24px;font-weight:700;margin:18px 0 10px}
+h1 .accent,h2 .accent{color:var(--amber)}
+p,li{font-size:18px;line-height:1.55;color:var(--text)}
+.lead{font-size:20px;color:var(--muted)}
+ul.points{margin:12px 0 12px 22px}
+ul.points li{margin-bottom:9px}
+ul.points li b{color:var(--amber);font-weight:600}
+.pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+  color:var(--teal);border:1px solid var(--border);border-radius:999px;padding:3px 12px;
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;background:var(--card)}
+.pill.breakout{color:var(--bg);background:var(--amber);border-color:var(--amber)}
+.pill.quiz{color:var(--bg);background:var(--teal);border-color:var(--teal)}
+/* hero */
+.hero{display:flex;flex-direction:column;justify-content:center;min-height:70vh;text-align:left}
+.hero h1{font-size:52px;margin-bottom:16px}
+.hero .sub{font-size:22px;color:var(--muted);margin-bottom:26px}
+.hero .meta{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--muted)}
+.hero .meta b{color:var(--amber);font-weight:600}
+/* cards, callouts */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin:12px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+.callout{border-left:4px solid var(--amber);background:var(--card);border-radius:0 10px 10px 0;padding:14px 16px;margin:14px 0}
+.callout.warn{border-left-color:var(--red)}
+.callout.info{border-left-color:var(--teal)}
+.callout b{color:var(--amber)}
+.callout.warn b{color:var(--red)}
+.callout.info b{color:var(--teal)}
+.callout p{font-size:17px}
+/* code blocks */
+.code-wrap{background:#0b111d;border:1px solid var(--border);border-radius:10px;margin:12px 0;overflow:hidden}
+.code-head{display:flex;align-items:center;gap:7px;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--card2)}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot-r{background:#f87171}.dot-y{background:var(--amber)}.dot-g{background:#4ade80}
+.code-head .fname{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);margin-left:6px}
+pre[class*="language-"]{margin:0;background:transparent !important;padding:14px 16px;font-size:15.5px;line-height:1.55}
+code[class*="language-"]{font-size:15.5px;text-shadow:none}
+/* Prism contrast overrides (comments/punctuation too dim by default) */
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color:#9aa7b8 !important}
+.token.punctuation{color:#c3ccd9 !important}
+.out{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--green);background:#0b111d;
+  border:1px dashed var(--border);border-radius:10px;padding:12px 16px;margin:10px 0;white-space:pre-wrap}
+/* tables */
+.table-wrap{overflow-x:auto;margin:12px 0;border:1px solid var(--border);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{background:var(--card2);color:var(--amber);text-align:left;padding:10px 14px;font-weight:600;border-bottom:1px solid var(--border)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
+tr:last-child td{border-bottom:none}
+td code,li code,p code{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:1px 7px;font-size:14.5px;color:var(--teal)}
+/* quiz */
+.q{margin:14px 0}
+.q .prompt{font-weight:600;margin-bottom:8px}
+.reveal-btn{font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--bg);
+  background:var(--teal);border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-top:6px}
+.reveal-btn:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.answer{display:none;margin-top:10px}
+.answer.shown{display:block}
+/* activity blocks */
+.activity{background:linear-gradient(135deg,#141c2e,#0e1523);border:1px solid var(--amber);border-radius:14px;padding:20px 22px;margin:14px 0}
+.activity .task-num{font-family:'JetBrains Mono',monospace;color:var(--amber);font-weight:600;font-size:14px}
+.timer{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:15px;font-weight:600}
+.reminder-list{list-style:none;margin:12px 0}
+.reminder-list li{padding:11px 14px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:9px;font-size:17px}
+.reminder-list li b{color:var(--amber)}
+.reminder-list li .due{font-family:'JetBrains Mono',monospace;color:var(--teal);font-size:14.5px}
+/* nav */
+nav{position:fixed;bottom:0;left:0;right:0;height:58px;background:rgba(8,12,20,.94);
+  border-top:1px solid var(--border);z-index:50;display:flex;align-items:center}
+.nav-inner{max-width:900px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 20px}
+nav button{font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--text);
+  background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 16px;cursor:pointer}
+nav button:hover{border-color:var(--amber);color:var(--amber)}
+nav button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+#counter{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--muted);min-width:86px;text-align:center}
+.kbd-hint{position:fixed;bottom:66px;right:18px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);z-index:40}
+@media (max-width:760px){
+  .two-col{grid-template-columns:1fr}
+  .hero h1{font-size:36px}
+  h1{font-size:27px}
+  .slide-title-hdr{display:none}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="slide-header">
+  <div class="header-top">
+    <span class="chapter-tag" id="hdrTag">CH 9</span>
+    <span class="slide-title-hdr" id="hdrTitle">Lists &amp; Dictionaries</span>
+    <span class="mdc-badge">MDC <span>COP 1047C</span></span>
+  </div>
+</header>
+
+<main class="deck" id="deck">
+
+<!-- ================= 1. HERO ================= -->
+<section class="slide" data-tag="Lecture 10" data-title="Chapter 9">
+  <div class="hero">
+    <span class="pill">Tuesday, July 14, 2026 &nbsp;·&nbsp; 5:40 PM – 10:00 PM &nbsp;·&nbsp; MDC Live</span>
+    <h1>Lists &amp; <span class="accent">Dictionaries</span></h1>
+    <p class="sub">Chapter 9 · Sections 9.1 – 9.12 — Python's two workhorse containers, in one focused two-hour block.</p>
+    <p class="meta"><b>Part 1 (5:40–7:40):</b> Lecture + 4 breakout activities<br>
+    <b>Part 2 (7:50–9:45):</b> In-class group project — <i>Temperature Converter: Kelvin Edition</i><br><br>
+    John Masseria · jmasseri@mdc.edu · West Campus, School of Engineering &amp; Technology</p>
+  </div>
+</section>
+
+<!-- ================= 2. AGENDA / OBJECTIVES ================= -->
+<section class="slide" data-tag="Agenda" data-title="Tonight's Objectives">
+  <span class="pill">Learning Objectives</span>
+  <h1>By the end of tonight, you will be able to…</h1>
+  <ul class="points">
+    <li><b>Create and modify lists</b> using indexing, methods, and in-place operations — and explain why two variables can point at the <i>same</i> list. <i>(9.1–9.2)</i></li>
+    <li><b>Iterate over lists</b> with <code>for</code>, <code>enumerate()</code>, and built-ins like <code>sum()</code>, <code>max()</code>, <code>any()</code>. <i>(9.3–9.4)</i></li>
+    <li><b>Work with nested (2D) lists and slices</b> — including negative indices and stride. <i>(9.5–9.6)</i></li>
+    <li><b>Avoid the classic bug</b> of modifying a list while iterating over it. <i>(9.7)</i></li>
+    <li><b>Sort</b> with <code>sort()</code> vs <code>sorted()</code>, using <code>key=</code> and <code>reverse=</code>. <i>(9.8)</i></li>
+    <li><b>Store and retrieve key-value data with dictionaries</b>, iterate with <code>items()</code>, and use <code>get()</code> safely. <i>(9.9–9.11)</i></li>
+    <li><b>Write list comprehensions</b>, including conditional filters. <i>(9.12 — optional in zyBooks, required by me)</i></li>
+    <li><b>Debug as a team</b> using hypothesis logs, <code>repr()</code>/<code>ord()</code> evidence, and trace tables. <i>(Part 2)</i></li>
+  </ul>
+  <div class="callout info"><p><b>Flight plan:</b> Lecture runs a tight 2 hours with breakouts at ~6:20, 6:50, 7:20, and 7:35. Break at 7:40. Part 2 group project starts at 7:50 sharp. Section 9.4 (list games) is a set of participation activities you complete on your own.</p></div>
+</section>
+
+<!-- ================= 9.1 ================= -->
+<section class="slide" data-tag="9.1" data-title="Lists">
+  <span class="pill">Section 9.1</span>
+  <h1>Lists: Python's workhorse <span class="accent">container</span></h1>
+  <ul class="points">
+    <li>A <b>container</b> groups related objects together.</li>
+    <li>A list is a <b>mutable</b> container — it can grow, shrink, and change in place.</li>
+    <li>A list is a <b>sequence</b> — elements keep left-to-right positional order.</li>
+    <li>Elements can be <b>mixed types</b>: strings, ints, floats… even other lists.</li>
+  </ul>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">list_basics.py</span></div>
+<pre><code class="language-python">my_list = ["hello", -4.2, 5]     # brackets create a list
+also_ok = list("abc")            # list() from any iterable
+print(my_list)
+print(also_ok)</code></pre></div>
+  <div class="out">['hello', -4.2, 5]
+['a', 'b', 'c']</div>
+  <div class="callout"><p><b>Key mental model:</b> the list object holds <i>references</i> to its elements — arrows pointing at objects. This matters enormously in a few slides.</p></div>
+</section>
+
+<section class="slide" data-tag="9.1" data-title="Indexing">
+  <span class="pill">Section 9.1</span>
+  <h1>Accessing elements by <span class="accent">index</span></h1>
+  <ul class="points">
+    <li>Indices are <b>zero-based</b>: the 1st element is <code>my_list[0]</code>.</li>
+    <li>An index can be any expression that evaluates to an <b>integer</b> — <code>my_list[i]</code>, <code>my_list[i + 1]</code>.</li>
+    <li>A <b>float index is an error</b>, even <code>my_list[0.0]</code>.</li>
+    <li>Out-of-range access raises an <b>IndexError</b> — remember Chapter 8? That's an exception you can now <code>try/except</code>.</li>
+  </ul>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">indexing.py</span></div>
+<pre><code class="language-python">animals = ["cat", "dog", "bird", "raptor"]
+print(animals[0])       # cat
+print(animals[2])       # bird
+i = 3
+print(animals[i])       # raptor
+print(animals[4])       # IndexError: list index out of range</code></pre></div>
+  <div class="callout warn"><p><b>Off-by-one alert:</b> the "Nth item" lives at index <code>n - 1</code>. This single fact causes more beginner bugs than anything else in this chapter.</p></div>
+</section>
+
+<section class="slide" data-tag="9.1" data-title="Common Operations">
+  <span class="pill">Section 9.1</span>
+  <h1>Common list <span class="accent">operations</span></h1>
+  <div class="table-wrap"><table>
+    <tr><th>Operation</th><th>What it does</th><th>Example</th><th>Result</th></tr>
+    <tr><td><code>[1, 2, 3]</code></td><td>Creates a list</td><td><code>my_list = [1, 2, 3]</code></td><td><code>[1, 2, 3]</code></td></tr>
+    <tr><td><code>list(iter)</code></td><td>List from an iterable</td><td><code>list("123")</code></td><td><code>['1','2','3']</code></td></tr>
+    <tr><td><code>my_list[i]</code></td><td>Reads one element</td><td><code>my_list[1]</code></td><td><code>2</code></td></tr>
+    <tr><td><code>my_list[a:b]</code></td><td><b>New</b> list from a slice</td><td><code>my_list[1:3]</code></td><td><code>[2, 3]</code></td></tr>
+    <tr><td><code>l1 + l2</code></td><td><b>New</b> list, concatenated</td><td><code>[1, 2] + [3]</code></td><td><code>[1, 2, 3]</code></td></tr>
+    <tr><td><code>my_list[i] = x</code></td><td>Changes an element <b>in place</b></td><td><code>my_list[2] = 9</code></td><td><code>[1, 2, 9]</code></td></tr>
+    <tr><td><code>del my_list[i]</code></td><td>Deletes an element <b>in place</b></td><td><code>del my_list[1]</code></td><td><code>[1, 3]</code></td></tr>
+  </table></div>
+  <div class="callout info"><p><b>Two families:</b> slicing and <code>+</code> build a <i>new</i> list; index assignment and <code>del</code> modify the <i>existing</i> object in place. Keep that split in your head — the next slide shows why.</p></div>
+</section>
+
+<section class="slide" data-tag="9.1" data-title="Aliases vs Copies">
+  <span class="pill">Section 9.1</span>
+  <h1>Aliases vs. copies — the <span class="accent">shared reference</span> trap</h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">alias.py — same object!</span></div>
+<pre><code class="language-python">my_teams = ["Raptors", "Heat", "Nets"]
+your_teams = my_teams   # alias
+
+my_teams[1] = "Lakers"
+print(your_teams)</code></pre></div>
+      <div class="out">['Raptors', 'Lakers', 'Nets']</div>
+    </div>
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">copy.py — independent</span></div>
+<pre><code class="language-python">my_teams = ["Raptors", "Heat", "Nets"]
+your_teams = my_teams[:]  # COPY
+
+my_teams[1] = "Lakers"
+print(your_teams)</code></pre></div>
+      <div class="out">['Raptors', 'Heat', 'Nets']</div>
+    </div>
+  </div>
+  <div class="callout"><p><b>Live demo:</b> we'll step through both versions in <b>Python Tutor</b> and watch the arrows. Assignment never copies an object — it copies the <i>reference</i>. Follow along or replay later:
+  <a href="https://tinyurl.com/4j22a3ak" target="_blank" rel="noopener" style="color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:15px">tinyurl.com/4j22a3ak</a> (alias) &nbsp;·&nbsp;
+  <a href="https://tinyurl.com/m34x88hf" target="_blank" rel="noopener" style="color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:15px">tinyurl.com/m34x88hf</a> (copy)</p></div>
+</section>
+
+<!-- ================= 9.2 ================= -->
+<section class="slide" data-tag="9.2" data-title="List Methods — Adding">
+  <span class="pill">Section 9.2</span>
+  <h1>List methods: <span class="accent">adding</span> elements</h1>
+  <div class="table-wrap"><table>
+    <tr><th>Method</th><th>Description</th><th>Example</th><th>Final list</th></tr>
+    <tr><td><code>append(x)</code></td><td>Add one item to the <b>end</b></td><td><code>[5, 8].append(16)</code></td><td><code>[5, 8, 16]</code></td></tr>
+    <tr><td><code>extend([x])</code></td><td>Add <b>all</b> items of another iterable</td><td><code>[5, 8].extend([4, 12])</code></td><td><code>[5, 8, 4, 12]</code></td></tr>
+    <tr><td><code>insert(i, x)</code></td><td>Insert <b>before</b> position i</td><td><code>[5, 8].insert(1, 1.7)</code></td><td><code>[5, 1.7, 8]</code></td></tr>
+  </table></div>
+  <div class="callout warn"><p><b>Classic mix-up:</b> <code>append([4, 12])</code> adds the <i>list itself</i> as one nested element → <code>[5, 8, [4, 12]]</code>. <code>extend()</code> unpacks it. Watch for this in your labs.</p></div>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">build_a_list.py — the pattern you'll use forever</span></div>
+<pre><code class="language-python">nums = []                        # ALWAYS create empty list first
+for token in input().split():
+    nums.append(int(token))      # grow it one item at a time</code></pre></div>
+</section>
+
+<section class="slide" data-tag="9.2" data-title="List Methods — Removing & More">
+  <span class="pill">Section 9.2</span>
+  <h1><span class="accent">Removing</span>, rearranging, and interrogating</h1>
+  <div class="table-wrap"><table>
+    <tr><th>Method</th><th>Description</th><th>Example (<code>[5, 8, 14]</code>)</th><th>Result</th></tr>
+    <tr><td><code>remove(x)</code></td><td>Remove first item <b>with value</b> x (error if absent)</td><td><code>remove(8)</code></td><td><code>[5, 14]</code></td></tr>
+    <tr><td><code>pop()</code></td><td>Remove &amp; <b>return</b> last item</td><td><code>val = pop()</code></td><td><code>[5, 8]</code>, val=14</td></tr>
+    <tr><td><code>pop(i)</code></td><td>Remove &amp; return item at position i</td><td><code>val = pop(0)</code></td><td><code>[8, 14]</code>, val=5</td></tr>
+    <tr><td><code>sort()</code></td><td>Sort <b>in place</b>, low → high</td><td><code>[14,5,8].sort()</code></td><td><code>[5, 8, 14]</code></td></tr>
+    <tr><td><code>reverse()</code></td><td>Reverse order <b>in place</b></td><td><code>[14,5,8].reverse()</code></td><td><code>[8, 5, 14]</code></td></tr>
+    <tr><td><code>index(x)</code></td><td>Position of first x (no change)</td><td><code>index(14)</code></td><td><code>2</code></td></tr>
+    <tr><td><code>count(x)</code></td><td>How many x's (no change)</td><td><code>count(5)</code></td><td><code>1</code></td></tr>
+  </table></div>
+  <div class="callout info"><p><b>remove vs. pop vs. del:</b> <code>remove()</code> works by <i>value</i>, <code>pop()</code>/<code>del</code> work by <i>position</i>. Only <code>pop()</code> hands the item back to you.</p></div>
+</section>
+
+<section class="slide" data-tag="9.1–9.2" data-title="Quick Check">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Predict the output <span class="accent">before</span> you click</h1>
+  <div class="q"><p class="prompt">1) What prints?</p>
+  <div class="code-wrap"><pre><code class="language-python">temps = [65, 67, 72, 75]
+temps.append(77)
+print(temps[-1])</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">77</div><p class="lead" style="font-size:16px">Negative index <code>-1</code> means "last element" — and <code>append()</code> just put 77 there.</p></div></div>
+  <div class="q"><p class="prompt">2) What prints?</p>
+  <div class="code-wrap"><pre><code class="language-python">actors = ["Pitt", "Damon"]
+actors.insert(1, "Affleck")
+print(actors[0], actors[1], actors[2])</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">Pitt Affleck Damon</div><p class="lead" style="font-size:16px"><code>insert(1, …)</code> pushes everything from position 1 rightward.</p></div></div>
+  <div class="q"><p class="prompt">3) Which of these does <b>NOT</b> modify the list in place: &nbsp;<code>my_list[j] = 3</code> · <code>my_list.sort()</code> · <code>l3 = l1 + l2</code></p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><code>l3 = l1 + l2</code> — concatenation builds a brand-new list; <code>l1</code> and <code>l2</code> are untouched.</p></div></div>
+</section>
+
+<!-- ================= 9.3 ================= -->
+<section class="slide" data-tag="9.3" data-title="Iterating Over a List">
+  <span class="pill">Section 9.3</span>
+  <h1>Iterating: the <span class="accent">tracking variable</span> pattern</h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">max_even.py</span></div>
+<pre><code class="language-python">nums = [3, 5, 23, -1, 456, 1, 6, 83]
+
+max_even = None                  # None = "nothing seen yet"
+for num in nums:
+    if num % 2 == 0:                          # even?
+        if max_even == None or num > max_even:  # new champ?
+            max_even = num
+
+print(f"Max even #: {max_even}")</code></pre></div>
+  <div class="out">Max even #: 456</div>
+  <ul class="points">
+    <li>Each iteration binds the next element to the loop variable <code>num</code>.</li>
+    <li><b>Why <code>None</code> and not 0?</b> If the list is <code>[-1, 0, -16, -2]</code>, starting at 0 gives the wrong answer (-2). <code>None</code> means "no candidate yet" — an honest starting state.</li>
+  </ul>
+</section>
+
+<section class="slide" data-tag="9.3" data-title="enumerate()">
+  <span class="pill">Section 9.3</span>
+  <h1><code>enumerate()</code> — when you need the <span class="accent">index too</span></h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">by index (works, clunky)</span></div>
+<pre><code class="language-python">for i in range(len(nums)):
+    print(f"{i}: {nums[i]}")</code></pre></div>
+    </div>
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">enumerate (Pythonic)</span></div>
+<pre><code class="language-python">for i, val in enumerate(nums):
+    print(f"{i}: {val}")</code></pre></div>
+    </div>
+  </div>
+  <div class="out">0: 3
+1: 5
+2: 23
+...</div>
+  <div class="callout"><p><b>Rule of thumb:</b> need only values → <code>for x in my_list</code>. Need positions too → <code>enumerate()</code>. Need to <i>modify</i> the list → you'll want the index (Section 9.7 explains why).</p></div>
+</section>
+
+<section class="slide" data-tag="9.3–9.4" data-title="Built-in Functions">
+  <span class="pill">Sections 9.3 – 9.4</span>
+  <h1>Built-ins that do the loop <span class="accent">for you</span></h1>
+  <div class="table-wrap"><table>
+    <tr><th>Function</th><th>Returns</th><th>Example</th><th>Output</th></tr>
+    <tr><td><code>max(list)</code></td><td>Largest element</td><td><code>max([-3, 5, 25])</code></td><td><code>25</code></td></tr>
+    <tr><td><code>min(list)</code></td><td>Smallest element</td><td><code>min([-3, 5, 25])</code></td><td><code>-3</code></td></tr>
+    <tr><td><code>sum(list)</code></td><td>Sum of all elements</td><td><code>sum([-3, 5, 25])</code></td><td><code>27</code></td></tr>
+    <tr><td><code>any(list)</code></td><td><code>True</code> if <i>any</i> element is truthy</td><td><code>any([0, 2])</code></td><td><code>True</code></td></tr>
+    <tr><td><code>all(list)</code></td><td><code>True</code> if <i>every</i> element is truthy</td><td><code>all([0, 1, 2])</code></td><td><code>False</code></td></tr>
+  </table></div>
+  <ul class="points">
+    <li>Average = <code>sum(nums) / len(nums)</code> — no loop required.</li>
+    <li>These work on any list of comparable values — including strings.</li>
+  </ul>
+  <div class="callout info"><p><b>Section 9.4 (List Games):</b> these are participation activities that you need to complete on your own. Please reach out if you have any questions.</p></div>
+</section>
+
+<!-- ================= BREAKOUT 1 ================= -->
+<section class="slide" data-tag="Breakout 1" data-title="Guest Manifest Stats">
+  <span class="pill breakout">Breakout 1 · <span class="timer">10 minutes</span> · Teams of 3–4</span>
+  <h1>🛳️ Guest Manifest <span class="accent">Stats</span></h1>
+  <div class="activity">
+    <p class="task-num">SCENARIO</p>
+    <p>A cruise line needs quick stats on the ages of guests booked on a shore excursion. Starting from this list:</p>
+    <div class="code-wrap"><pre><code class="language-python">ages = [34, 8, 71, 45, 12, 67, 29, 88, 15, 52, 41, 6]</code></pre></div>
+    <p class="task-num" style="margin-top:10px">YOUR TASKS</p>
+    <ul class="points" style="margin-top:8px">
+      <li><b>1.</b> Print the number of guests, the youngest, the oldest, and the average age (1 decimal place).</li>
+      <li><b>2.</b> Count how many guests are minors (under 18) — use a loop and a tracking variable.</li>
+      <li><b>3.</b> Using <code>enumerate()</code>, print the <i>position and age</i> of every senior guest (65+), e.g. <code>Position 2: age 71</code>.</li>
+      <li><b>Stretch:</b> print <code>True/False</code>: is <i>every</i> guest at least 5 years old? (One built-in… think comparison list.)</li>
+    </ul>
+  </div>
+  <div class="callout"><p><b>Deliverable:</b> one team member pastes your working code + output into the Teams channel. <b>Rule:</b> whoever types is not allowed to be the one who solved it — explain it to your driver.</p></div>
+</section>
+
+<!-- ================= 9.5 ================= -->
+<section class="slide" data-tag="9.5" data-title="List Nesting">
+  <span class="pill">Section 9.5</span>
+  <h1>Nested lists: <span class="accent">tables</span> in two indexes</h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">tic_tac_toe.py</span></div>
+<pre><code class="language-python">board = [
+    ["X", "O", "X"],   # row 0
+    [" ", "X", " "],   # row 1
+    ["O", "O", "X"]    # row 2
+]
+print(board[1][1])   # X
+print(board[2][0])   # O</code></pre></div>
+    </div>
+    <div>
+      <ul class="points">
+        <li>A list can hold lists → a <b>2D table</b>: rows × columns.</li>
+        <li>Access with <b>two index operations</b>: <code>board[row][col]</code>.</li>
+        <li><code>board[1]</code> alone is the <i>entire middle row</i> — a list.</li>
+        <li><code>len(board)</code> counts <b>rows</b> (3), not all 9 cells.</li>
+        <li>Nesting depth is arbitrary — 3D and beyond work the same way.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><p><b>Read it inside-out:</b> <code>board[2][0]</code> = "grab row 2, then take its element 0." Same left-to-right evaluation you already know.</p></div>
+</section>
+
+<section class="slide" data-tag="9.5" data-title="Nested Loops">
+  <span class="pill">Section 9.5</span>
+  <h1><span class="accent">Nested loops</span> walk the whole table</h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">currency.py</span></div>
+<pre><code class="language-python">currency = [
+    [1.00, 5.00, 10.0],   # US dollars
+    [0.75, 3.77, 7.53],   # Euros
+    [0.65, 3.25, 6.50]    # British pounds
+]
+for row in currency:          # outer: one row (a list) at a time
+    for cell in row:          # inner: one value in that row
+        print(cell, end=" ")
+    print()                   # newline after each row</code></pre></div>
+  <div class="out">1.0 5.0 10.0
+0.75 3.77 7.53
+0.65 3.25 6.50</div>
+  <ul class="points">
+    <li>Need row/column numbers too? Nest <code>enumerate()</code>: <code>for r, row in enumerate(currency): for c, item in enumerate(row): …</code></li>
+    <li><b>Common bug:</b> writing the <i>outer</i> list name in the <i>inner</i> loop — you iterate rows twice and never see the cells.</li>
+  </ul>
+</section>
+
+<!-- ================= 9.6 ================= -->
+<section class="slide" data-tag="9.6" data-title="List Slicing">
+  <span class="pill">Section 9.6</span>
+  <h1>Slicing: <span class="accent">[start : end]</span> — end excluded</h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">slices.py</span></div>
+<pre><code class="language-python">years = [1992, 1996, 2000, 2004, 2008]
+print(years[0:2])    # [1992, 1996]      end index NOT included
+print(years[0:-1])   # all but the last: [1992, 1996, 2000, 2004]
+print(years[-3:-1])  # [2000, 2004]</code></pre></div>
+  <ul class="points">
+    <li>Slicing always builds a <b>new</b> list — the original is untouched.</li>
+    <li><b>Negative indices</b> count from the end: <code>-1</code> is the last element.</li>
+    <li>Same semantics you learned for string slicing in Chapter 7 — one skill, every sequence.</li>
+    <li>Python is forgiving: an end past the last element just means "to the end"; a backwards range gives <code>[]</code> — no crash.</li>
+  </ul>
+</section>
+
+<section class="slide" data-tag="9.6" data-title="Stride & Shorthand">
+  <span class="pill">Section 9.6</span>
+  <h1>Stride and the <span class="accent">shorthand</span> slices</h1>
+  <div class="table-wrap"><table>
+    <tr><th>Slice</th><th>Meaning</th><th><code>[5, 10, 20, 40, 80]</code> →</th></tr>
+    <tr><td><code>my_list[a:b]</code></td><td>a up to (not incl.) b</td><td><code>[0:2]</code> → <code>[5, 10]</code></td></tr>
+    <tr><td><code>my_list[a:b:s]</code></td><td>every s-th element</td><td><code>[0:5:3]</code> → <code>[5, 40]</code></td></tr>
+    <tr><td><code>my_list[a:]</code></td><td>a to the end</td><td><code>[2:]</code> → <code>[20, 40, 80]</code></td></tr>
+    <tr><td><code>my_list[:b]</code></td><td>start up to b</td><td><code>[:4]</code> → <code>[5, 10, 20, 40]</code></td></tr>
+    <tr><td><code>my_list[:]</code></td><td><b>full copy</b></td><td>→ new independent list</td></tr>
+  </table></div>
+  <div class="callout"><p><b><code>[:]</code> is the star of this table.</b> Remember the alias trap from 9.1? <code>[:]</code> is your escape hatch — and it's about to save us again in Section 9.7.</p></div>
+</section>
+
+<!-- ================= 9.7 ================= -->
+<section class="slide" data-tag="9.7" data-title="Loops Modifying Lists">
+  <span class="pill">Section 9.7</span>
+  <h1>Modifying values: the <span class="accent">loop-variable trap</span></h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">❌ list never changes</span></div>
+<pre><code class="language-python">for num in nums:
+    if num < 0:
+        num = 0   # rebinds num,
+                  # not the list!</code></pre></div>
+    </div>
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">✅ index assignment</span></div>
+<pre><code class="language-python">for pos in range(len(nums)):
+    if nums[pos] < 0:
+        nums[pos] = 0  # writes
+                       # into list</code></pre></div>
+    </div>
+  </div>
+  <ul class="points">
+    <li>The loop variable is just a <b>name bound to the current element</b>. Reassigning it points the name somewhere new — the list's reference never changes.</li>
+    <li>To change the list, you must assign <b>through an index</b>: <code>nums[pos] = …</code></li>
+  </ul>
+  <div class="callout info"><p><b>Python Tutor moment:</b> this one is invisible in print statements but obvious in the arrow diagram. We'll trace it live.</p></div>
+</section>
+
+<section class="slide" data-tag="9.7" data-title="Changing Size While Iterating">
+  <span class="pill">Section 9.7</span>
+  <h1>Never <span class="accent">shrink</span> the list you're walking on</h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">skips_elements.py — subtle logic error</span></div>
+<pre><code class="language-python">nums1 = [5, 10, 15, 20]
+nums2 = [15, 20, 25, 30]
+
+for val in nums1:          # ❌ iterating the list being modified
+    if val in nums2:
+        nums1.remove(val)  # deletion shifts everything left…
+
+print(nums1)               # 20 survives! Loop skipped over it.</code></pre></div>
+  <div class="out">[5, 10, 20]     # expected [5, 10] — the 20 escaped</div>
+  <ul class="points">
+    <li>Removing an element shifts every later element left one slot — the loop's internal position doesn't know, so the <b>next element gets skipped</b>.</li>
+    <li><b>The fix costs four characters:</b> iterate over a <i>copy</i> → <code>for val in nums1[:]:</code></li>
+  </ul>
+  <div class="callout warn"><p><b>This exact bug appears on real production incident reports.</b> It passes small tests (one deletion) and fails on real data (consecutive deletions). Keep it in mind at 7:50 tonight…</p></div>
+</section>
+
+<!-- ================= BREAKOUT 2 ================= -->
+<section class="slide" data-tag="Breakout 2" data-title="The Standby List Bug">
+  <span class="pill breakout">Breakout 2 · <span class="timer">10 minutes</span> · Same teams</span>
+  <h1>🐞 The Standby <span class="accent">List Bug</span></h1>
+  <div class="activity">
+    <p class="task-num">SCENARIO</p>
+    <p>This boarding-desk program should remove every no-show from the standby list — but some no-shows keep boarding. <b>Do not fix it yet.</b></p>
+    <div class="code-wrap"><pre><code class="language-python">standby = ["ana", "ben", "cruz", "dana", "eli", "flo"]
+no_shows = ["ben", "cruz", "eli", "flo"]
+
+for guest in standby:
+    if guest in no_shows:
+        standby.remove(guest)
+
+print(f"Boarding: {standby}")</code></pre></div>
+    <p class="task-num" style="margin-top:10px">YOUR TASKS</p>
+    <ul class="points" style="margin-top:8px">
+      <li><b>1. Predict</b> — write down what your team thinks prints, <i>before running</i>.</li>
+      <li><b>2. Run &amp; trace</b> — build a trace table: loop position, current guest, list contents after each iteration. Where does the skip happen?</li>
+      <li><b>3. Fix it</b> — one small change. Prove it works.</li>
+      <li><b>Stretch:</b> also fix this line so the discount actually applies: <code>for fare in fares: fare = fare * 0.9</code></li>
+    </ul>
+  </div>
+  <div class="callout"><p><b>Deliverable:</b> your prediction, your trace table, and the fixed code. The trace table is the graded part — it's tonight's warm-up for Part 2.</p></div>
+</section>
+
+<!-- ================= 9.8 ================= -->
+<section class="slide" data-tag="9.8" data-title="Sorting Lists">
+  <span class="pill">Section 9.8</span>
+  <h1><code>sort()</code> vs <code>sorted()</code> — <span class="accent">in place</span> vs new list</h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">method — modifies original</span></div>
+<pre><code class="language-python">vals = [150, 47, 500, -37, 0]
+vals.sort()
+print(vals)
+# [-37, 0, 47, 150, 500]
+# original is GONE</code></pre></div>
+    </div>
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">function — original kept</span></div>
+<pre><code class="language-python">vals = [150, 47, 500, -37, 0]
+in_order = sorted(vals)
+print(vals)      # unchanged
+print(in_order)  # sorted copy</code></pre></div>
+    </div>
+  </div>
+  <ul class="points">
+    <li>Numbers sort by value; strings sort by <b>Unicode code point</b> — which is why <code>"Z" &lt; "a"</code>. Capital letters encode lower than lowercase.</li>
+    <li>Note the return value trap: <code>vals.sort()</code> returns <code>None</code>, so <code>x = vals.sort()</code> gives you <code>None</code>, not a list.</li>
+  </ul>
+</section>
+
+<section class="slide" data-tag="9.8" data-title="key= and reverse=">
+  <span class="pill">Section 9.8</span>
+  <h1>Steering the sort: <span class="accent">key=</span> and <span class="accent">reverse=</span></h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">sort_options.py</span></div>
+<pre><code class="language-python">names = ["Serena", "venus", "Rafael", "john"]
+
+print(sorted(names))                    # capitals first — surprise!
+print(sorted(names, key=str.lower))     # case-insensitive — sane
+print(sorted([15, 20, 25], reverse=True))  # highest first</code></pre></div>
+  <div class="out">['Rafael', 'Serena', 'john', 'venus']
+['john', 'Rafael', 'Serena', 'venus']
+[25, 20, 15]</div>
+  <ul class="points">
+    <li><code>key=</code> takes a <b>function</b> — note <code>str.lower</code>, <i>no parentheses</i>. You're handing over the function itself, not calling it.</li>
+    <li>Any function works: <code>sorted(rows, key=max)</code> sorts 2D rows by their largest value. <code>key=len</code> sorts strings by length.</li>
+  </ul>
+</section>
+
+<!-- ================= 9.9 ================= -->
+<section class="slide" data-tag="9.9" data-title="Dictionaries">
+  <span class="pill">Section 9.9</span>
+  <h1>Dictionaries: look things up by <span class="accent">key</span>, not position</h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">grades.py</span></div>
+<pre><code class="language-python">my_dict = {
+    "Bobby": "A+",
+    "Alan": 67,
+    10: 5.0
+}
+print(my_dict["Alan"])  # 67</code></pre></div>
+    </div>
+    <div>
+      <ul class="points">
+        <li>Stores <b>key → value</b> pairs, like a real dictionary maps word → definition.</li>
+        <li><b>Mutable</b>, like lists — add, change, delete in place.</li>
+        <li>Since Python 3.7, entries keep <b>insertion order</b>.</li>
+        <li>Keys are usually strings or numbers; values can be <i>anything</i> — even lists or other dicts.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><p><b>When list, when dict?</b> If your data is naturally a <i>numbered sequence</i> → list. If it's naturally a <i>lookup</i> (name → grade, cabin → guest, airport → code) → dictionary.</p></div>
+</section>
+
+<section class="slide" data-tag="9.9" data-title="Dict Operations">
+  <span class="pill">Section 9.9</span>
+  <h1>The four core <span class="accent">dict operations</span></h1>
+  <div class="table-wrap"><table>
+    <tr><th>Operation</th><th>Description</th><th>Example</th></tr>
+    <tr><td><code>my_dict[key]</code></td><td>Read the value (KeyError if absent)</td><td><code>grade = my_dict["Jose"]</code></td></tr>
+    <tr><td><code>my_dict[key] = v</code></td><td><b>Adds</b> if new, <b>updates</b> if existing</td><td><code>my_dict["Jose"] = "B+"</code></td></tr>
+    <tr><td><code>del my_dict[key]</code></td><td>Delete the entry</td><td><code>del my_dict["Jose"]</code></td></tr>
+    <tr><td><code>key in my_dict</code></td><td>Membership test → <code>True/False</code></td><td><code>if "Jose" in my_dict:</code></td></tr>
+  </table></div>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">build_as_you_go.py — the dict twin of the append pattern</span></div>
+<pre><code class="language-python">airport_codes = {}                     # start empty
+airport_codes["Paris"] = "CDG"         # assignment creates entries
+airport_codes["Los Angeles"] = "LAX"
+airport_codes["Seattle"] = "SEA"</code></pre></div>
+</section>
+
+<!-- ================= 9.10 ================= -->
+<section class="slide" data-tag="9.10" data-title="Dictionary Methods">
+  <span class="pill">Section 9.10</span>
+  <h1>Dict methods — <span class="accent">get()</span> is the one to master</h1>
+  <div class="table-wrap"><table>
+    <tr><th>Method</th><th>Description</th><th>Example</th><th>Output</th></tr>
+    <tr><td><code>get(key, default)</code></td><td>Read, but <b>no crash</b> — returns default if key missing</td><td><code>d.get("Chad", "N/A")</code></td><td><code>N/A</code></td></tr>
+    <tr><td><code>update(d2)</code></td><td>Merge in another dict (overwrites duplicate keys)</td><td><code>d.update({"John": 50})</code></td><td>merged dict</td></tr>
+    <tr><td><code>pop(key, default)</code></td><td>Remove &amp; return the value</td><td><code>val = d.pop("Ahmad")</code></td><td>value removed</td></tr>
+    <tr><td><code>clear()</code></td><td>Empty the whole dict</td><td><code>d.clear()</code></td><td><code>{}</code></td></tr>
+  </table></div>
+  <div class="callout"><p><b>Why <code>get()</code> matters:</b> <code>d["Chad"]</code> raises <b>KeyError</b> if Chad isn't there. <code>d.get("Chad", 0)</code> degrades gracefully — it's the dictionary version of defensive driving. Chapter 8's <code>try/except KeyError</code> is the other route; <code>get()</code> is usually cleaner.</p></div>
+</section>
+
+<!-- ================= 9.11 ================= -->
+<section class="slide" data-tag="9.11" data-title="Iterating Over a Dictionary">
+  <span class="pill">Section 9.11</span>
+  <h1>Iterating: <span class="accent">items()</span>, keys(), values()</h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">calories.py</span></div>
+<pre><code class="language-python">num_calories = {"Coke": 90, "Coke_zero": 0, "Pepsi": 94}
+
+for soda in num_calories:                 # plain loop -> keys
+    print(soda)
+
+for soda, cals in num_calories.items():  # the workhorse: pairs
+    print(f"{soda}: {cals}")
+
+for cals in num_calories.values():       # just the values
+    print(cals)</code></pre></div>
+  <ul class="points">
+    <li><code>items()</code> yields <b>(key, value) pairs</b> you unpack right in the loop header — same feel as <code>enumerate()</code>.</li>
+    <li>These return <b>view objects</b>: memory-light, live-updating, but <b>not indexable</b>. <code>d.keys()[0]</code> is an error — wrap in <code>list()</code> first: <code>sorted(list(d.items()))</code>.</li>
+  </ul>
+</section>
+
+<section class="slide" data-tag="9.9–9.11" data-title="Quick Check">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Dictionary <span class="accent">predictions</span></h1>
+  <div class="q"><p class="prompt">1) What prints?</p>
+  <div class="code-wrap"><pre><code class="language-python">codes = {"San Francisco": "SFO", "Minneapolis": "MSP"}
+print(codes.get("Houston", "na"))
+print(codes.get("Minneapolis", "na"))</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">na
+MSP</div></div></div>
+  <div class="q"><p class="prompt">2) What prints?</p>
+  <div class="code-wrap"><pre><code class="language-python">menu = {"burger": 3.50, "fries": 2.39}
+menu.update({"soda": 1.49, "burger": 3.69})
+print(menu["burger"])</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">3.69</div><p class="lead" style="font-size:16px"><code>update()</code> overwrites existing keys — burger got a price hike.</p></div></div>
+  <div class="q"><p class="prompt">3) True or false: <code>my_dict.values()[0]</code> gives the first value.</p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><b>False.</b> View objects don't support indexing — convert first: <code>list(my_dict.values())[0]</code>.</p></div></div>
+</section>
+
+<!-- ================= BREAKOUT 3 ================= -->
+<section class="slide" data-tag="Breakout 3" data-title="Deck Directory">
+  <span class="pill breakout">Breakout 3 · <span class="timer">10 minutes</span> · Same teams</span>
+  <h1>🗂️ The Deck <span class="accent">Directory</span></h1>
+  <div class="activity">
+    <p class="task-num">SCENARIO</p>
+    <p>Guest services keeps a directory mapping cabin numbers to guest names:</p>
+    <div class="code-wrap"><pre><code class="language-python">directory = {"A101": "Rivera", "A102": "Chen", "B201": "Okafor"}</code></pre></div>
+    <p class="task-num" style="margin-top:10px">YOUR TASKS</p>
+    <ul class="points" style="margin-top:8px">
+      <li><b>1.</b> A new guest, <code>"Dubois"</code>, checks into cabin <code>"B202"</code>. Add them. Then <code>"Chen"</code> upgrades: change <code>"A102"</code> to <code>"Vacant"</code>.</li>
+      <li><b>2.</b> Look up cabins <code>"A101"</code> and <code>"C303"</code> using <code>get()</code> so the missing cabin prints <code>"Unassigned"</code> instead of crashing.</li>
+      <li><b>3.</b> Using <code>items()</code>, print one line per cabin: <code>Cabin B201 -> Okafor</code>.</li>
+      <li><b>Stretch:</b> print the directory sorted by cabin number. (Hint: views aren't sortable directly…)</li>
+    </ul>
+  </div>
+  <div class="callout"><p><b>Deliverable:</b> code + output in the Teams channel. <b>Rotate the driver</b> — someone who hasn't typed yet tonight.</p></div>
+</section>
+
+<!-- ================= 9.12 ================= -->
+<section class="slide" data-tag="9.12" data-title="List Comprehensions">
+  <span class="pill">Section 9.12 · Optional in zyBooks — required by me</span>
+  <h1>List comprehensions: a loop that <span class="accent">returns a list</span></h1>
+  <div class="card" style="text-align:center">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:20px;font-variant-ligatures:none">
+      new_list = [ <span style="color:var(--amber)">expression</span> &nbsp;for&nbsp; <span style="color:var(--teal)">variable</span> &nbsp;in&nbsp; <span style="color:var(--green)">iterable</span> ]
+    </p>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">the loop way</span></div>
+<pre><code class="language-python">my_list = [10, 20, 30]
+plus_5 = []
+for i in my_list:
+    plus_5.append(i + 5)</code></pre></div>
+    </div>
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">the comprehension way</span></div>
+<pre><code class="language-python">my_list = [10, 20, 30]
+plus_5 = [(i + 5) for i in my_list]
+
+# [15, 25, 35]</code></pre></div>
+    </div>
+  </div>
+  <ul class="points">
+    <li>The brackets are your reminder: a comprehension always <b>builds a new list</b>.</li>
+    <li>Why bother? Less code, fewer append bugs, and the interpreter executes it faster. You'll see these <i>everywhere</i> in professional Python.</li>
+  </ul>
+</section>
+
+<section class="slide" data-tag="9.12" data-title="Comprehension Patterns">
+  <span class="pill">Section 9.12</span>
+  <h1>The patterns you'll actually <span class="accent">use</span></h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">greatest_hits.py</span></div>
+<pre><code class="language-python"># 1. Transform every element
+strs = [str(i) for i in [5, 20, 50]]        # ['5', '20', '50']
+
+# 2. Parse user input into ints (you've been writing this as 3 lines)
+nums = [int(i) for i in input().split()]
+
+# 3. Per-row work on a 2D list
+sums = [sum(row) for row in [[5, 10], [2, 3], [100]]]  # [15, 5, 100]
+
+# 4. Feed one straight into a function
+smallest = min([sum(row) for row in table])</code></pre></div>
+  <div class="callout"><p><b>Pattern 2 is your new best friend.</b> The read-split-convert loop you've written in every lab since Chapter 5 collapses into one line. Expect it on the final.</p></div>
+</section>
+
+<section class="slide" data-tag="9.12" data-title="Conditional Comprehensions">
+  <span class="pill">Section 9.12</span>
+  <h1>Add an <span class="accent">if</span> to filter</h1>
+  <div class="card" style="text-align:center">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:19px;font-variant-ligatures:none">
+      [ expression &nbsp;for&nbsp; var &nbsp;in&nbsp; iterable &nbsp;<span style="color:var(--red)">if condition</span> ]
+    </p>
+  </div>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">filters.py</span></div>
+<pre><code class="language-python">numbers = [5, 52, 16, 7, 25]
+
+evens     = [i for i in numbers if (i % 2) == 0]   # [52, 16]
+negatives = [i for i in numbers if i < 0]          # []
+big_x2    = [(i * 2) for i in numbers if i > 20]   # [104, 50]</code></pre></div>
+  <ul class="points">
+    <li>Element only joins the new list when the condition is <code>True</code>.</li>
+    <li>Transform <i>and</i> filter combine freely — expression on the left, filter on the right.</li>
+    <li>Readability rule: if it doesn't fit on one comfortable line, use a regular loop. Comprehensions are a tool, not a religion.</li>
+  </ul>
+</section>
+
+<!-- ================= BREAKOUT 4 ================= -->
+<section class="slide" data-tag="Breakout 4" data-title="Lightning Drill">
+  <span class="pill breakout">Breakout 4 · <span class="timer">Lightning — 6 minutes</span> · Race format</span>
+  <h1>⚡ Comprehension <span class="accent">Conversion Drill</span></h1>
+  <div class="activity">
+    <p class="task-num">RULES</p>
+    <p>Convert each loop to a single list comprehension. First team to post all three <i>correct</i> one-liners in Teams wins eternal glory (and the right to pick the break-time music).</p>
+    <div class="code-wrap"><pre><code class="language-python"># 1 — transform
+doubled = []
+for n in [3, 7, 11]:
+    doubled.append(n * 2)
+
+# 2 — parse input
+prices = []
+for tok in input().split():
+    prices.append(float(tok))
+
+# 3 — transform + filter
+comp_fares = []
+for fare in [120, -1, 89, -1, 250]:
+    if fare != -1:
+        comp_fares.append(fare * 0.9)</code></pre></div>
+  </div>
+  </section>
+
+<!-- ================= SUMMARY ================= -->
+<section class="slide" data-tag="Summary" data-title="Chapter 9 Recap">
+  <span class="pill">Chapter 9 · Recap</span>
+  <h1>What you can do <span class="accent">now</span></h1>
+  <ul class="points">
+    <li><b>Lists</b> — mutable, ordered, zero-indexed containers of references. In-place ops (<code>[i]=</code>, <code>del</code>, methods) vs new-list ops (slices, <code>+</code>).</li>
+    <li><b>Aliases vs copies</b> — <code>b = a</code> shares one object; <code>b = a[:]</code> makes a real copy.</li>
+    <li><b>Iteration</b> — <code>for x in list</code>, <code>enumerate()</code> for positions, built-ins (<code>sum</code>, <code>max</code>, <code>any</code>, <code>all</code>) for one-liners.</li>
+    <li><b>The two loop traps</b> — rebinding the loop variable changes nothing; shrinking a list mid-loop skips elements. Fixes: index assignment; iterate a <code>[:]</code> copy.</li>
+    <li><b>Sorting</b> — <code>sort()</code> in place vs <code>sorted()</code> new list; steer with <code>key=</code> and <code>reverse=</code>.</li>
+    <li><b>Dictionaries</b> — key→value lookup, <code>get()</code> for crash-proof reads, <code>items()</code> for iteration.</li>
+    <li><b>Comprehensions</b> — <code>[expr for x in iterable if cond]</code>: transform + filter in one readable line.</li>
+  </ul>
+</section>
+
+<section class="slide" data-tag="Reminders" data-title="Due Dates">
+  <span class="pill">Admin</span>
+  <h1>Reminders &amp; <span class="accent">due dates</span></h1>
+  <ul class="reminder-list">
+    <li>📕 <b>Due TONIGHT 11:59 PM</b> — zyBook Ch 8 Exceptions Labs (30 pts) + Readings (35 pts), Ch 12 Files Labs (40 pts) <span class="due">7/14</span></li>
+    <li>📗 <b>Due next Tuesday</b> — zyBook Ch 9 Labs (20 pts) + Readings (118 pts), Ch 10 Classes Readings (73 pts), Ch 12 Files Readings (30 pts) <span class="due">7/21</span></li>
+    <li>🧬 <b>DNA Sequence Search project</b> (150 pts) + <b>Final Exam</b> — both due <span class="due">7/30, 11:59 PM</span>. Two weeks. Start the DNA project this weekend.</li>
+    <li>🎮 <b>Section 9.4 list games</b> — participation activities to complete on your own. Reach out with any questions.</li>
+    <li>📅 Last day of the semester is <span class="due">7/31</span> — three class meetings remain.</li>
+  </ul>
+  <div class="callout warn"><p><b>AI policy reminder</b> for the DNA project: AI tools may assist your understanding, but code entirely generated by AI is not permitted, and your usage must be cited and explained. Tonight's Part 2 shows you exactly why: some bugs can't be found by reading — only by <i>running</i>.</p></div>
+</section>
+
+<!-- ================= PART 2 HANDOFF ================= -->
+<section class="slide" data-tag="Part 2" data-title="Temperature Converter">
+  <div class="hero">
+    <span class="pill breakout">Part 2 · 7:50 – 9:45 PM · In-class Group Project</span>
+    <h1>🌡️ Temperature Converter —<br>the <span class="accent">Kelvin Edition</span></h1>
+    <p class="sub">Three scales. Six conversion paths. And a program that must survive whatever garbage a user types — without crashing.</p>
+    <ul class="points">
+      <li><b>The build:</b> convert between °C, °F, and K in any direction, loop until the user quits, format results to two decimal places.</li>
+      <li><b>The Chapter 8 requirement:</b> non-numeric input must be caught with <code>try/except ValueError</code> and answered with an <b>informative</b> message — echo the bad input, explain what valid input looks like.</li>
+      <li><b>Design hint:</b> you don't need six formulas. Talk it through as a team <i>before</i> anyone types.</li>
+      <li><b>Deliverable:</b> one <code>.py</code> per team, all names in the header comment, uploaded to Canvas by <b>9:40 PM</b>. Live error-handling demos in the last 15 minutes.</li>
+      <li><b>Stretch (+5):</b> nothing is colder than absolute zero — reject impossible temperatures by <code>raise</code>-ing your own <code>ValueError</code>.</li>
+    </ul>
+    <p class="meta">Full handout with formulas, examples, and the 100-point rubric is on Canvas. Back from break at <b>7:50 sharp</b>. Breakout rooms open at 7:52.</p>
+  </div>
+</section>
+
+</main>
+
+<nav>
+  <div class="nav-inner">
+    <button onclick="goto(0)" aria-label="First slide">⏮ First</button>
+    <button onclick="step(-1)" aria-label="Previous slide">◀ Prev</button>
+    <span id="counter">1 / 1</span>
+    <button onclick="step(1)" aria-label="Next slide">Next ▶</button>
+    <button onclick="goto(slides.length-1)" aria-label="Last slide">Last ⏭</button>
+  </div>
+</nav>
+<div class="kbd-hint">← → navigate</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+let cur = 0;
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active', i===cur));
+  document.getElementById('counter').textContent = (cur+1) + ' / ' + slides.length;
+  document.getElementById('hdrTag').textContent = slides[cur].dataset.tag || 'CH 9';
+  document.getElementById('hdrTitle').textContent = slides[cur].dataset.title || '';
+  document.getElementById('progress').style.width = ((cur)/(slides.length-1)*100) + '%';
+  slides[cur].scrollTop = 0;
+}
+function step(d){ cur = Math.min(Math.max(cur+d,0), slides.length-1); render(); }
+function goto(i){ cur = i; render(); }
+document.addEventListener('keydown', e=>{
+  if(e.target.tagName==='BUTTON' && (e.key===' '||e.key==='Enter')) return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ') step(1);
+  else if(e.key==='ArrowLeft'||e.key==='PageUp') step(-1);
+  else if(e.key==='Home') goto(0);
+  else if(e.key==='End') goto(slides.length-1);
+});
+render();
+</script>
+</body>
+</html>
