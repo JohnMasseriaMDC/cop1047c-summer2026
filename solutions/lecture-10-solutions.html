@@ -117,8 +117,7 @@ print(all(age >= 5 for age in ages))   # stretch — a preview of 9.12!</code></
 <pre><code class="language-python">for guest in standby[:]:       # iterate a COPY, modify the original
     if guest in no_shows:
         standby.remove(guest)   # -> Boarding: ['ana', 'dana']</code></pre></div>
-<p><b style="color:var(--amber)">Stretch:</b> <code>fare = fare * 0.9</code> rebinds the loop variable — fix is index assignment: <code>for i in range(len(fares)): fares[i] *= 0.9</code>.</p>
-<div class="callout-note"><p><b>Grading note:</b> the trace table is the deliverable that matters — same artifact style as tonight's Part 2 project and the DNA project's process evidence. A correct fix with no trace earns partial credit; a correct trace with a wrong fix earns most of it.</p></div>
+<div class="callout-note"><p><b>Debrief note:</b> the trace table is the artifact that matters — same evidence style students will use in Part 2 tonight and on the DNA project. If a team jumped straight to the fix without a trace, have them reconstruct it during the debrief; if a team is stuck tracing, point them to <b>PythonTutor.com</b> and let them watch the list shrink step by step.</p></div>
 
 <h2 id="b3"><span class="topic-num">B3</span>Deck Directory <span class="accent">(after 9.11)</span></h2>
 <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">deck_directory.py</span></div>
