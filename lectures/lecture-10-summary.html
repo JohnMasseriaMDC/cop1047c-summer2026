@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 10: Lists, Dictionaries &amp; Comprehensions — COP 1047C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c14; --surface:#0f1724; --surface2:#16202e; --border:#1e2d42; --border2:#253347;
+  --accent:#f59e0b; --accent-dk:#d97706; --text:#e2e8f0; --muted:#7d93af;
+  --green-bg:#071510; --green-bdr:#0d3322; --green-txt:#34d399;
+  --mono:'JetBrains Mono','Courier New',monospace; --sans:'Outfit',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;}
+pre, code, kbd{
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "calt" 0 !important;
+}
+header{position:sticky;top:0;z-index:100;background:rgba(8,12,20,0.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:16px 24px;}
+.header-inner{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;}
+.course-tag{display:inline-block;background:var(--accent);color:#1a1005;font-weight:700;font-size:0.72rem;letter-spacing:0.06em;padding:3px 10px;border-radius:20px;text-transform:uppercase;}
+h1{font-size:1.3rem;margin:6px 0 2px;font-weight:700;}
+.meta{color:var(--muted);font-size:0.85rem;text-align:right;}
+nav{max-width:860px;margin:10px auto 0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:0.85rem;}
+nav a{color:var(--muted);text-decoration:none;border-bottom:1px dotted transparent;}
+nav a:hover{color:var(--accent);border-bottom-color:var(--accent);}
+main{max-width:860px;margin:0 auto;padding:20px 24px 80px;}
+html{scroll-padding-top:150px;scroll-behavior:smooth;}
+.section{padding:38px 0;border-bottom:1px solid var(--border);}
+.section:last-of-type{border-bottom:none;}
+.section-eyebrow{font-family:var(--mono);color:var(--accent);font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+h2{font-size:1.5rem;margin:0 0 18px;}
+h3{font-size:1.1rem;color:var(--text);margin:26px 0 10px;}
+p{color:#c9d5e3;}
+.topic-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--surface2);color:var(--accent);border-radius:6px;font-family:var(--mono);font-size:0.75rem;margin-right:8px;}
+.callout-warn, .callout-info, .callout-note{border-radius:10px;padding:16px 18px;margin:18px 0;font-size:0.94rem;}
+.callout-warn{background:#1a0d0d;border:1px solid #4a1f1f;color:#fca5a5;}
+.callout-info{background:#0a1420;border:1px solid #1e3a5f;color:#93c5fd;}
+.callout-note{background:#1a1408;border:1px solid #4a3a1a;color:#fcd34d;}
+.callout-warn strong, .callout-info strong, .callout-note strong{color:#fff;}
+.code-wrap{background:var(--surface);border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin:16px 0;}
+.code-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface2);border-bottom:1px solid var(--border2);}
+.dot-r{width:10px;height:10px;border-radius:50%;background:#ef4444;}
+.dot-y{width:10px;height:10px;border-radius:50%;background:#f59e0b;}
+.dot-g{width:10px;height:10px;border-radius:50%;background:#22c55e;}
+.code-filename{color:var(--muted);font-family:var(--mono);font-size:0.78rem;margin-left:4px;}
+pre{margin:0;padding:16px;overflow-x:auto;background:transparent !important;}
+code{font-family:var(--mono);font-size:0.87rem;}
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:0.9rem;}
+th{background:var(--surface2);color:var(--accent);text-align:left;padding:10px 12px;border-bottom:2px solid var(--border2);}
+td{padding:9px 12px;border-bottom:1px solid var(--border);color:#c9d5e3;}
+.activity{background:var(--green-bg);border:1px solid var(--green-bdr);border-radius:10px;padding:18px 20px;margin:18px 0;}
+.activity-tag{display:inline-block;background:var(--green-bdr);color:var(--green-txt);font-family:var(--mono);font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
+.reminder-list{margin:16px 0;}
+.reminder-list div{border-left:3px solid var(--accent);background:var(--surface);padding:10px 14px;margin-bottom:8px;border-radius:0 8px 8px 0;color:#c9d5e3;font-size:0.92rem;}
+footer{max-width:860px;margin:0 auto;padding:30px 24px 60px;color:var(--muted);font-size:0.85rem;border-top:1px solid var(--border);}
+footer a{color:var(--accent);text-decoration:none;}
+ul{color:#c9d5e3;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <span class="course-tag">COP 1047C</span>
+      <h1>Lecture 10: Lists, Dictionaries &amp; Comprehensions</h1>
+    </div>
+    <div class="meta">July 14, 2026 &middot; Chapter 9 (+9.12) &middot; John Masseria</div>
+  </div>
+  <nav>
+    <a href="#objectives">Objectives</a>
+    <a href="#pointers">Lists as References</a>
+    <a href="#list-ops">List Methods</a>
+    <a href="#mutation-pitfall">Iterating &amp; Modifying</a>
+    <a href="#nested-lists">Nested Lists</a>
+    <a href="#sort">sort() vs sorted()</a>
+    <a href="#dictionaries">Dictionaries</a>
+    <a href="#comprehensions">List Comprehensions</a>
+    <a href="#breakout-cruise">Breakout: Excursion Stats</a>
+    <a href="#temp-project">In-Class Project: Lord Kelvin Edition</a>
+    <a href="#looking-ahead">Looking Ahead</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="section" id="objectives">
+  <div class="section-eyebrow">Agenda</div>
+  <h2>🎯 What You'll Be Able to Do After Tonight</h2>
+  <p>By the end of this lecture, you should be able to:</p>
+  <ul>
+    <li>Explain how Python lists actually work internally as references/pointers, not as containers holding values directly</li>
+    <li>Use <code>enumerate()</code> to get both index and value while iterating</li>
+    <li>Use list methods: <code>append</code>, <code>extend</code>, <code>insert</code>, <code>remove</code>, <code>pop</code>, <code>sort</code>, <code>index</code>, <code>count</code></li>
+    <li>Recognize and avoid the bug caused by modifying a list while iterating over it</li>
+    <li>Work with nested (two-dimensional) lists — rows, columns, and their lengths</li>
+    <li>Explain the difference between <code>sort()</code> (in-place) and <code>sorted()</code> (returns a new list)</li>
+    <li>Use dictionary operations: <code>in</code>, <code>get()</code>, <code>update()</code>, <code>pop()</code>, <code>clear()</code>, <code>items()</code>, <code>keys()</code>, <code>values()</code></li>
+    <li>Read and write basic list comprehensions, including with a filtering <code>if</code> clause</li>
+  </ul>
+  <div class="reminder-list">
+    <div>📌 zyBook Chapter 8 (Exceptions) and Chapter 12 (Files) assignments were due tonight.</div>
+    <div>📌 zyBook Chapter 9 (Lists &amp; Dictionaries) is due <strong>next week, July 21</strong>.</div>
+    <div>📌 Chapters 10 (Classes) and 11 (Modules, extra credit) will be taught next week — no lab component for either.</div>
+    <div>📌 Two lectures remain: next week's lecture, then a final-exam review on <strong>July 28</strong>.</div>
+    <div>📌 Final exam, DNA Sequence Search project, and all remaining assignments are due <strong>July 30</strong>.</div>
+  </div>
+</section>
+
+<section class="section" id="pointers">
+  <div class="section-eyebrow">Chapter 9 &middot; Lists Deep Dive</div>
+  <h2>🧠 Lists Are Really References — Live in Python Tutor</h2>
+  <p><span class="topic-num">1</span>Tonight's lecture leaned heavily on <a href="https://pythontutor.com" target="_blank" rel="noopener">Python Tutor</a>, a free site that steps through your code line by line and visualizes what's happening in memory. If you missed the live demo, it's worth spending 15 minutes with it on your own — pasting in a script and clicking "Visualize Execution" builds the exact mental model this course keeps coming back to.</p>
+  <div class="callout-info">
+    <strong>The core idea:</strong> a variable like <code>myList</code> isn't a box that holds the list — it's a pointer to a list object elsewhere in memory. And the items <em>inside</em> that list aren't the actual values either (in most cases) — they're pointers to other objects. A string like <code>"cat"</code> lives somewhere in memory on its own; the list just holds a reference to it. This is what makes random access to any element fast and consistent-size regardless of what's stored there — the list holds fixed-size pointers, not variable-size values.
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">list_index_trace.py</span></div>
+    <pre><code class="language-python">animals = ["cat", "dog", "bird", "raptor"]
+print(animals[0])   # cat
+print(animals[2])   # bird
+i = 3
+print(animals[i])   # raptor — index 3 is the 4th item</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>Terminology trap:</strong> index 3 is the <em>fourth</em> item in the list. The index is always one less than the position number — index 0 is the first item, index 1 is the second, and so on. Trying to access <code>animals[4]</code> on a 4-item list raises <code>IndexError</code>, because valid indices only run from 0 to <code>len(list) - 1</code>.
+  </div>
+  <p>Once <code>animals.append("dog")</code> is called, the list grows to 5 items, so <code>animals[4]</code> becomes valid.</p>
+</section>
+
+<section class="section" id="list-ops">
+  <h2>🧰 List Methods You'll Actually Use</h2>
+  <p><span class="topic-num">2</span>A quick-reference set of list operations, worth memorizing as a cheat sheet:</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Method</th><th>What it does</th></tr>
+      <tr><td><code>list.append(x)</code></td><td>Adds <code>x</code> as a single new item at the end</td></tr>
+      <tr><td><code>list.extend(other_list)</code></td><td>Adds each item of <code>other_list</code> individually — different from appending the whole list as one nested item</td></tr>
+      <tr><td><code>list.insert(i, x)</code></td><td>Inserts <code>x</code> before position <code>i</code></td></tr>
+      <tr><td><code>list.remove(x)</code></td><td>Removes the <em>first</em> occurrence of value <code>x</code> — raises an error if <code>x</code> isn't found</td></tr>
+      <tr><td><code>list.pop()</code></td><td>Removes and returns the <em>last</em> item</td></tr>
+      <tr><td><code>list.pop(i)</code></td><td>Removes and returns the item at index <code>i</code></td></tr>
+      <tr><td><code>list.index(x)</code></td><td>Returns the index of the first occurrence of <code>x</code></td></tr>
+      <tr><td><code>list.count(x)</code></td><td>Returns how many times <code>x</code> appears</td></tr>
+      <tr><td><code>del list[i]</code></td><td>Deletes the item at index <code>i</code> (the same <code>del</code> keyword works on variables and dictionary entries too)</td></tr>
+    </table>
+  </div>
+  <div class="callout-warn">
+    <strong>Classic mix-up: <code>append</code> vs. <code>extend</code>.</strong> <code>my_list.append(other_list)</code> adds <code>other_list</code> as one nested list item. <code>my_list.extend(other_list)</code> adds each of its items individually. If your result has an unexpected list-inside-a-list, this is almost always why.
+  </div>
+  <div class="callout-info">
+    <strong>Real-world pattern: append + pop as a queue.</strong> Appending new items to the end and popping from the front (<code>pop(0)</code>) builds a fair first-come-first-served queue — think people lining up at one of several service counters. Checking <code>if my_list</code> (or <code>if not my_list</code>) tells you whether there's anything waiting to be processed.
+  </div>
+  <p>Use <code>x in list</code> or <code>list.count(x)</code> to safely check whether a value exists before calling <code>list.remove(x)</code> — this avoids the exception <code>remove()</code> raises when the value isn't found.</p>
+</section>
+
+<section class="section" id="mutation-pitfall">
+  <h2>⚠️ Don't Modify a List While You're Iterating Over It</h2>
+  <p><span class="topic-num">3</span>This is one of the most common real bugs you'll write, and it's subtle because Python doesn't raise an error — it just silently produces the wrong answer.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">broken_negatives.py</span></div>
+    <pre><code class="language-python"># This does NOT change the list — num is just a local copy of each value
+for num in nums:
+    if num < 0:
+        num = 0   # only changes the loop variable, not the list</code></pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">fixed_negatives.py</span></div>
+    <pre><code class="language-python"># Fixed with enumerate — you get BOTH the index and the value
+for i, num in enumerate(nums):
+    if num < 0:
+        nums[i] = 0   # this actually updates the list</code></pre>
+  </div>
+  <p>A related, sneakier version of the same trap: removing items from a list <em>while looping over that same list</em> causes items to get skipped, because the list shifts as you remove from it and the loop's internal position doesn't account for the shift.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">safe_removal.py</span></div>
+    <pre><code class="language-python">values = [10, 20, 30, 40]
+numbers_to_remove = [20, 40]
+
+for val in values.copy():        # iterate over a COPY
+    if val in numbers_to_remove:
+        values.remove(val)
+
+print(values)   # [10, 30] — correct</code></pre>
+  </div>
+  <div class="callout-note">
+    <strong>The fix, in general:</strong> if you need to remove or change items in a list while looping over it, either loop over <code>list.copy()</code> instead of the original, or use <code>enumerate()</code> to update by index rather than removing/reassigning items mid-loop.
+  </div>
+</section>
+
+<section class="section" id="nested-lists">
+  <h2>🗺️ Nested Lists (2D Lists)</h2>
+  <p><span class="topic-num">4</span>A list of lists behaves like a table — a tic-tac-toe board, or a spreadsheet with rows and columns.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">board.py</span></div>
+    <pre><code class="language-python">board = [
+    ["X", "O", "X"],
+    ["O", "X", "O"],
+    ["X", " ", "O"]
+]
+print(board[1][1])   # row 1, column 1 -> "X"
+
+for row in board:
+    for cell in row:
+        print(cell, end=" ")
+    print()</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong><code>len()</code> on a 2D list only gives you the number of rows</strong>, not the total number of cells. To count every item, you have to sum the length of each row.
+  </div>
+  <p>Think of a 2D list the same way you'd think of an Excel spreadsheet: the first index is the row, the second is the column — except Python starts counting both from 0 instead of using letters and 1-based row numbers.</p>
+</section>
+
+<section class="section" id="sort">
+  <h2>🔀 sort() vs. sorted()</h2>
+  <p><span class="topic-num">5</span><code>list.sort()</code> sorts the list <strong>in place</strong> and returns <code>None</code> — if you try to capture its return value (<code>x = my_list.sort()</code>), <code>x</code> will be <code>None</code>, and this mistake won't be flagged as an error until you try to use <code>x</code> later and it fails.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">sort_vs_sorted.py</span></div>
+    <pre><code class="language-python">nums = [30, 10, 20]
+nums.sort()              # sorts in place, original order is lost
+print(nums)               # [10, 20, 30]
+
+nums2 = [30, 10, 20]
+result = sorted(nums2)    # returns a NEW sorted list
+print(nums2)               # [30, 10, 20] — original preserved
+print(result)              # [10, 20, 30]</code></pre>
+  </div>
+  <div class="callout-info">
+    <strong>Sorting names case-insensitively:</strong> since uppercase letters have lower character-code values than lowercase ones (an ASCII/Unicode fact), sorting a plain list of names puts all-uppercase-first names ahead of others regardless of alphabetical order. Passing <code>key=str.lower</code> tells <code>sort()</code>/<code>sorted()</code> to compare using the lowercase version of each name — without actually changing the values stored in the list. Add <code>reverse=True</code> to sort descending instead of ascending.
+  </div>
+  <div class="callout-warn">
+    <strong>This is a runtime bug, not a compile-time one.</strong> In statically-typed, compiled languages, assigning a function's <code>None</code>-like return to a variable typed as a list would often be caught before the program ever runs. Python is dynamically typed, so this kind of mistake isn't caught until the program actually executes and something downstream fails — one of the real tradeoffs of a flexible, dynamically-typed language.
+  </div>
+</section>
+
+<section class="section" id="dictionaries">
+  <h2>📖 Dictionaries: Key-Value Lookups</h2>
+  <p><span class="topic-num">6</span>Unlike lists, dictionaries aren't positional — you access values by key, not by numeric index. Since Python 3.7, dictionaries preserve insertion order (in earlier versions they didn't), so iterating over keys returns them in the order they were added.</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Operation</th><th>What it does</th></tr>
+      <tr><td><code>key in dictionary</code></td><td>Returns <code>True</code>/<code>False</code> without raising an error — safe way to check existence first</td></tr>
+      <tr><td><code>dictionary.get(key, default)</code></td><td>Returns the value for <code>key</code>, or <code>default</code> if the key isn't present — no exception, no <code>if</code> needed</td></tr>
+      <tr><td><code>dictionary.update(other_dict)</code></td><td>Merges another dictionary in — updates existing keys, adds new ones</td></tr>
+      <tr><td><code>dictionary.pop(key)</code></td><td>Removes <code>key</code> and returns its value (raises an error if the key doesn't exist and no default is given)</td></tr>
+      <tr><td><code>dictionary.clear()</code></td><td>Empties the dictionary completely, but the dictionary itself still exists</td></tr>
+      <tr><td><code>del dictionary</code></td><td>Deletes the entire dictionary object — it no longer exists afterward</td></tr>
+      <tr><td><code>.items()</code> / <code>.keys()</code> / <code>.values()</code></td><td>Return the key-value pairs (as tuples), just the keys, or just the values</td></tr>
+    </table>
+  </div>
+  <div class="callout-info">
+    <strong>Why <code>get()</code> and <code>in</code> matter for real applications:</strong> if you're pulling JSON data back from a web API into a dictionary (weather data, for example), you can't always guarantee every key you expect will be present. Referencing a missing key directly raises an exception that will crash your program if uncaught. <code>dictionary.get("temperature", "not available")</code> handles the missing case in one line, with no <code>try</code>/<code>except</code> or <code>if</code> statement needed.
+  </div>
+  <p>Dictionaries are the right structure when your data is naturally keyed rather than sequential — pick a list when data is ordered/sequential (spreadsheet rows), a dictionary when you need to look something up by a meaningful key (an airport code, a username, a product SKU).</p>
+</section>
+
+<section class="section" id="comprehensions">
+  <div class="section-eyebrow">zyBook 9.12 &middot; Optional but Recommended</div>
+  <h2>⚡ List Comprehensions</h2>
+  <p><span class="topic-num">7</span>List comprehensions aren't required material for this course and won't be tested directly — but they're one of Python's defining features, and worth understanding because you'll see them constantly in real code (and in AI-generated code).</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">comprehension_basics.py</span></div>
+    <pre><code class="language-python"># The long way
+nums = [10, 20, 30]
+new_list = []
+for i in nums:
+    new_list.append(i + 5)
+print(new_list)   # [15, 25, 35]
+
+# The same thing, as a list comprehension
+new_list = [i + 5 for i in nums]
+print(new_list)   # [15, 25, 35]</code></pre>
+  </div>
+  <p>Read it as: "build a new list from <code>i + 5</code>, for every <code>i</code> in <code>nums</code>." The expression on the left (<code>i + 5</code>) can be anything — including a type conversion:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">comprehension_convert.py</span></div>
+    <pre><code class="language-python">nums = [10, 20, 30, 40, 50, 60, 70]
+as_strings = [str(n) for n in nums]
+
+typed_in = input("Enter numbers separated by spaces: ")
+as_ints = [int(s) for s in typed_in.split()]</code></pre>
+  </div>
+  <p>Adding an <code>if</code> clause filters which items make it into the new list:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">comprehension_filter.py</span></div>
+    <pre><code class="language-python">nums = [3, 5, 23, -1, 456, 1, 6, 83]
+
+evens = [n for n in nums if n % 2 == 0]
+negatives = [n for n in nums if n < 0]
+doubled_if_big = [n * 2 for n in nums if n > 20]</code></pre>
+  </div>
+  <div class="callout-note">
+    <strong>Where this comes from:</strong> the syntax mirrors set-builder notation from mathematics — "the set of all <code>x</code> such that some condition holds." If you've seen that notation before, list comprehensions will feel familiar; if not, that's fine, it's a shorthand for the plain <code>for</code>-loop-and-<code>append</code> pattern shown above.
+  </div>
+</section>
+
+<section class="section" id="breakout-cruise">
+  <div class="section-eyebrow">Now You Try</div>
+  <h2>🚢 Breakout: Shore Excursion Age Statistics</h2>
+  <div class="activity">
+    <span class="activity-tag">Breakout Activity</span>
+    <p>A cruise line needs quick statistics on the ages of guests booked on a shore excursion, given a list of ages:</p>
+    <ul>
+      <li>Print the number of guests</li>
+      <li>Print the youngest and oldest ages</li>
+      <li>Print the average age, to one decimal place</li>
+      <li>Count how many guests are under 18</li>
+      <li>Using <code>enumerate()</code>, print the position and age of every guest 65 or older</li>
+      <li><strong>Toughest part:</strong> determine whether <em>every</em> guest meets some condition — the built-in <code>all()</code> function is the cleanest tool for this, though it wasn't required to solve it that way</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="temp-project">
+  <div class="section-eyebrow">In-Class Group Project</div>
+  <h2>🌡️ Temperature Conversion: The Lord Kelvin Edition</h2>
+  <p><span class="topic-num">8</span>Building on the original Celsius/Fahrenheit converter your groups already delivered, this update adds the Kelvin scale — named after Lord Kelvin — and folds in last week's exception-handling material.</p>
+  <div class="callout-info">
+    <strong>Why Kelvin is different:</strong> unlike Celsius or Fahrenheit, Kelvin has a true absolute zero — 0 K is the point at which matter has no kinetic energy left, and there is no temperature lower than that. 0 K corresponds to -273.15°C.
+  </div>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Conversion</th><th>Formula</th></tr>
+      <tr><td>Celsius → Kelvin</td><td><code>K = C + 273.15</code></td></tr>
+      <tr><td>Kelvin → Celsius</td><td><code>C = K - 273.15</code></td></tr>
+      <tr><td>Fahrenheit → Kelvin / Kelvin → Fahrenheit</td><td>Convert through Celsius, or use the direct formulas shown in the slide deck</td></tr>
+    </table>
+  </div>
+  <div class="activity">
+    <span class="activity-tag">Group Project Requirements</span>
+    <ul>
+      <li>Support conversion to and from Celsius, Fahrenheit, <strong>and</strong> Kelvin</li>
+      <li>Catch <code>ValueError</code> if the user enters a non-numeric value, and print an informative message — this reuses exactly what you practiced last week</li>
+      <li><strong>Bonus (+5 points):</strong> validate that no input converts to below absolute zero (below -273.15°C / below 0 K). If it would, print an error explaining the value isn't physically possible, rather than returning a nonsensical result</li>
+      <li>One submission per group is sufficient — list which team members were present in a comment at the top of the file</li>
+    </ul>
+  </div>
+  <p>Groups could build on their earlier working solution as a starting point, use the Zybooks lab environment as a browser-based alternative IDE, or use Python Tutor to test logic collaboratively via a shared link.</p>
+</section>
+
+<section class="section" id="looking-ahead">
+  <div class="section-eyebrow">Coming Up</div>
+  <h2>🧬 Reminders: DNA Sequence Search &amp; Final Exam</h2>
+  <ul>
+    <li><strong>Submit your DNA Sequence Search project as a <code>.py</code> file</strong> — not a Word document. Include screenshots of the program running, plus a recorded walkthrough where you explain your code line by line (roughly half the grade).</li>
+    <li>Chapters 10 (Classes) and 11 (Modules) will be taught next week; Chapter 11 is extra credit with no lab component, and Chapter 10 has no lab component either.</li>
+    <li>The final exam will follow the same format as the midterm (50 questions, LockDown Browser), with roughly 10 questions drawn from midterm-era material. A review session is planned for July 28, opening the exam for the remainder of that final week.</li>
+    <li>Everything — final exam, DNA Sequence Search, and any remaining assignments — is due <strong>July 30</strong>.</li>
+    <li>Office hours: Wednesdays 6–7 PM (July 15, 22, and 29).</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  COP 1047C &middot; Introduction to Python Programming &middot; Summer 2026 &middot; Miami Dade College West Campus<br>
+  Questions? <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+(function () {
+  const header = document.querySelector('header');
+  function setScrollOffset() {
+    document.documentElement.style.scrollPaddingTop = (header.offsetHeight + 12) + 'px';
+  }
+  setScrollOffset();
+  window.addEventListener('resize', setScrollOffset);
+})();
+</script>
+</body>
+</html>
