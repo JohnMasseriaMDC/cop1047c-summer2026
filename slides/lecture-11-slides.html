@@ -173,8 +173,8 @@ nav button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
     <h1>Classes &amp; <span class="accent">Modules</span></h1>
     <p class="sub">Chapter 10 · Sections 10.1 – 10.6 &nbsp;+&nbsp; Chapter 11 · Sections 11.1 – 11.7 — how professionals organize code: bundle data with behavior, then package it for reuse.</p>
     <p class="meta"><b>Part 1 (5:40–7:45):</b> Chapter 10 — Classes, with Breakouts 1–3<br>
-    <b>Part 2 (7:55–8:45):</b> Chapter 11 — Modules, with Breakout 4<br>
-    <b>Part 3 (8:45–9:45):</b> DNA Sequence Search project — full walkthrough on Canvas + Q&amp;A<br><br>
+    <b>Part 2 (7:55–9:05):</b> Chapter 11 — Modules + live venv/pip demo, with Breakout 4<br>
+    <b>Part 3 (9:05–9:35):</b> DNA Sequence Search project — walkthrough on Canvas + Q&amp;A<br><br>
     John Masseria · jmasseri@mdc.edu · West Campus, School of Engineering &amp; Technology</p>
   </div>
 </section>
@@ -194,7 +194,7 @@ nav button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
     <li><b>Reach for the standard library first</b>, explain how Python finds a module, and guard a script with <code>__name__ == "__main__"</code>. <i>(11.4–11.7)</i></li>
     <li><b>Ask every DNA-project question you have</b> — tonight is the full walkthrough. <i>(Part 3)</i></li>
   </ul>
-  <div class="callout info"><p><b>Flight plan:</b> Chapter 10 runs 5:45–7:45 with breakouts at ~6:25, ~7:05, and ~7:35. Break 7:45–7:55. Chapter 11 runs 7:55–8:45 with Breakout 4 at ~8:30. Then the DNA Sequence Search walkthrough at 8:45, and final-exam logistics before we close.</p></div>
+  <div class="callout info"><p><b>Flight plan:</b> Chapter 10 runs 5:45–7:45 with breakouts at ~6:25, ~7:05, and ~7:35. Break 7:45–7:55. Chapter 11 runs 7:55–9:05 — live venv/pip demo at ~8:35, Breakout 4 at ~8:50. DNA Sequence Search walkthrough + Q&amp;A at 9:05, then final-exam logistics and reminders before we close at 10:00.</p></div>
 </section>
 
 <!-- ================= 10.1 ================= -->
@@ -371,6 +371,38 @@ print(f"Alice earned {alice.calculate_pay():.2f}")</code></pre></div>
   </ul>
 </section>
 
+<!-- ================= HOW-TO: GITHUB GISTS ================= -->
+<section class="slide" data-tag="How-To" data-title="Sharing Code via Gists">
+  <span class="pill">How-To · Applies to every breakout tonight</span>
+  <h1>📋 Share your code with <span class="accent">GitHub Gists</span></h1>
+  <p class="lead">From tonight on, breakout teams share code by posting a <b style="color:var(--amber)">Gist link</b> in the Teams chat — no more screenshots or mangled paste-jobs. A Gist keeps your formatting, adds syntax highlighting, and its URL pastes cleanly into chat.</p>
+  <div class="two-col">
+    <div class="card">
+      <h2 style="margin-top:0"><span class="accent">1</span> · Log in to GitHub</h2>
+      <ul class="points" style="margin-bottom:0">
+        <li>Go to <a href="https://gist.github.com" target="_blank" rel="noopener" style="color:var(--teal)">gist.github.com</a> and sign in with your GitHub account (or create a free one).</li>
+        <li><b>Anonymous gists are no longer permitted</b> — you must be logged in.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0"><span class="accent">2</span> · Create your Gist</h2>
+      <ul class="points" style="margin-bottom:0">
+        <li><b>Filename:</b> include the extension — <code>breakout1.py</code>, not <code>breakout1</code>. The extension turns on code highlighting automatically.</li>
+        <li><b>Code:</b> paste your clean, readable code into the editor.</li>
+        <li><b>Visibility:</b> choose <b>"Create secret gist"</b> — it stays out of public search engines.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0"><span class="accent">3</span> · Share it</h2>
+    <ul class="points" style="margin-bottom:0">
+      <li>Copy the complete URL from your browser's address bar and paste it into the <b>Teams chat</b> (for tonight's breakouts) or the <b>Canvas submission box</b> (when an assignment asks for one).</li>
+      <li><i>Note:</i> a secret gist is <b>not</b> password protected — anyone with the link can view it, so don't share your link with other teams.</li>
+    </ul>
+  </div>
+  <div class="callout warn"><p><b>⚠️ Critical security rules:</b> <b>Never include private data</b> — strip passwords, database credentials, and personal API keys <i>before</i> saving. And <b>history is permanent</b>: editing a leaked secret out later doesn't help, because it stays visible in the gist's Revision History. If you leak credentials, delete the entire gist.</p></div>
+</section>
+
 <!-- ================= BREAKOUT 1 ================= -->
 <section class="slide" data-tag="Breakout 1" data-title="Cabin Class">
   <span class="pill breakout">Breakout 1 · <span class="timer">10 minutes</span> · Teams of 3–4</span>
@@ -387,7 +419,7 @@ print(f"Alice earned {alice.calculate_pay():.2f}")</code></pre></div>
       <li><b>Stretch:</b> add a method <code>check_in(self, name)</code> that sets the guest — but prints a warning instead if the cabin is not <code>"Vacant"</code>.</li>
     </ul>
   </div>
-  <div class="callout"><p><b>Deliverable:</b> one team member pastes working code + output into the Teams channel. <b>Rule:</b> the typist must not be the person who solved it — explain it to your driver.</p></div>
+  <div class="callout"><p><b>Deliverable:</b> one team member posts a <b>Gist link</b> to your code (secret gist, <code>.py</code> filename) plus your program output in the Teams channel. <b>Rule:</b> the typist must not be the person who solved it — explain it to your driver.</p></div>
 </section>
 
 <!-- ================= 10.4 ================= -->
@@ -572,7 +604,7 @@ print(rectangle1.width)</code></pre></div>
       <li><b>5. Predict, then run:</b> the pier changes! Execute <code>Excursion.pier = "Terminal F"</code> and reprint all three receipts. How many lines changed, and why?</li>
     </ul>
   </div>
-  <div class="callout"><p><b>Deliverable:</b> code + output + a one-sentence answer to task 5 in the Teams channel.</p></div>
+  <div class="callout"><p><b>Deliverable:</b> a <b>Gist link</b> to your code + your output + a one-sentence answer to task 5 in the Teams channel.</p></div>
 </section>
 
 <!-- ================= 10.6 ================= -->
@@ -666,7 +698,7 @@ item2.display()                   # inherited from Item!</code></pre></div>
       <li><b>4. Discuss &amp; answer in Teams:</b> if class <code>Dwelling</code> has <code>open_door()</code> and class <code>House(Dwelling)</code> adds <code>open_window()</code> and <code>open_basement()</code> — after <code>h = House()</code>, how many different methods can <code>h</code> call (ignoring constructors)?</li>
     </ul>
   </div>
-  <div class="callout"><p><b>Deliverable:</b> code + output + your task-4 number (with one sentence of justification) in the Teams channel.</p></div>
+  <div class="callout"><p><b>Deliverable:</b> a <b>Gist link</b> to your code + your output + your task-4 number (with one sentence of justification) in the Teams channel.</p></div>
 </section>
 
 <!-- ================= BREAK ================= -->
@@ -861,6 +893,47 @@ if __name__ == "__main__":
   <div class="callout"><p><b>This idiom is everywhere.</b> Open almost any real Python file on GitHub and you'll find it at the bottom. After tonight, your files should have it too — including your DNA project.</p></div>
 </section>
 
+<!-- ================= 11.6b: SELF-TESTS ================= -->
+<section class="slide" data-tag="11.6" data-title="Self-Tests">
+  <span class="pill">Section 11.6 · Applied</span>
+  <h1>Self-tests — and why an <span class="accent">unguarded</span> one misbehaves</h1>
+  <ul class="points">
+    <li>A <b>self-test</b> is a few quick statements at the bottom of a module that exercise its functions with inputs whose answers you already know — instant proof the module works.</li>
+    <li><b>Unguarded</b> means those statements sit at the top level, <i>not</i> inside the <code>if __name__ == "__main__":</code> guard — so they execute on <b>every import</b>, spraying output into any program that just wanted your functions. That's the side effect from the previous slide.</li>
+  </ul>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">my_funcs.py — UNGUARDED</span></div>
+<pre><code class="language-python">def factorial(num):
+    x = 1
+    for i in range(1, num + 1):
+        x *= i
+    return x
+
+# self-test (unguarded - top level!)
+print(factorial(3))    # expect 6</code></pre></div>
+    </div>
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">main.py</span></div>
+<pre><code class="language-python">import my_funcs
+
+n = int(input("Enter number: "))
+print(my_funcs.factorial(n))</code></pre></div>
+      <div class="out">6
+Enter number: 4
+24</div>
+      <p class="lead" style="font-size:15.5px">That stray <code>6</code> printed before the prompt — the import ran the unguarded test.</p>
+    </div>
+  </div>
+  <div class="q"><p class="prompt">💬 <b>Chat drill:</b> type <b>two additional self-tests</b> for <code>factorial()</code> into the Teams chat — pick inputs that probe something the first test doesn't. Then tell me: where should all three lines live?</p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="code-wrap"><pre><code class="language-python">if __name__ == "__main__":
+    print(factorial(3))    # expect 6
+    print(factorial(0))    # expect 1  - edge case: empty product
+    print(factorial(1))    # expect 1  - smallest normal input</code></pre></div>
+  <p class="lead" style="font-size:16px">Good tests probe <b>edges</b>: <code>factorial(0)</code> and <code>factorial(1)</code> both return 1 for different reasons. (<code>factorial(5) == 120</code> is a fine third.) And all of them belong <b>inside the guard</b> — self-tests fire when the module runs as a script, never on import.</p></div></div>
+</section>
+
 <!-- ================= 11.7 ================= -->
 <section class="slide" data-tag="11.7" data-title="Reloading Modules">
   <span class="pill">Section 11.7</span>
@@ -885,14 +958,24 @@ send_gmail.send(...)        # now uses the updated definitions</code></pre></div
 <section class="slide" data-tag="Quick Check" data-title="Modules: Predictions">
   <span class="pill quiz">Quick Check</span>
   <h1>Modules — <span class="accent">predict first</span></h1>
-  <div class="q"><p class="prompt">1) <code>arithmetic.py</code> contains <code>def calculate(number): return number + 3</code>. What does <code>main.py</code> print?</p>
-  <div class="code-wrap"><pre><code class="language-python">import arithmetic
+  <div class="q"><p class="prompt">1) What does <code>main.py</code> print?</p>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">arithmetic.py</span></div>
+<pre><code class="language-python">def calculate(number):
+    return number + 3</code></pre></div>
+    </div>
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">main.py</span></div>
+<pre><code class="language-python">import arithmetic
 
 def calculate(number):
     return number + 10
 
 print(arithmetic.calculate(5))
 print(calculate(5))</code></pre></div>
+    </div>
+  </div>
   <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
   <div class="answer"><div class="out">8
 15</div><p class="lead" style="font-size:16px">Two namespaces, two functions: <code>arithmetic.calculate</code> adds 3; the local <code>calculate</code> adds 10. No collision — that's the point of modules.</p></div></div>
@@ -902,6 +985,27 @@ print(calculate(5))</code></pre></div>
   <div class="q"><p class="prompt">3) A script runs <code>import MyMod</code>. What is <code>MyMod.__name__</code>? What is the script's own <code>__name__</code>?</p>
   <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
   <div class="answer"><p><code>MyMod.__name__</code> is <code>"MyMod"</code>; the executing script's is always <code>"__main__"</code>.</p></div></div>
+</section>
+
+<!-- ================= LIVE DEMO: VENV + PIP ================= -->
+<section class="slide" data-tag="Live Demo" data-title="Virtual Environments &amp; pip">
+  <span class="pill breakout">Live Demo · Follow along if you like</span>
+  <h1>📦 Virtual environments &amp; installing packages with <span class="accent">pip</span></h1>
+  <p class="lead">The standard library is huge — but real projects also pull in third-party packages. I'll now demonstrate, live, how professionals keep each project's packages isolated in a <b style="color:var(--amber)">virtual environment</b>, and how to install into it with <b style="color:var(--amber)">pip</b> — on Windows, macOS, and Linux.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Step</th><th>Windows (PowerShell / cmd)</th><th>macOS &amp; Linux (terminal)</th></tr>
+    <tr><td><b>1.</b> Create the venv</td><td><code>py -m venv .venv</code></td><td><code>python3 -m venv .venv</code></td></tr>
+    <tr><td><b>2.</b> Activate it</td><td><code>.venv\Scripts\activate</code></td><td><code>source .venv/bin/activate</code></td></tr>
+    <tr><td><b>3.</b> Install a package</td><td colspan="2"><code>pip install requests</code></td></tr>
+    <tr><td><b>4.</b> See what's installed</td><td colspan="2"><code>pip list</code> &nbsp;·&nbsp; <code>pip freeze</code></td></tr>
+    <tr><td><b>5.</b> Leave the venv</td><td colspan="2"><code>deactivate</code></td></tr>
+  </table></div>
+  <ul class="points">
+    <li><b>Why a venv?</b> Each project gets its own private copy of Python's packages — Project A can use one version of a package while Project B uses another, and neither pollutes your system Python.</li>
+    <li><b>How you know it worked:</b> your prompt grows a <code>(.venv)</code> prefix, and <code>import</code> now finds the installed package — it landed on this venv's <code>sys.path</code> (Section 11.5 in action).</li>
+    <li><b>VS Code tip:</b> it auto-detects <code>.venv</code> and offers to select it as your interpreter — say yes.</li>
+  </ul>
+  <div class="callout info"><p><b>Watch first, then try.</b> I'll run the full cycle on each OS. The commands stay on this slide — screenshot it or find it in tonight's posted deck.</p></div>
 </section>
 
 <!-- ================= BREAKOUT 4 ================= -->
@@ -920,7 +1024,7 @@ print(calculate(5))</code></pre></div>
       <li><b>Stretch:</b> change <code>main.py</code> to <code>from temp_tools import c_to_f, c_to_k</code> and update the calls.</li>
     </ul>
   </div>
-  <div class="callout"><p><b>Deliverable:</b> both files + a one-sentence answer to task 3 in the Teams channel. This exact refactor pattern is fair game on the final.</p></div>
+  <div class="callout"><p><b>Deliverable:</b> one <b>Gist link</b> containing both files (a gist can hold multiple files — use "Add file") + a one-sentence answer to task 3 in the Teams channel. This exact refactor pattern is fair game on the final.</p></div>
 </section>
 
 <!-- ================= SUMMARY ================= -->
@@ -943,11 +1047,11 @@ print(calculate(5))</code></pre></div>
 <!-- ================= PART 3: DNA PROJECT ================= -->
 <section class="slide" data-tag="Part 3" data-title="DNA Sequence Search">
   <div class="hero">
-    <span class="pill breakout">Part 3 · 8:45 – 9:45 PM · Project Walkthrough</span>
-    <h1>🧬 DNA Sequence <span class="accent">Search</span> — the full walkthrough</h1>
-    <p class="sub">150 points. Due in nine days. Tonight we read the assignment together, line by line, on Canvas — and you leave with zero unanswered questions.</p>
+    <span class="pill breakout">Part 3 · 9:05 – 9:35 PM · Project Walkthrough</span>
+    <h1>🧬 DNA Sequence <span class="accent">Search</span> — walkthrough &amp; Q&amp;A</h1>
+    <p class="sub">150 points. Due in nine days. We'll review the assignment description together on Canvas, hit the requirements and the rubric, then open the floor for questions.</p>
     <ul class="points">
-      <li><b>What we'll do:</b> open the assignment description on Canvas, walk the requirements, the input files, the expected output, and the grading rubric — then open Q&amp;A.</li>
+      <li><b>What we'll do:</b> review the assignment description on Canvas — requirements, input files, expected output, and the grading rubric — then Q&amp;A.</li>
       <li><b>What tonight's material buys you:</b> your search logic belongs in <i>functions in a module</i>, your script gets the <code>__name__</code> guard, and your file reading is straight from Chapter 12. This project is the whole course in one program.</li>
       <li><b>Bring your questions now</b> — next week is final-exam review, and July 30 is a hard deadline for <i>both</i> the project and the final.</li>
     </ul>
