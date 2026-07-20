@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INSTRUCTOR ONLY - Until after lecture — Lecture 11 Breakout Solutions | COP 1047C</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+/* Palette matches the lecture deck; all text >= 4.5:1 vs #080c14 and #0e1523 */
+:root{
+  --bg:#080c14; --card:#0e1523; --card2:#101a2c; --border:#22304a;
+  --text:#e8eef6; --muted:#a9b4c4; --amber:#fbbf24; --teal:#5eead4;
+  --green:#7ee787; --red:#ff8f8f; --red-solid:#dc2626;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.55}
+pre,code,kbd{
+  font-family:'JetBrains Mono',monospace !important;
+  font-variant-ligatures:none !important;
+  font-feature-settings:"liga" 0,"calt" 0 !important;
+}
+/* Confidential banner — diagonal red stripes */
+.conf-banner{
+  position:sticky;top:0;z-index:100;
+  background:repeating-linear-gradient(45deg,#7f1d1d 0 18px,#450a0a 18px 36px);
+  border-bottom:2px solid var(--red-solid);
+  padding:10px 20px;text-align:center;
+}
+.conf-banner .badge{
+  display:inline-block;background:var(--red-solid);color:#ffffff;
+  font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px;
+  letter-spacing:.14em;text-transform:uppercase;
+  border-radius:6px;padding:6px 16px;border:1px solid #fecaca;
+}
+.conf-banner .note{display:block;margin-top:5px;font-size:13.5px;color:#fecaca;font-weight:500}
+header.doc-head{max-width:860px;margin:0 auto;padding:34px 22px 6px}
+header.doc-head h1{font-size:34px;font-weight:800;line-height:1.15}
+header.doc-head h1 span{color:var(--amber)}
+header.doc-head .sub{color:var(--muted);font-size:17px;margin-top:8px}
+.wrap{max-width:860px;margin:0 auto;padding:10px 22px 70px}
+/* section nav */
+.toc{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 6px}
+.toc a{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--teal);
+  text-decoration:none;border:1px solid var(--border);border-radius:999px;
+  padding:5px 13px;background:var(--card)}
+.toc a:hover{border-color:var(--amber);color:var(--amber)}
+/* sections */
+section{margin:38px 0}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+  color:var(--amber);letter-spacing:.1em;text-transform:uppercase}
+h2{font-size:26px;font-weight:700;margin:6px 0 12px}
+h3{font-size:19px;font-weight:600;margin:20px 0 8px;color:var(--teal)}
+p,li{font-size:16.5px}
+ul{margin:8px 0 8px 22px}
+li{margin-bottom:6px}
+/* code */
+.code-wrap{background:#0b111d;border:1px solid var(--border);border-radius:10px;margin:12px 0;overflow:hidden}
+.code-head{display:flex;align-items:center;gap:7px;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--card2)}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot-r{background:#f87171}.dot-y{background:var(--amber)}.dot-g{background:#4ade80}
+.code-head .fname{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);margin-left:6px}
+pre[class*="language-"]{margin:0;background:transparent !important;padding:14px 16px;font-size:14.5px;line-height:1.6}
+code[class*="language-"]{font-size:14.5px;text-shadow:none}
+.token.comment,.token.prolog{color:#9aa7b8 !important}
+.token.punctuation{color:#c3ccd9 !important}
+.out{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--green);background:#0b111d;
+  border:1px dashed var(--border);border-radius:10px;padding:11px 15px;margin:10px 0;white-space:pre-wrap}
+p code,li code,td code{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:13.5px;color:var(--teal)}
+/* callouts */
+.callout{border-left:4px solid var(--amber);background:var(--card);border-radius:0 10px 10px 0;padding:13px 16px;margin:14px 0}
+.callout.debrief{border-left-color:var(--teal)}
+.callout b{color:var(--amber)}
+.callout.debrief b{color:var(--teal)}
+.callout p{font-size:15.5px}
+/* wrong/right grid */
+.table-wrap{overflow-x:auto;margin:12px 0;border:1px solid var(--border);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{background:var(--card2);color:var(--amber);text-align:left;padding:9px 13px;font-weight:600;border-bottom:1px solid var(--border)}
+td{padding:9px 13px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+th.wrong,td.wrong-cell b{color:var(--red)}
+.recap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin:10px 0;color:var(--muted);font-size:15.5px}
+.recap b{color:var(--text)}
+footer{border-top:1px solid var(--border);margin-top:40px;padding:20px 22px;text-align:center;color:var(--muted);font-size:14px}
+footer a{color:var(--teal);text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="conf-banner">
+  <span class="badge">🔒 Instructor Only - Until after lecture</span>
+  <span class="note">Confidential - Until after lecture</span>
+</div>
+
+<header class="doc-head">
+  <h1>Lecture 11 <span>Breakout Solutions</span></h1>
+  <p class="sub">COP 1047C · Chapters 10 &amp; 11 — Classes &amp; Modules · Tuesday, July 21, 2026 · John Masseria</p>
+  <nav class="toc">
+    <a href="#b1">Breakout 1 · Cabin Class</a>
+    <a href="#b2">Breakout 2 · Excursion Bookings</a>
+    <a href="#b3">Breakout 3 · Galley Inventory</a>
+    <a href="#b4">Breakout 4 · Modularize Lord Kelvin</a>
+  </nav>
+</header>
+
+<div class="wrap">
+
+<!-- ============================================================ -->
+<section id="b1">
+  <p class="eyebrow">Breakout 1 · ~6:25 PM · 10 minutes</p>
+  <h2>🛳️ The Cabin Class</h2>
+  <div class="recap"><b>Problem recap:</b> Define <code>Cabin</code> with <code>__init__</code> creating <code>number</code>/<code>guest</code>/<code>deck</code> defaults, add <code>print_status()</code>, create two instances, then predict the alias behavior of <code>c3 = c1</code>. Stretch: a <code>check_in()</code> method that refuses an occupied cabin.</div>
+
+  <h3>Base solution — annotated</h3>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">cabin_solution.py</span></div>
+<pre><code class="language-python">class Cabin:                                   # Initial-caps class name (convention)
+    def __init__(self):                        # constructor runs on every Cabin()
+        self.number = ""                       # self = the instance being built
+        self.guest = "Vacant"                  # sensible default state
+        self.deck = 0
+
+    def print_status(self):                    # instance method: self is required
+        print(f"Cabin {self.number} (deck {self.deck}): {self.guest}")
+
+    def check_in(self, name):                  # STRETCH
+        if self.guest == "Vacant":
+            self.guest = name                  # mutate this instance's state
+        else:
+            print(f"Cabin {self.number} is occupied by {self.guest}!")
+
+c1 = Cabin()                                   # instantiation #1
+c1.number = "A101"
+c1.deck = 7
+c1.guest = "Rivera"
+
+c2 = Cabin()                                   # instantiation #2 - separate object
+c2.number = "B202"
+c2.deck = 8                                    # guest stays "Vacant" from __init__
+
+c1.print_status()
+c2.print_status()
+
+c3 = c1                                        # TASK 4: alias, NOT a new instance
+c3.guest = "Dubois"
+c1.print_status()                              # c1 changed too - one object, two names</code></pre></div>
+  <div class="out">Cabin A101 (deck 7): Rivera
+Cabin B202 (deck 8): Vacant
+Cabin A101 (deck 7): Dubois</div>
+
+  <h3>Task 4 — expected answer</h3>
+  <p><code>c1.print_status()</code> now shows <b>Dubois</b>. <code>c3 = c1</code> copies the <i>reference</i>, not the object — identical to the Chapter 9 list-alias trap. This is the single most important 60 seconds of the debrief: the reference model transfers unchanged from lists to instances.</p>
+
+  <h3>Wrong / right grid</h3>
+  <div class="table-wrap"><table>
+    <tr><th class="wrong">What teams will write (wrong)</th><th>What happens</th><th>The fix (right)</th></tr>
+    <tr><td class="wrong-cell"><b><code>def print_status():</code></b> — no self</td><td><code>TypeError: print_status() takes 0 positional arguments but 1 was given</code></td><td><code>def print_status(self):</code> — the instance is auto-inserted as arg 1</td></tr>
+    <tr><td class="wrong-cell"><b><code>c1.print_status</code></b> — no parentheses</td><td>Prints a bound-method object; no output line</td><td><code>c1.print_status()</code> — call it</td></tr>
+    <tr><td class="wrong-cell"><b><code>number = ""</code></b> inside __init__ without <code>self.</code></td><td>Creates a local variable that vanishes; later <code>c1.number</code> raises <code>AttributeError</code></td><td><code>self.number = ""</code></td></tr>
+    <tr><td class="wrong-cell"><b>Predicting c1 still shows Rivera</b></td><td>Team believes <code>c3 = c1</code> copied the cabin</td><td>Aliasing: two names, one object — same as <code>b = a</code> with lists</td></tr>
+  </table></div>
+
+  <h3>Bonus extensions (fast teams)</h3>
+  <ul>
+    <li>Add a <code>check_out(self)</code> that resets <code>guest</code> to <code>"Vacant"</code>.</li>
+    <li>Give <code>check_in</code> a return value (<code>True</code>/<code>False</code>) instead of printing — discuss why returning beats printing for reusable code.</li>
+    <li>Preview of 10.5: "Wouldn't it be nicer to write <code>Cabin("A101", 7)</code>? Hold that thought for twenty minutes."</li>
+  </ul>
+
+  <div class="callout debrief"><p><b>Debrief script (3 min):</b> Poll in chat first: "After <code>c3.guest = "Dubois"</code>, what does c1 show?" Expect a 50/50 split — that split <i>is</i> the lesson. Then run it live in Python Tutor if time allows: two variables, one arrow. Close by connecting to the deck's alias-trap callout. Watch for teams that never ran the code and answered from vibes — call for the actual output line.</p></div>
+  <div class="callout"><p><b>Key takeaway to say out loud:</b> "Instances are objects like lists are objects. Assignment never copies — it points."</p></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="b2">
+  <p class="eyebrow">Breakout 2 · ~7:05 PM · 10 minutes</p>
+  <h2>🎟️ Shore Excursion Bookings</h2>
+  <div class="recap"><b>Problem recap:</b> Class attribute <code>pier</code> shared by all bookings; constructor with two required and two defaulted parameters (<code>party_size=2</code>, <code>rate=79.00</code>); a receipt method; three instantiations exercising defaults and a by-name argument; then mutate <code>Excursion.pier</code> and observe all receipts change.</div>
+
+  <h3>Base solution — annotated</h3>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">excursion_solution.py</span></div>
+<pre><code class="language-python">class Excursion:
+    pier = "Terminal J"                          # CLASS attribute - one shared copy
+
+    def __init__(self, guest, tour, party_size=2, rate=79.00):
+        self.guest = guest                       # required, positional, in order
+        self.tour = tour
+        self.party_size = party_size             # defaults kick in if omitted
+        self.rate = rate
+
+    def print_receipt(self):
+        total = self.party_size * self.rate      # local variable, dies at return
+        print(f"{self.guest} - {self.tour} x{self.party_size} "
+              f"from {self.pier}: ${total:.2f}") # self.pier falls through to class
+
+b1 = Excursion("Okafor", "Snorkel Adventure", 3)     # rate defaults to 79.00
+b2 = Excursion("Chen", "Old Town Walk")              # both defaults
+b3 = Excursion("Rivera", "Reef Dive", rate=129.00)   # by NAME: party_size stays 2
+
+for b in [b1, b2, b3]:
+    b.print_receipt()
+
+print("--- pier change ---")
+Excursion.pier = "Terminal F"                    # turn the ONE shared dial
+for b in [b1, b2, b3]:
+    b.print_receipt()</code></pre></div>
+  <div class="out">Okafor - Snorkel Adventure x3 from Terminal J: $237.00
+Chen - Old Town Walk x2 from Terminal J: $158.00
+Rivera - Reef Dive x2 from Terminal J: $258.00
+--- pier change ---
+Okafor - Snorkel Adventure x3 from Terminal F: $237.00
+Chen - Old Town Walk x2 from Terminal F: $158.00
+Rivera - Reef Dive x2 from Terminal F: $258.00</div>
+
+  <h3>Task 5 — expected answer</h3>
+  <p><b>All three</b> receipt lines change pier. <code>pier</code> lives in the class namespace; every instance's <code>self.pier</code> lookup misses in the instance namespace and falls through to the class — one dial, all instances.</p>
+
+  <h3>Wrong / right grid</h3>
+  <div class="table-wrap"><table>
+    <tr><th class="wrong">What teams will write (wrong)</th><th>What happens</th><th>The fix (right)</th></tr>
+    <tr><td class="wrong-cell"><b><code>Excursion("Rivera", "Reef Dive", 129.00)</code></b></td><td>129.00 lands in <code>party_size</code>, rate stays 79.00 — receipt reads <code>x129.0</code> with total <code>$10191.00</code>. Runs without error; watch how many teams don't notice</td><td>Pass by name: <code>rate=129.00</code> — order-free and self-documenting</td></tr>
+    <tr><td class="wrong-cell"><b><code>b1.pier = "Terminal F"</code></b> for task 5</td><td>Creates an <i>instance</i> attribute on b1 that shadows the class attribute — only b1's receipt changes</td><td><code>Excursion.pier = "Terminal F"</code> — mutate the class namespace</td></tr>
+    <tr><td class="wrong-cell"><b><code>self.pier = "Terminal J"</code></b> inside __init__</td><td>Runs, but now every instance owns a private copy — task 5 then changes <i>nothing</i>, contradicting the lesson</td><td>Define <code>pier</code> in class scope, outside all methods</td></tr>
+    <tr><td class="wrong-cell"><b><code>${total:.2}</code></b> or <code>round(total)</code></td><td>Wrong decimals ("$2.4e+02"-style surprises with :.2)</td><td><code>{total:.2f}</code> — the f matters</td></tr>
+  </table></div>
+
+  <h3>Bonus extensions (fast teams)</h3>
+  <ul>
+    <li>Add a class attribute <code>port_fee = 5.00</code> per person and fold it into the total.</li>
+    <li>Ask: "What prints for <code>b1.pier</code> if you did the b1.pier shadow-write, then reset with <code>del b1.pier</code>?" (Lookup falls back to class again — nice namespace proof.)</li>
+  </ul>
+
+  <div class="callout debrief"><p><b>Debrief script (3 min):</b> The gold is the <b>positional 129.00 bug</b> — at least one team will have a $10k+ snorkel trip and not blink. Put their (anonymized) receipt on screen and ask the room what's wrong before revealing. Then show the shadow-write variant (<code>b1.pier = ...</code>) in 30 seconds: instance namespace wins, class untouched. That's Quick Check 2 knowledge cashing out.</p></div>
+  <div class="callout"><p><b>Key takeaway to say out loud:</b> "Defaults answer 'what's typical?' Class attributes answer 'what's true for everyone?' Instance attributes answer 'what's true for this one?'"</p></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="b3">
+  <p class="eyebrow">Breakout 3 · ~7:35 PM · 8 minutes</p>
+  <h2>🍎 Galley Inventory — derive it</h2>
+  <div class="recap"><b>Problem recap:</b> Derive <code>Perishable</code> from the deck's <code>Item</code> class; call <code>Item.__init__(self)</code>; add <code>expiration</code> and <code>display_full()</code> that reuses the inherited <code>display()</code>; instantiate one of each; answer the Dwelling/House method-count question.</div>
+
+  <h3>Base solution — annotated</h3>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">galley_solution.py</span></div>
+<pre><code class="language-python">class Item:                                    # base class (from the slide)
+    def __init__(self):
+        self.name = ""
+        self.quantity = 0
+    def set_name(self, nm):
+        self.name = nm
+    def set_quantity(self, qnty):
+        self.quantity = qnty
+    def display(self):
+        print(self.name, self.quantity)
+
+class Perishable(Item):                        # derived: inherits Item's methods
+    def __init__(self):
+        Item.__init__(self)                    # REQUIRED: builds name/quantity
+        self.expiration = ""                   # then add the new attribute
+    def set_expiration(self, expir):
+        self.expiration = expir
+    def display_full(self):
+        self.display()                         # reuse the inherited method
+        print(f"  (Expires: {self.expiration})")
+
+dry = Item()
+dry.set_name("Rice")
+dry.set_quantity(120)
+dry.display()
+
+cold = Perishable()
+cold.set_name("Mangoes")                       # inherited from Item
+cold.set_quantity(60)                          # inherited from Item
+cold.set_expiration("Jul 24, 2026")
+cold.display_full()</code></pre></div>
+  <div class="out">Rice 120
+Mangoes 60
+  (Expires: Jul 24, 2026)</div>
+
+  <h3>Task 4 — expected answer</h3>
+  <p><b>3 methods</b>: <code>open_door()</code> (inherited from Dwelling) + <code>open_window()</code> + <code>open_basement()</code>. This is verbatim zyBooks 10.6.4 — it will feel like free points to teams who did the reading, which is exactly the message.</p>
+
+  <h3>Wrong / right grid</h3>
+  <div class="table-wrap"><table>
+    <tr><th class="wrong">What teams will write (wrong)</th><th>What happens</th><th>The fix (right)</th></tr>
+    <tr><td class="wrong-cell"><b>Omitting <code>Item.__init__(self)</code></b></td><td><code>AttributeError: 'Perishable' object has no attribute 'name'</code> the moment <code>display()</code> runs — instance attributes are not inherited automatically</td><td>Call the base constructor first line of the derived constructor</td></tr>
+    <tr><td class="wrong-cell"><b><code>Item.__init__()</code></b> — forgot to pass self</td><td><code>TypeError: __init__() missing 1 required positional argument: 'self'</code> — explicit base-class calls do NOT auto-insert the instance</td><td><code>Item.__init__(self)</code></td></tr>
+    <tr><td class="wrong-cell"><b><code>self.display(self)</code></b> in display_full</td><td><code>TypeError: display() takes 1 positional argument but 2 were given</code> — the mirror image of the forgot-self bug</td><td><code>self.display()</code> — dot call auto-inserts self</td></tr>
+    <tr><td class="wrong-cell"><b>Task 4 answer: "2"</b></td><td>Team forgot inherited methods count</td><td>Derived instances can call base methods: 1 + 2 = 3</td></tr>
+  </table></div>
+
+  <h3>Bonus extensions (fast teams)</h3>
+  <ul>
+    <li>Derive <code>Frozen(Perishable)</code> adding <code>freezer_deck</code> — a two-level tree, mirroring Item → Produce → Fruit from the slide.</li>
+    <li>Pythonic detour: replace the setters with direct attribute writes (<code>cold.name = "Mangoes"</code>) and discuss why zyBooks' getter/setter style is a Java accent, not Python's.</li>
+  </ul>
+
+  <div class="callout debrief"><p><b>Debrief script (2–3 min):</b> Run the broken no-base-constructor version live first — the <code>AttributeError</code> is the teachable crash, and it lands better as a demo than a warning. Trace it in Python Tutor Demo 2 if the room looks shaky. Collect task-4 numbers in chat <i>before</i> revealing; wrong answers of "2" tell you who thinks inheritance only flows to new methods. Keep this one tight — it's the last breakout before break and the room will be fading.</p></div>
+  <div class="callout"><p><b>Key takeaway to say out loud:</b> "Methods are inherited for free. Instance attributes are not — you must invite the base constructor to the party."</p></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="b4">
+  <p class="eyebrow">Breakout 4 · ~8:30 PM · 10 minutes</p>
+  <h2>🌡️ Lord Kelvin gets modularized</h2>
+  <div class="recap"><b>Problem recap:</b> Refactor last week's converter: math in <code>temp_tools.py</code>, UI in <code>main.py</code>. Add an unguarded self-test to the module, observe the import side effect, then fix it with the <code>__name__ == "__main__"</code> guard. Stretch: switch to <code>from</code>-imports.</div>
+
+  <h3>Base solution — annotated</h3>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">temp_tools.py (final, guarded)</span></div>
+<pre><code class="language-python"># temp_tools.py - reusable conversion module
+def c_to_f(c):
+    return c * 9 / 5 + 32
+
+def c_to_k(c):
+    return c + 273.15
+
+if __name__ == "__main__":          # True ONLY when run directly
+    # self-test: fires on  python temp_tools.py,  silent on import
+    print(c_to_f(100))              # expect 212.0
+    print(c_to_k(0))                # expect 273.15</code></pre></div>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">main.py</span></div>
+<pre><code class="language-python"># main.py - user interface script
+import temp_tools                   # executes the module ONCE (sys.modules)
+
+c = float(input("Enter Celsius: "))
+print(f"{temp_tools.c_to_f(c):.2f} F")
+print(f"{temp_tools.c_to_k(c):.2f} K")</code></pre></div>
+  <div class="out">Enter Celsius: 25
+77.00 F
+298.15 K</div>
+
+  <h3>Task 3 — expected answer</h3>
+  <p>With the <i>unguarded</i> self-test, running <code>main.py</code> prints <code>212.0</code> and <code>273.15</code> <b>before the input prompt even appears</b>. Why: <code>import temp_tools</code> executes every top-level statement in the module — imports are execution, not inclusion. The guard makes the self-test conditional on being the executing script (<code>__name__</code> is <code>"__main__"</code>) rather than an import (<code>__name__</code> is <code>"temp_tools"</code>).</p>
+
+  <h3>Wrong / right grid</h3>
+  <div class="table-wrap"><table>
+    <tr><th class="wrong">What teams will write (wrong)</th><th>What happens</th><th>The fix (right)</th></tr>
+    <tr><td class="wrong-cell"><b><code>import temp_tools.py</code></b></td><td><code>ModuleNotFoundError: No module named 'temp_tools.py'</code> — the .py reads as a dotted package path</td><td><code>import temp_tools</code> — no extension, ever</td></tr>
+    <tr><td class="wrong-cell"><b><code>print(c_to_f(c))</code></b> after plain <code>import temp_tools</code></td><td><code>NameError: name 'c_to_f' is not defined</code> — plain import adds only the module name</td><td>Prefix it (<code>temp_tools.c_to_f</code>) or use the stretch's <code>from</code>-import</td></tr>
+    <tr><td class="wrong-cell"><b><code>if __name__ == "main":</code></b> or <code>'__main__'</code> with one underscore</td><td>Condition silently never True — self-test never runs, team declares victory for the wrong reason</td><td>Exactly <code>"__main__"</code>: two underscores each side. Have them run <code>temp_tools.py</code> directly to prove the test still fires</td></tr>
+    <tr><td class="wrong-cell"><b>Files in different folders</b></td><td><code>ModuleNotFoundError</code> despite perfect code — sys.path rule 2a: script's own directory</td><td>Keep module and script side by side (tonight's 11.5 slide)</td></tr>
+  </table></div>
+
+  <h3>Bonus extensions (fast teams)</h3>
+  <ul>
+    <li>Add <code>f_to_c(f)</code> and re-run only the module's self-test — no changes needed in main.py: that's the maintainability win, name it.</li>
+    <li>Ask them to predict: does importing temp_tools <i>twice</i> print the self-test twice with the guard removed? (No — sys.modules caches; step 1 of the import process.)</li>
+  </ul>
+
+  <div class="callout debrief"><p><b>Debrief script (4 min):</b> Task 3 is the whole activity — collect one-sentence "why" answers in chat and read two aloud; you want the phrase "import runs the file" from a student's mouth, not yours. Verify at least one team demos <i>both</i> runs (main.py silent, temp_tools.py chatty) — that two-sided test is the comprehension check, and it's un-fakeable with AI because it requires running code in front of you. Land the DNA-project connection hard: "Your DNA search functions go in a module. Your script gets this guard. I will be looking for it."</p></div>
+  <div class="callout"><p><b>Key takeaway to say out loud:</b> "A module is a program that got promoted. The guard is how it stays polite when other programs hire it."</p></div>
+</section>
+
+</div>
+
+<footer>
+  COP 1047C · Lecture 11 Breakout Solutions · Confidential — instructor use only until after lecture · <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

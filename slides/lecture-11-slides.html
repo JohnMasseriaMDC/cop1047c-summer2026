@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 11 — Chapters 10 &amp; 11: Classes &amp; Modules | COP 1047C</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+/* ============================================================
+   ACCESSIBILITY / CONTRAST NOTES (WCAG 2.1 AA)
+   Background: #080c14 (near-black navy)
+   All body/small text colors verified >= 4.5:1 against #080c14
+   and against card background #0e1523:
+     --text      #e8eef6  -> ~16.5:1
+     --muted     #a9b4c4  -> ~ 8.9:1   (safe for small text)
+     --amber     #fbbf24  -> ~10.9:1
+     --teal      #5eead4  -> ~11.9:1
+     --green     #7ee787  -> ~11.6:1
+     --red       #ff8f8f  -> ~ 8.2:1
+     --code-com  #9aa7b8  -> ~ 7.6:1   (Prism comment override)
+   Nothing smaller than 18px uses a color below 4.5:1.
+   ============================================================ */
+:root{
+  --bg:#080c14;
+  --card:#0e1523;
+  --card2:#101a2c;
+  --border:#22304a;
+  --text:#e8eef6;
+  --muted:#a9b4c4;
+  --amber:#fbbf24;
+  --teal:#5eead4;
+  --green:#7ee787;
+  --red:#ff8f8f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Outfit',sans-serif;
+  overflow:hidden;
+}
+/* JetBrains Mono ligature suppression — REQUIRED so <=, >=, ==, != render literally */
+pre,code,kbd{
+  font-family:'JetBrains Mono',monospace !important;
+  font-variant-ligatures:none !important;
+  font-feature-settings:"liga" 0,"calt" 0 !important;
+}
+/* progress bar */
+#progress{position:fixed;top:0;left:0;height:4px;background:var(--amber);width:0%;z-index:60;transition:width .25s ease}
+/* fixed slide header */
+.slide-header{
+  position:fixed;top:4px;left:0;right:0;height:58px;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;background:rgba(8,12,20,.92);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--border);
+}
+.header-top{max-width:900px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
+.chapter-tag{
+  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+  color:var(--amber);letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid var(--border);border-radius:6px;padding:4px 10px;background:var(--card);
+}
+.slide-title-hdr{font-size:15px;font-weight:600;color:var(--muted)}
+.mdc-badge{font-size:13px;font-weight:700;color:var(--text);letter-spacing:.04em}
+.mdc-badge span{color:var(--amber)}
+/* slide body */
+.deck{height:100vh;padding:78px 28px 74px;display:flex;justify-content:center}
+.slide{display:none;width:100%;max-width:960px;overflow-y:auto;padding-bottom:12px}
+.slide.active{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h1{font-size:34px;font-weight:800;line-height:1.15;margin-bottom:14px}
+h2{font-size:24px;font-weight:700;margin:18px 0 10px}
+h1 .accent,h2 .accent{color:var(--amber)}
+p,li{font-size:18px;line-height:1.55;color:var(--text)}
+.lead{font-size:20px;color:var(--muted)}
+ul.points{margin:12px 0 12px 22px}
+ul.points li{margin-bottom:9px}
+ul.points li b{color:var(--amber);font-weight:600}
+.pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+  color:var(--teal);border:1px solid var(--border);border-radius:999px;padding:3px 12px;
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;background:var(--card)}
+.pill.breakout{color:var(--bg);background:var(--amber);border-color:var(--amber)}
+.pill.quiz{color:var(--bg);background:var(--teal);border-color:var(--teal)}
+/* hero */
+.hero{display:flex;flex-direction:column;justify-content:center;min-height:70vh;text-align:left}
+.hero h1{font-size:52px;margin-bottom:16px}
+.hero .sub{font-size:22px;color:var(--muted);margin-bottom:26px}
+.hero .meta{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--muted)}
+.hero .meta b{color:var(--amber);font-weight:600}
+/* cards, callouts */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin:12px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+.callout{border-left:4px solid var(--amber);background:var(--card);border-radius:0 10px 10px 0;padding:14px 16px;margin:14px 0}
+.callout.warn{border-left-color:var(--red)}
+.callout.info{border-left-color:var(--teal)}
+.callout b{color:var(--amber)}
+.callout.warn b{color:var(--red)}
+.callout.info b{color:var(--teal)}
+.callout p{font-size:17px}
+/* code blocks */
+.code-wrap{background:#0b111d;border:1px solid var(--border);border-radius:10px;margin:12px 0;overflow:hidden}
+.code-head{display:flex;align-items:center;gap:7px;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--card2)}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot-r{background:#f87171}.dot-y{background:var(--amber)}.dot-g{background:#4ade80}
+.code-head .fname{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);margin-left:6px}
+pre[class*="language-"]{margin:0;background:transparent !important;padding:14px 16px;font-size:15.5px;line-height:1.55}
+code[class*="language-"]{font-size:15.5px;text-shadow:none}
+/* Prism contrast overrides (comments/punctuation too dim by default) */
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color:#9aa7b8 !important}
+.token.punctuation{color:#c3ccd9 !important}
+.out{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--green);background:#0b111d;
+  border:1px dashed var(--border);border-radius:10px;padding:12px 16px;margin:10px 0;white-space:pre-wrap}
+/* tables */
+.table-wrap{overflow-x:auto;margin:12px 0;border:1px solid var(--border);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{background:var(--card2);color:var(--amber);text-align:left;padding:10px 14px;font-weight:600;border-bottom:1px solid var(--border)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
+tr:last-child td{border-bottom:none}
+td code,li code,p code{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:1px 7px;font-size:14.5px;color:var(--teal)}
+/* quiz */
+.q{margin:14px 0}
+.q .prompt{font-weight:600;margin-bottom:8px}
+.reveal-btn{font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--bg);
+  background:var(--teal);border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-top:6px}
+.reveal-btn:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.answer{display:none;margin-top:10px}
+.answer.shown{display:block}
+/* activity blocks */
+.activity{background:linear-gradient(135deg,#141c2e,#0e1523);border:1px solid var(--amber);border-radius:14px;padding:20px 22px;margin:14px 0}
+.activity .task-num{font-family:'JetBrains Mono',monospace;color:var(--amber);font-weight:600;font-size:14px}
+.timer{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:15px;font-weight:600}
+.reminder-list{list-style:none;margin:12px 0}
+.reminder-list li{padding:11px 14px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:9px;font-size:17px}
+.reminder-list li b{color:var(--amber)}
+.reminder-list li .due{font-family:'JetBrains Mono',monospace;color:var(--teal);font-size:14.5px}
+/* nav */
+nav{position:fixed;bottom:0;left:0;right:0;height:58px;background:rgba(8,12,20,.94);
+  border-top:1px solid var(--border);z-index:50;display:flex;align-items:center}
+.nav-inner{max-width:900px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 20px}
+nav button{font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--text);
+  background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 16px;cursor:pointer}
+nav button:hover{border-color:var(--amber);color:var(--amber)}
+nav button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+#counter{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--muted);min-width:86px;text-align:center}
+.kbd-hint{position:fixed;bottom:66px;right:18px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);z-index:40}
+@media (max-width:760px){
+  .two-col{grid-template-columns:1fr}
+  .hero h1{font-size:36px}
+  h1{font-size:27px}
+  .slide-title-hdr{display:none}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="slide-header">
+  <div class="header-top">
+    <span class="chapter-tag" id="hdrTag">CH 10–11</span>
+    <span class="slide-title-hdr" id="hdrTitle">Classes &amp; Modules</span>
+    <span class="mdc-badge">MDC <span>COP 1047C</span></span>
+  </div>
+</header>
+
+<main class="deck" id="deck">
+
+<!-- ================= 1. HERO ================= -->
+<section class="slide" data-tag="Lecture 11" data-title="Chapters 10 &amp; 11">
+  <div class="hero">
+    <span class="pill">Tuesday, July 21, 2026 &nbsp;·&nbsp; 5:40 PM – 10:00 PM &nbsp;·&nbsp; MDC Live</span>
+    <h1>Classes &amp; <span class="accent">Modules</span></h1>
+    <p class="sub">Chapter 10 · Sections 10.1 – 10.6 &nbsp;+&nbsp; Chapter 11 · Sections 11.1 – 11.7 — how professionals organize code: bundle data with behavior, then package it for reuse.</p>
+    <p class="meta"><b>Part 1 (5:40–7:45):</b> Chapter 10 — Classes, with Breakouts 1–3<br>
+    <b>Part 2 (7:55–8:45):</b> Chapter 11 — Modules, with Breakout 4<br>
+    <b>Part 3 (8:45–9:45):</b> DNA Sequence Search project — full walkthrough on Canvas + Q&amp;A<br><br>
+    John Masseria · jmasseri@mdc.edu · West Campus, School of Engineering &amp; Technology</p>
+  </div>
+</section>
+
+<!-- ================= 2. AGENDA / OBJECTIVES ================= -->
+<section class="slide" data-tag="Agenda" data-title="Tonight's Objectives">
+  <span class="pill">Learning Objectives</span>
+  <h1>By the end of tonight, you will be able to…</h1>
+  <ul class="points">
+    <li><b>Explain what an object is</b> — data plus operations — and how abstraction hides internal details behind a clean interface. <i>(10.1)</i></li>
+    <li><b>Define a class</b> with the <code>class</code> keyword, initialize it with <code>__init__</code>, and create multiple independent instances. <i>(10.2)</i></li>
+    <li><b>Write instance methods</b> and explain what <code>self</code> is — and diagnose the classic "forgot self" error. <i>(10.3)</i></li>
+    <li><b>Distinguish class attributes from instance attributes</b> and predict which one a dot lookup finds. <i>(10.4)</i></li>
+    <li><b>Customize constructors</b> with required and default parameters. <i>(10.5)</i></li>
+    <li><b>Derive a class from a base class</b>, inherit its methods, and call the base constructor. <i>(10.6)</i></li>
+    <li><b>Split a program into modules</b>, import them four different ways, and explain the import process. <i>(11.1–11.3)</i></li>
+    <li><b>Reach for the standard library first</b>, explain how Python finds a module, and guard a script with <code>__name__ == "__main__"</code>. <i>(11.4–11.7)</i></li>
+    <li><b>Ask every DNA-project question you have</b> — tonight is the full walkthrough. <i>(Part 3)</i></li>
+  </ul>
+  <div class="callout info"><p><b>Flight plan:</b> Chapter 10 runs 5:45–7:45 with breakouts at ~6:25, ~7:05, and ~7:35. Break 7:45–7:55. Chapter 11 runs 7:55–8:45 with Breakout 4 at ~8:30. Then the DNA Sequence Search walkthrough at 8:45, and final-exam logistics before we close.</p></div>
+</section>
+
+<!-- ================= 10.1 ================= -->
+<section class="slide" data-tag="10.1" data-title="Objects">
+  <span class="pill">Section 10.1</span>
+  <h1>Objects: data + the operations <span class="accent">on that data</span></h1>
+  <ul class="points">
+    <li>The world is made of materials — wood, metal, fabric — but people think in <b>objects</b>: chairs, drawers, ovens.</li>
+    <li>Programs are made of variables and functions — but programmers think in objects too. An <b>object</b> is a grouping of <b>data (variables)</b> and <b>operations on that data (methods)</b>.</li>
+    <li>Mostly we care about the <i>operations</i>: a drawer's job is "put stuff in, take stuff out" — not "wood + metal bar."</li>
+    <li>Building a program as a collection of objects makes it more understandable, manageable, and correct.</li>
+  </ul>
+  <div class="two-col">
+    <div class="card"><h2 style="margin-top:0">Restaurant <span class="accent">object</span></h2>
+      <p><b style="color:var(--teal)">Data:</b> name, phone, reviews, cuisines</p>
+      <p><b style="color:var(--amber)">Operations:</b> set name/phone · add cuisine · add review · print all</p></div>
+    <div class="card"><h2 style="margin-top:0">CarOnLot <span class="accent">object</span></h2>
+      <p><b style="color:var(--teal)">Data:</b> sticker price, days on lot, original purchase price</p>
+      <p><b style="color:var(--amber)">Operations:</b> increment days on lot · decrease sticker price</p>
+      <p class="lead" style="font-size:15.5px;margin-top:6px">Not included: <code>todays_temperature</code>, <code>num_salespeople</code> — those belong to the <i>weather</i> and the <i>dealership</i>, not to one car.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-tag="10.1" data-title="Abstraction">
+  <span class="pill">Section 10.1</span>
+  <h1><span class="accent">Abstraction</span> — use the knobs, ignore the wiring</h1>
+  <ul class="points">
+    <li><b>Abstraction</b>: interact with an object at a high level while low-level details stay hidden. Also called <b>information hiding</b> or <b>encapsulation</b>.</li>
+    <li>An oven gives you a food compartment and a heat knob. Nobody reaches inside to adjust the flame.</li>
+    <li>Objects support abstraction by exposing only certain functions and hiding everything else.</li>
+    <li>An <b>abstract data type (ADT)</b> is a data type whose creation and update are constrained to specific, well-defined operations. A class can implement an ADT.</li>
+    <li><b>Built-in objects</b> are everywhere already: <code>mystr = "Hello!"</code> creates a <code>str</code> object bundling the value <i>and</i> methods like <code>mystr.lower()</code> and <code>mystr.isdigit()</code>. Same for <code>int</code>, <code>list</code>, <code>dict</code>…</li>
+  </ul>
+  <div class="callout"><p><b>You've been using objects all semester.</b> <code>my_list.append(5)</code>, <code>name.split()</code>, <code>codes.get("MIA")</code> — every dot was a method call on an object. Tonight you finally get to build your own.</p></div>
+</section>
+
+<!-- ================= 10.2 ================= -->
+<section class="slide" data-tag="10.2" data-title="The class Keyword">
+  <span class="pill">Section 10.2</span>
+  <h1><span class="accent">class</span> — define your own type</h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">time_class.py</span></div>
+<pre><code class="language-python">class Time:
+    """ Represents a time of day """
+    def __init__(self):
+        self.hours = 0
+        self.minutes = 0
+
+my_time = Time()      # instantiation
+my_time.hours = 7
+my_time.minutes = 15
+
+print(f"{my_time.hours} hours", end=" ")
+print(f"and {my_time.minutes} minutes")</code></pre></div>
+      <div class="out">7 hours and 15 minutes</div>
+    </div>
+    <div>
+      <ul class="points">
+        <li>A <b>class</b> defines a new type grouping data and functions. Its variables and functions are called <b>attributes</b>.</li>
+        <li><b>Instantiation</b> = "calling" the class like a function: <code>Time()</code>. Each call creates one <b>instance</b>.</li>
+        <li>Instantiation automatically runs <code>__init__</code> — the <b>constructor</b>, a method that sets up the new instance's initial state.</li>
+        <li><code>self</code> automatically references the instance being created: <code>self.hours = 0</code> creates the attribute <code>hours</code> on <i>this</i> instance.</li>
+        <li>Access attributes with the <b>attribute reference operator</b> <code>.</code> (dot notation / member operator).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout info"><p><b>Naming convention:</b> classes use initial caps on each word — <code>LunchMenu</code>, <code>CoinAmounts</code>, <code>PDFFileContents</code>. Variables stay <code>snake_case</code>. Following this makes code instantly readable.</p></div>
+</section>
+
+<section class="slide" data-tag="10.2" data-title="Multiple Instances">
+  <span class="pill">Section 10.2</span>
+  <h1>One class, <span class="accent">many instances</span></h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">two_times.py</span></div>
+<pre><code class="language-python">class Time:
+    def __init__(self):
+        self.hours = 0
+        self.minutes = 0
+
+time1 = Time()        # first instance
+time1.hours = 7
+time1.minutes = 30
+
+time2 = Time()        # second, completely separate instance
+time2.hours = 12
+time2.minutes = 45
+
+print(f"{time1.hours} hours and {time1.minutes} minutes")
+print(f"{time2.hours} hours and {time2.minutes} minutes")</code></pre></div>
+  <div class="out">7 hours and 30 minutes
+12 hours and 45 minutes</div>
+  <div class="callout warn"><p><b>Chapter 9 flashback — the alias trap rides again:</b> <code>time2 = Time()</code> makes a <i>new</i> object, but <code>time2 = time1</code> makes an <b>alias</b> — two names, one object. Change <code>time2.hours</code> and <code>time1.hours</code> changes too. Same reference model as lists.</p></div>
+</section>
+
+<!-- ================= QUICK CHECK 1 ================= -->
+<section class="slide" data-tag="Quick Check" data-title="Classes: Predictions">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Predict the output <span class="accent">before</span> you click</h1>
+  <div class="q"><p class="prompt">1) What prints?</p>
+  <div class="code-wrap"><pre><code class="language-python">class Person:
+    def __init__(self):
+        self.name = ""
+
+person1 = Person()
+username = "Noa"
+person1.name = username
+print(f"I am {person1.name}")</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">I am Noa</div><p class="lead" style="font-size:16px"><code>__init__</code> set <code>name</code> to <code>""</code>; the assignment then rebinds it to <code>"Noa"</code>.</p></div></div>
+  <div class="q"><p class="prompt">2) What is <code>time2.hours</code> after this runs?</p>
+  <div class="code-wrap"><pre><code class="language-python">time1 = Time()
+time1.hours = 7
+time2 = time1</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">7</div><p class="lead" style="font-size:16px"><code>time2 = time1</code> is an alias, not a new instance — both names point at the same object.</p></div></div>
+  <div class="q"><p class="prompt">3) True or false: <code>__init__</code> must be called explicitly, as in <code>t.__init__()</code>.</p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><b>False.</b> Instantiation — <code>t = Time()</code> — calls <code>__init__</code> automatically.</p></div></div>
+</section>
+
+<!-- ================= 10.3 ================= -->
+<section class="slide" data-tag="10.3" data-title="Instance Methods">
+  <span class="pill">Section 10.3</span>
+  <h1><span class="accent">Instance methods</span> — behavior lives in the class</h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">time_method.py</span></div>
+<pre><code class="language-python">class Time:
+    def __init__(self):
+        self.hours = 0
+        self.minutes = 0
+
+    def print_time(self):
+        print(f"Hours: {self.hours}", end=" ")
+        print(f"Minutes: {self.minutes}")
+
+time1 = Time()
+time1.hours = 7
+time1.minutes = 15
+time1.print_time()</code></pre></div>
+      <div class="out">Hours: 7 Minutes: 15</div>
+    </div>
+    <div>
+      <ul class="points">
+        <li>A function defined inside a class is an <b>instance method</b> — call it with dot notation: <code>time1.print_time()</code>.</li>
+        <li><code>self</code> is bound to the instance <i>automatically</i>: when <code>time1.print_time()</code> runs, <code>self</code> <i>is</i> <code>time1</code>. You never pass it yourself.</li>
+        <li>Inside the method, <code>self.hours</code> reaches that instance's attributes and other methods.</li>
+        <li><code>__init__</code> is a <b>special method</b> — double underscores before and after signal behavior the interpreter handles specially. Avoid double underscores in your own names.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-tag="10.3" data-title="The Forgotten self">
+  <span class="pill">Section 10.3</span>
+  <h1>The #1 rookie error: <span class="accent">forgetting self</span></h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">payroll_bug.py</span></div>
+<pre><code class="language-python">class Employee:
+    def __init__(self):
+        self.wage = 0
+        self.hours_worked = 0
+
+    def calculate_pay():        # BUG: forgot the self parameter
+        return self.wage * self.hours_worked
+
+alice = Employee()
+alice.wage = 9.25
+alice.hours_worked = 35
+print(f"Alice earned {alice.calculate_pay():.2f}")</code></pre></div>
+  <div class="out" style="color:var(--red)">TypeError: calculate_pay() takes 0 positional arguments but 1 was given</div>
+  <ul class="points">
+    <li>Every method call <b>automatically inserts the instance</b> as the first argument. Your parameter list must have a seat for it: <code>def calculate_pay(self):</code>.</li>
+    <li>Read that error message carefully — "takes 0 … but 1 was given" when <i>you</i> passed nothing is the fingerprint of a missing <code>self</code>. You <b>will</b> see this error. Now you can fix it in ten seconds.</li>
+  </ul>
+</section>
+
+<!-- ================= BREAKOUT 1 ================= -->
+<section class="slide" data-tag="Breakout 1" data-title="Cabin Class">
+  <span class="pill breakout">Breakout 1 · <span class="timer">10 minutes</span> · Teams of 3–4</span>
+  <h1>🛳️ The <span class="accent">Cabin</span> Class</h1>
+  <div class="activity">
+    <p class="task-num">SCENARIO</p>
+    <p>Guest services is replacing last week's cabin <i>dictionary</i> with something better: a proper <code>Cabin</code> class that bundles the data <b>and</b> the behavior.</p>
+    <p class="task-num" style="margin-top:10px">YOUR TASKS</p>
+    <ul class="points" style="margin-top:8px">
+      <li><b>1.</b> Define a class <code>Cabin</code> whose <code>__init__</code> creates three attributes: <code>number</code> = <code>""</code>, <code>guest</code> = <code>"Vacant"</code>, <code>deck</code> = <code>0</code>.</li>
+      <li><b>2.</b> Add an instance method <code>print_status(self)</code> that prints one line, e.g. <code>Cabin A102 (deck 7): Chen</code> — use an f-string.</li>
+      <li><b>3.</b> Create <b>two</b> instances: cabin <code>"A101"</code> on deck 7 with guest <code>"Rivera"</code>, and cabin <code>"B202"</code> on deck 8, still vacant. Call <code>print_status()</code> on both.</li>
+      <li><b>4. Predict, then run:</b> add <code>c3 = c1</code> and set <code>c3.guest = "Dubois"</code>. What does <code>c1.print_status()</code> show now, and <i>why</i>?</li>
+      <li><b>Stretch:</b> add a method <code>check_in(self, name)</code> that sets the guest — but prints a warning instead if the cabin is not <code>"Vacant"</code>.</li>
+    </ul>
+  </div>
+  <div class="callout"><p><b>Deliverable:</b> one team member pastes working code + output into the Teams channel. <b>Rule:</b> the typist must not be the person who solved it — explain it to your driver.</p></div>
+</section>
+
+<!-- ================= 10.4 ================= -->
+<section class="slide" data-tag="10.4" data-title="Class &amp; Instance Objects">
+  <span class="pill">Section 10.4</span>
+  <h1>Two kinds of objects: the <span class="accent">factory</span> and its products</h1>
+  <ul class="points">
+    <li>A program with user-defined classes contains <b>class objects</b> and <b>instance objects</b>.</li>
+    <li>The <b>class object</b> acts as a <b>factory</b>: calling it creates instance objects, each initialized by <code>__init__</code>.</li>
+    <li>Both are <b>namespaces</b> — named containers grouping data and functions — and the two namespaces are <i>linked</i>.</li>
+  </ul>
+  <div class="card">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:16px;text-align:center">
+      <span style="color:var(--amber)">Time</span> (class object) &nbsp;──creates──&gt;&nbsp; <span style="color:var(--teal)">time1</span>, <span style="color:var(--teal)">time2</span> (instance objects)
+    </p>
+  </div>
+  <div class="callout info"><p><b>🔍 Live demo — Python Tutor:</b> watch <code>__init__</code> build two separate Time instances, frame by frame.<br>
+  <a href="https://pythontutor.com/render.html#code=class%20Time%3A%0A%20%20%20%20def%20__init__%28self%29%3A%0A%20%20%20%20%20%20%20%20self.hours%20%3D%200%0A%20%20%20%20%20%20%20%20self.minutes%20%3D%200%0A%0Atime1%20%3D%20Time%28%29%0Atime1.hours%20%3D%205%0Atime1.minutes%20%3D%2030%0A%0Atime2%20%3D%20Time%28%29%0Atime2.hours%20%3D%207%0Atime2.minutes%20%3D%2045%0A&cumulative=false&curInstr=0&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=311&rawInputLstJSON=%5B%5D&textReferences=false" target="_blank" rel="noopener" style="color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:15px">Open Demo 1 in Python Tutor →</a></p></div>
+</section>
+
+<section class="slide" data-tag="10.4" data-title="Class vs Instance Attributes">
+  <span class="pill">Section 10.4</span>
+  <h1><span class="accent">Class attributes</span> vs. instance attributes</h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">marathon.py</span></div>
+<pre><code class="language-python">class MarathonRunner:
+    race_distance = 42.195   # class attribute
+                             # shared by ALL runners
+    def __init__(self):
+        self.speed = 0       # instance attribute
+                             # unique to EACH runner
+
+runner1 = MarathonRunner()
+runner2 = MarathonRunner()
+runner1.speed = 7.5
+runner2.speed = 8.0
+
+print(runner1.race_distance)   # 42.195
+print(runner2.race_distance)   # 42.195
+print(runner1.speed)           # 7.5
+print(runner2.speed)           # 8.0</code></pre></div>
+    </div>
+    <div>
+      <div class="table-wrap"><table>
+        <tr><th></th><th>Class attribute</th><th>Instance attribute</th></tr>
+        <tr><td><b>Defined</b></td><td>In class scope, outside methods</td><td>Via <code>self.x = ...</code> or <code>obj.x = ...</code></td></tr>
+        <tr><td><b>Shared?</b></td><td>One copy for <i>all</i> instances</td><td>Each instance has its own</td></tr>
+        <tr><td><b>Typical use</b></td><td>Constants, defaults, methods</td><td>Per-object state</td></tr>
+      </table></div>
+      <ul class="points" style="margin-top:10px">
+        <li>Methods are class attributes too — one shared definition.</li>
+        <li>Every marathon is 42.195 km; every runner has their own speed.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-tag="10.4" data-title="Namespace Lookup">
+  <span class="pill">Section 10.4</span>
+  <h1>Dot lookup: <span class="accent">instance first</span>, then class</h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">gmt_offset.py</span></div>
+<pre><code class="language-python">class Time:
+    gmt_offset = 0                    # class attribute — one shared dial
+
+    def __init__(self):
+        self.hours = 0                # instance attributes
+        self.minutes = 0
+
+    def print_time(self):
+        offset_hours = self.hours + self.gmt_offset   # local variable
+        print(f"Time -- {offset_hours}:{self.minutes}")
+
+time1 = Time(); time1.hours = 10; time1.minutes = 15
+time2 = Time(); time2.hours = 12; time2.minutes = 45
+
+Time.gmt_offset = -8      # turn ONE dial -> ALL instances change behavior
+time1.print_time()
+time2.print_time()</code></pre></div>
+  <div class="out">Time -- 2:15
+Time -- 4:45</div>
+  <ul class="points">
+    <li>Dot notation on an instance searches the <b>instance namespace first, then the class namespace</b>. <code>self.hours</code> finds instance data; <code>self.gmt_offset</code> falls through to the class.</li>
+    <li>If a class and instance attribute share a name, the <b>instance wins</b>. Good practice: don't create that collision.</li>
+  </ul>
+</section>
+
+<!-- ================= 10.5 ================= -->
+<section class="slide" data-tag="10.5" data-title="Constructor Parameters">
+  <span class="pill">Section 10.5</span>
+  <h1>Constructors with <span class="accent">parameters</span></h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">race_time.py</span></div>
+<pre><code class="language-python">class RaceTime:
+    def __init__(self, start_hrs, start_mins, end_hrs, end_mins, dist):
+        self.start_hrs = start_hrs      # save each argument as an
+        self.start_mins = start_mins    # instance attribute so every
+        self.end_hrs = end_hrs          # method can use it later
+        self.end_mins = end_mins
+        self.distance = dist
+
+    def print_pace(self):
+        total_minutes = (self.end_hrs - self.start_hrs) * 60 \
+                        + (self.end_mins - self.start_mins)
+        print(f"Avg pace (mins/mile): {total_minutes / self.distance:.2f}")
+
+race_time = RaceTime(5, 30, 6, 24, 5.0)   # arguments -> __init__
+race_time.print_pace()</code></pre></div>
+  <div class="out">Avg pace (mins/mile): 10.80</div>
+  <ul class="points">
+    <li>Add parameters after <code>self</code>; pass the matching arguments at instantiation: <code>RaceTime(5, 30, 6, 24, 5.0)</code>.</li>
+    <li>The pattern <code>self.distance = dist</code> is how a constructor argument <i>survives</i> — attributes persist; parameters vanish when <code>__init__</code> returns.</li>
+  </ul>
+</section>
+
+<section class="slide" data-tag="10.5" data-title="Default Parameters">
+  <span class="pill">Section 10.5</span>
+  <h1><span class="accent">Default values</span> — the typical case, pre-filled</h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">employees.py</span></div>
+<pre><code class="language-python">class Employee:
+    def __init__(self, name, wage=8.25, hours=20):
+        """ Default employee: part time, minimum wage """
+        self.name = name
+        self.wage = wage
+        self.hours = hours
+
+todd   = Employee("Todd")                 # all defaults
+jason  = Employee("Jason")                # all defaults
+tricia = Employee("Tricia", 12.50, 40)    # manager — overrides both
+
+for e in [todd, jason, tricia]:
+    print(f"{e.name} earns {e.wage * e.hours:.2f} per week")</code></pre></div>
+  <div class="out">Todd earns 165.00 per week
+Jason earns 165.00 per week
+Tricia earns 500.00 per week</div>
+  <ul class="points">
+    <li>Same <code>name=value</code> syntax as function defaults (Chapter 6). Required parameters come <b>first and in order</b>; defaulted ones are optional and can be passed by name in any order: <code>Employee("Ana", hours=40)</code>.</li>
+  </ul>
+</section>
+
+<!-- ================= QUICK CHECK 2 ================= -->
+<section class="slide" data-tag="Quick Check" data-title="Attributes &amp; Constructors">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Attributes &amp; constructors — <span class="accent">predict first</span></h1>
+  <div class="q"><p class="prompt">1) Is <code>area_code</code> a class attribute or an instance attribute?</p>
+  <div class="code-wrap"><pre><code class="language-python">class PhoneNumber:
+    area_code = "805"
+    def __init__(self):
+        self.number = "555-2231"</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><b>Class attribute</b> — defined in class scope, outside any method. (<code>number</code> is the instance attribute.)</p></div></div>
+  <div class="q"><p class="prompt">2) What prints?</p>
+  <div class="code-wrap"><pre><code class="language-python">class Rectangle:
+    def __init__(self, length, width):
+        self.length = length
+        self.width = width
+
+rectangle1 = Rectangle(1, 9)
+rectangle2 = Rectangle(6, 16)
+print(rectangle2.length)
+print(rectangle1.width)</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">6
+9</div><p class="lead" style="font-size:16px">Positional arguments map in order: <code>rectangle2.length</code> is 6, <code>rectangle1.width</code> is 9.</p></div></div>
+  <div class="q"><p class="prompt">3) Given <code>def __init__(self, name, grade=9, honors=False):</code> — what are the attributes after <code>Student("Tommy")</code>?</p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><code>name="Tommy"</code>, <code>grade=9</code>, <code>honors=False</code> — every default kicks in when no argument overrides it.</p></div></div>
+</section>
+
+<!-- ================= BREAKOUT 2 ================= -->
+<section class="slide" data-tag="Breakout 2" data-title="Excursion Bookings">
+  <span class="pill breakout">Breakout 2 · <span class="timer">10 minutes</span> · Same teams</span>
+  <h1>🎟️ Shore Excursion <span class="accent">Bookings</span></h1>
+  <div class="activity">
+    <p class="task-num">SCENARIO</p>
+    <p>The excursion desk sells tours. Every tour departs from the <i>same</i> pier, but each booking has its own guest, tour name, and party size. Most parties are 2 people at the standard $79 rate.</p>
+    <p class="task-num" style="margin-top:10px">YOUR TASKS</p>
+    <ul class="points" style="margin-top:8px">
+      <li><b>1.</b> Define class <code>Excursion</code> with a <b>class attribute</b> <code>pier = "Terminal J"</code>.</li>
+      <li><b>2.</b> Write <code>__init__(self, guest, tour, party_size=2, rate=79.00)</code> that saves all four as instance attributes.</li>
+      <li><b>3.</b> Add a method <code>print_receipt(self)</code> that prints, e.g.: <code>Okafor - Snorkel Adventure x3 from Terminal J: $237.00</code> (total = party_size * rate, 2 decimals).</li>
+      <li><b>4.</b> Create three bookings and print all receipts: Okafor / Snorkel Adventure / party of 3; Chen / Old Town Walk with all defaults; Rivera / Reef Dive, party of 2 at the VIP <code>rate=129.00</code> — pass it <b>by name</b>.</li>
+      <li><b>5. Predict, then run:</b> the pier changes! Execute <code>Excursion.pier = "Terminal F"</code> and reprint all three receipts. How many lines changed, and why?</li>
+    </ul>
+  </div>
+  <div class="callout"><p><b>Deliverable:</b> code + output + a one-sentence answer to task 5 in the Teams channel.</p></div>
+</section>
+
+<!-- ================= 10.6 ================= -->
+<section class="slide" data-tag="10.6" data-title="Derived Classes">
+  <span class="pill">Section 10.6</span>
+  <h1>Derived classes: <span class="accent">inherit</span>, then extend</h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">inventory.py</span></div>
+<pre><code class="language-python">class Item:                       # base class
+    def __init__(self):
+        self.name = ""
+        self.quantity = 0
+    def set_name(self, nm):
+        self.name = nm
+    def set_quantity(self, qnty):
+        self.quantity = qnty
+    def display(self):
+        print(self.name, self.quantity)
+
+class Produce(Item):              # derived from Item
+    def __init__(self):
+        Item.__init__(self)       # call base constructor
+        self.expiration = ""
+    def set_expiration(self, expir):
+        self.expiration = expir
+
+item2 = Produce()
+item2.set_name("Apples")          # inherited from Item!
+item2.set_quantity(40)
+item2.set_expiration("May 5, 2027")
+item2.display()                   # inherited from Item!</code></pre></div>
+      <div class="out">Apples 40</div>
+    </div>
+    <div>
+      <ul class="points">
+        <li><b>Derived class</b> = a class that <b>inherits</b> the class attributes (including methods) of a <b>base class</b>: <code>class Produce(Item):</code>.</li>
+        <li>Produce <i>is an</i> Item with one addition — no copy-pasting <code>set_name</code>, <code>display</code>, etc.</li>
+        <li>Instance attributes are <b>not</b> inherited automatically — call the base constructor yourself: <code>Item.__init__(self)</code> hands the new Produce instance to Item's <code>__init__</code>, which creates <code>name</code> and <code>quantity</code> on it.</li>
+        <li>Any class can be a base class; no changes to it are needed.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-tag="10.6" data-title="Inheritance Trees &amp; UML">
+  <span class="pill">Section 10.6</span>
+  <h1>Inheritance <span class="accent">trees</span> &amp; UML in 90 seconds</h1>
+  <div class="two-col">
+    <div>
+      <div class="card" style="text-align:center">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:15px;line-height:2">
+        <span style="color:var(--amber);border:1px solid var(--amber);border-radius:6px;padding:2px 12px">Item</span><br>
+        ▲ &nbsp;&nbsp;&nbsp;&nbsp; ▲<br>
+        <span style="border:1px solid var(--border);border-radius:6px;padding:2px 10px">Produce</span> &nbsp;
+        <span style="border:1px solid var(--border);border-radius:6px;padding:2px 10px">Book</span><br>
+        ▲ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ▲<br>
+        <span style="border:1px solid var(--border);border-radius:6px;padding:2px 10px">Fruit</span> &nbsp;&nbsp;
+        <span style="border:1px solid var(--border);border-radius:6px;padding:2px 10px">Textbook</span></p>
+      </div>
+      <ul class="points">
+        <li>A derived class can itself be a base: <code>class Fruit(Produce):</code></li>
+        <li>One base, many derived: <code>class Book(Item):</code></li>
+        <li>Multiple bases allowed: <code>class House(Dwelling, Property):</code></li>
+      </ul>
+    </div>
+    <div>
+      <ul class="points">
+        <li><b>UML class diagram:</b> a box lists the class name, data members, and methods; a solid line with a closed, unfilled arrowhead points from derived to base. The derived box shows only its <i>additional</i> members.</li>
+        <li>UML access symbols: <code>+</code> public, <code>-</code> private, <code>#</code> protected. <b>In Python, all attributes are public</b> — UML is language-independent, so the symbols exist anyway.</li>
+        <li><b>Pythonic note:</b> the getter/setter pattern (<code>item1.set_name("x")</code>) is common in Java/C++; in Python, plain attribute access — <code>item1.name = "x"</code> — is preferred.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout info"><p><b>🔍 Live demo — Python Tutor:</b> step through <code>Produce()</code> and watch <code>Item.__init__(self)</code> add <code>name</code> and <code>quantity</code> to the new instance before <code>expiration</code> appears.<br>
+  <a href="https://pythontutor.com/render.html#code=class%20Item%3A%0A%20%20%20%20def%20__init__%28self%29%3A%0A%20%20%20%20%20%20%20%20self.name%20%3D%20%22%22%0A%20%20%20%20%20%20%20%20self.quantity%20%3D%200%0A%0Aclass%20Produce%28Item%29%3A%0A%20%20%20%20def%20__init__%28self%29%3A%0A%20%20%20%20%20%20%20%20Item.__init__%28self%29%0A%20%20%20%20%20%20%20%20self.expiration%20%3D%20%22%22%0A%0Aitem1%20%3D%20Item%28%29%0Aitem2%20%3D%20Produce%28%29%0A&cumulative=false&curInstr=0&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=311&rawInputLstJSON=%5B%5D&textReferences=false" target="_blank" rel="noopener" style="color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:15px">Open Demo 2 in Python Tutor →</a></p></div>
+</section>
+
+<!-- ================= BREAKOUT 3 ================= -->
+<section class="slide" data-tag="Breakout 3" data-title="Galley Inventory">
+  <span class="pill breakout">Breakout 3 · <span class="timer">8 minutes</span> · Same teams</span>
+  <h1>🍎 Galley <span class="accent">Inventory</span> — derive it</h1>
+  <div class="activity">
+    <p class="task-num">SCENARIO</p>
+    <p>The ship's galley tracks supplies. Dry goods just need a name and quantity — but anything refrigerated also needs an expiration date and a "use it or lose it" check.</p>
+    <p class="task-num" style="margin-top:10px">YOUR TASKS — start from the Item class on the previous slide</p>
+    <ul class="points" style="margin-top:8px">
+      <li><b>1.</b> Derive a class <code>Perishable</code> from <code>Item</code>. Its constructor must call the base constructor, then add <code>self.expiration = ""</code>.</li>
+      <li><b>2.</b> Add a method <code>display_full(self)</code> that calls the <i>inherited</i> <code>display()</code>, then prints <code>&nbsp;&nbsp;(Expires: May 5, 2027)</code> on a second line.</li>
+      <li><b>3.</b> Create one plain <code>Item</code> (<code>"Rice"</code>, 120) and one <code>Perishable</code> (<code>"Mangoes"</code>, 60, expiring <code>"Jul 24, 2026"</code>) and display both.</li>
+      <li><b>4. Discuss &amp; answer in Teams:</b> if class <code>Dwelling</code> has <code>open_door()</code> and class <code>House(Dwelling)</code> adds <code>open_window()</code> and <code>open_basement()</code> — after <code>h = House()</code>, how many different methods can <code>h</code> call (ignoring constructors)?</li>
+    </ul>
+  </div>
+  <div class="callout"><p><b>Deliverable:</b> code + output + your task-4 number (with one sentence of justification) in the Teams channel.</p></div>
+</section>
+
+<!-- ================= BREAK ================= -->
+<section class="slide" data-tag="Break" data-title="10 Minutes">
+  <div class="hero">
+    <span class="pill">7:45 – 7:55 PM</span>
+    <h1>☕ Break — <span class="accent">10 minutes</span></h1>
+    <p class="sub">When we return: Chapter 11 — Modules. How Python programs stop being one giant file.</p>
+    <p class="meta">Back at <b>7:55 sharp</b>. Stretch. Hydrate. Do not <code>del</code> your teammates.</p>
+  </div>
+</section>
+
+<!-- ================= 11.1 ================= -->
+<section class="slide" data-tag="11.1" data-title="Modules">
+  <span class="pill">Section 11.1</span>
+  <h1><span class="accent">Modules</span> — write once, import everywhere</h1>
+  <div class="two-col">
+    <div>
+      <ul class="points">
+        <li>A <b>script</b> is a Python file passed to the interpreter. Close the interactive interpreter and everything is lost; scripts persist.</li>
+        <li>Copying the same functions into every script gets old fast. A <b>module</b> is a file of Python code that scripts, other modules, or the interpreter can <b>import</b>.</li>
+        <li>To <b>import</b> = execute the module's code and make its definitions available to the importer.</li>
+        <li>A module another program requires is called a <b>dependency</b>.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">my_funcs.py &nbsp;+&nbsp; main.py</span></div>
+<pre><code class="language-python"># my_funcs.py — the module
+def factorial(num):
+    x = 1
+    for i in range(1, num + 1):
+        x *= i
+    return x
+
+# main.py — the script
+import my_funcs
+n = int(input("Enter number: "))
+print(my_funcs.factorial(n))</code></pre></div>
+      <div class="out">Enter number: 5
+120</div>
+    </div>
+  </div>
+  <ul class="points">
+    <li><b>Rules:</b> the filename must end in <code>.py</code>; you import it <i>without</i> the extension; import names are <b>case-sensitive</b> (<code>import ABC</code> is not <code>import aBc</code>).</li>
+    <li><b>Good practice:</b> all imports at the <b>top</b> of the file — a reader sees every dependency at a glance.</li>
+  </ul>
+</section>
+
+<section class="slide" data-tag="11.1" data-title="The Import Process">
+  <span class="pill">Section 11.1</span>
+  <h1>What actually happens on <span class="accent">import</span></h1>
+  <div class="card">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:15.5px;line-height:1.9">
+    1&nbsp; Check <span style="color:var(--teal)">sys.modules</span> — already imported? Reuse the loaded module. Done.<br>
+    2&nbsp; Otherwise: create a new <span style="color:var(--amber)">module object</span> (a namespace for the module's definitions) and insert it into sys.modules.<br>
+    3&nbsp; Execute the module's code inside that namespace, then add the module to the <i>importer's</i> namespace.</p>
+  </div>
+  <ul class="points">
+    <li><b>sys.modules</b> is a dictionary of every loaded module — that's why importing the same module twice is free: step 1 short-circuits.</li>
+    <li>Because step 3 <i>executes</i> the module, any loose <code>print()</code> or <code>input()</code> in it runs at import time. Hold that thought — it becomes the whole point of Section 11.6.</li>
+    <li>Once imported, use dot notation: <code>my_funcs.factorial(5)</code>. You can even rebind a module's names — <code>HTTPServer.address = "www.yahoo.com"</code> — but only for the current run.</li>
+  </ul>
+</section>
+
+<!-- ================= 11.2 ================= -->
+<section class="slide" data-tag="11.2" data-title="from … import">
+  <span class="pill">Section 11.2</span>
+  <h1><span class="accent">from</span> module <span class="accent">import</span> name — skip the prefix</h1>
+  <div class="table-wrap"><table>
+    <tr><th>Style</th><th>Import statement</th><th>Using the name</th><th>What lands in your namespace</th></tr>
+    <tr><td>Whole module</td><td><code>import hashlib</code></td><td><code>hashlib.md5(data)</code></td><td>The module object <code>hashlib</code></td></tr>
+    <tr><td>Specific names</td><td><code>from hashlib import md5, sha1</code></td><td><code>md5(data)</code></td><td>Just <code>md5</code> and <code>sha1</code></td></tr>
+    <tr><td>Everything</td><td><code>from hashlib import *</code></td><td><code>md5(data)</code></td><td>Every public name — <b>avoid</b></td></tr>
+  </table></div>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">hasher.py</span></div>
+<pre><code class="language-python">from hashlib import md5, sha1
+
+text = "Whether 'tis nobler in the mind to suffer..."
+print(md5(text.encode("utf-8")).hexdigest())     # no hashlib. prefix</code></pre></div>
+  <ul class="points">
+    <li><code>from</code> copies <b>only the named definitions</b> into your namespace — the module name itself is not added.</li>
+    <li><b>Why <code>import *</code> is a trap:</b> a reader can't tell where any name came from, and identically-named imports silently overwrite each other. Reserve it for interactive interpreter sessions.</li>
+  </ul>
+</section>
+
+<!-- ================= 11.3 ================= -->
+<section class="slide" data-tag="11.3" data-title="Packages">
+  <span class="pill">Section 11.3</span>
+  <h1><span class="accent">Packages</span> — a directory of modules</h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">directory structure</span></div>
+<pre><code class="language-python">ASCIIArt/            # top-level package
+    __init__.py      # marks the directory as a package
+    canvas.py
+    figures/         # subpackage
+        __init__.py
+        cow.py
+    buildings/       # subpackage
+        __init__.py
+        barn.py</code></pre></div>
+    </div>
+    <div>
+      <ul class="points">
+        <li>A <b>package</b> is a directory that, when imported, gives access to the modules inside it. Big projects group related modules this way.</li>
+        <li>The directory <b>must contain <code>__init__.py</code></b> (often empty) to count as a package.</li>
+        <li>Packages prevent name collisions: <code>ASCIIArt.canvas</code> and <code>3DGraphics.canvas</code> can coexist.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="table-wrap"><table>
+    <tr><th>Goal</th><th>Statement</th><th>Call site</th></tr>
+    <tr><td>Whole package</td><td><code>import ASCIIArt</code></td><td>—</td></tr>
+    <tr><td>One module (full path)</td><td><code>import ASCIIArt.canvas</code></td><td><code>ASCIIArt.canvas.draw_canvas()</code></td></tr>
+    <tr><td>Module via <code>from</code></td><td><code>from ASCIIArt.figures import cow</code></td><td><code>cow.draw()</code></td></tr>
+    <tr><td>One function</td><td><code>from ASCIIArt.figures.cow import draw</code></td><td><code>draw()</code></td></tr>
+  </table></div>
+  <div class="callout info"><p><b>Fine print:</b> in <code>import y.z</code>, <code>z</code> must be a package, subpackage, or module. In <code>from x.y import z</code>, <code>z</code> may also be a function, class, or variable.</p></div>
+</section>
+
+<!-- ================= 11.4 ================= -->
+<section class="slide" data-tag="11.4" data-title="Standard Library">
+  <span class="pill">Section 11.4</span>
+  <h1>The <span class="accent">standard library</span> — batteries included</h1>
+  <div class="table-wrap"><table>
+    <tr><th>Module</th><th>What it gives you</th><th>You'd use it for…</th></tr>
+    <tr><td><code>math</code></td><td>Mathematical functions</td><td><code>math.cos(angle)</code>, <code>math.sqrt(x)</code></td></tr>
+    <tr><td><code>random</code></td><td>Random numbers &amp; choices</td><td>Shuffling a card deck, dice, sampling</td></tr>
+    <tr><td><code>datetime</code></td><td>Date and time objects</td><td>"What date is 30 days from today?"</td></tr>
+    <tr><td><code>time</code></td><td>Current time, sleeping</td><td><code>time.sleep(2)</code> between retries</td></tr>
+    <tr><td><code>os</code> / <code>sys</code></td><td>Operating-system &amp; interpreter info</td><td>Paths, environment, <code>sys.path</code></td></tr>
+    <tr><td><code>copy</code></td><td>Full copies of objects</td><td>Deep-copying nested lists (Ch 9 déjà vu)</td></tr>
+    <tr><td><code>urllib</code></td><td>URL handling</td><td>Requesting web pages</td></tr>
+    <tr><td><code>pdb</code></td><td>Interactive debugger</td><td>Stepping through a stubborn bug</td></tr>
+  </table></div>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">draw_until_ace.py</span></div>
+<pre><code class="language-python">import random
+
+deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", "A"] * 4
+random.shuffle(deck)
+card = random.choice(deck)     # the library did the hard part</code></pre></div>
+  <div class="callout"><p><b>Professional habit:</b> before writing <i>any</i> new project code, check whether the standard library (or a well-known package) already solved the problem. It usually has.</p></div>
+</section>
+
+<!-- ================= 11.5 ================= -->
+<section class="slide" data-tag="11.5" data-title="Finding Modules">
+  <span class="pill">Section 11.5</span>
+  <h1>How Python <span class="accent">finds</span> a module</h1>
+  <div class="card">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:15.5px;line-height:1.9">
+    1&nbsp; <span style="color:var(--amber)">Built-in modules</span> first — sys, time, math ship with Python.<br>
+    2&nbsp; Then the directories in <span style="color:var(--teal)">sys.path</span>:<br>
+    &nbsp;&nbsp;&nbsp;a. the executing script's own directory<br>
+    &nbsp;&nbsp;&nbsp;b. directories listed in the <span style="color:var(--teal)">PYTHONPATH</span> environment variable<br>
+    &nbsp;&nbsp;&nbsp;c. the Python installation directory</p>
+  </div>
+  <ul class="points">
+    <li>Simple projects: keep your module <b>next to your script</b> (that's rule 2a) and imports just work.</li>
+    <li>An <b>environment variable</b> lives in the operating system, not your script — every program can read it. Windows: <code>set PYTHONPATH="c:\dir1;c:\other\directory"</code>.</li>
+  </ul>
+  <div class="callout warn"><p><b>Never name your file after a built-in module.</b> Create your own <code>math.py</code> and... nothing breaks loudly — Python simply loads the <i>built-in</i> <code>math</code> first, and you'll spend an hour wondering why your functions "don't exist." Ask me how students discover this one.</p></div>
+</section>
+
+<!-- ================= 11.6 ================= -->
+<section class="slide" data-tag="11.6" data-title="__name__ Guard">
+  <span class="pill">Section 11.6</span>
+  <h1>The <span class="accent">__name__ == "__main__"</span> guard</h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">web_search.py</span></div>
+<pre><code class="language-python">def search_term(term):
+    # ... returns result URLs ...
+
+def stringify_result(term, domains, s):
+    # ... formats the results ...
+
+if __name__ == "__main__":
+    # Runs ONLY when executed as a script
+    print("Welcome to Web Search")
+    term = input("Enter search term: ")
+    print(search_term(term))</code></pre></div>
+    </div>
+    <div>
+      <ul class="points">
+        <li>Importing a module <b>executes all of its top-level code</b> — including prompts and prints. That's an unwanted <b>side effect</b> when another script just wants your functions.</li>
+        <li><code>__name__</code> is a string variable automatically added to every module: normally the module's name (<code>"web_search"</code>)…</li>
+        <li>…but for the <b>executing script</b> it is always <code>"__main__"</code>.</li>
+        <li>So the guard means: <i>"run this user interface only when I'm the program — stay quiet when I'm imported."</i></li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><p><b>This idiom is everywhere.</b> Open almost any real Python file on GitHub and you'll find it at the bottom. After tonight, your files should have it too — including your DNA project.</p></div>
+</section>
+
+<!-- ================= 11.7 ================= -->
+<section class="slide" data-tag="11.7" data-title="Reloading Modules">
+  <span class="pill">Section 11.7</span>
+  <h1><span class="accent">Reloading</span> a module without restarting</h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">long_running.py</span></div>
+<pre><code class="language-python">from importlib import reload
+import send_gmail
+
+# ... send_gmail.py's source code gets edited while we run ...
+
+reload(send_gmail)          # re-executes the module IN PLACE
+send_gmail.send(...)        # now uses the updated definitions</code></pre></div>
+  <ul class="points">
+    <li>Modules execute <b>once</b> at import — editing the source afterward changes nothing in the running program.</li>
+    <li><code>reload()</code> (from the <code>importlib</code> standard library module) re-executes the module and updates its namespace <b>in place</b>.</li>
+    <li>Useful for <b>long-running programs</b> — a web server updating one component without disconnecting every client.</li>
+  </ul>
+  <div class="callout warn"><p><b>Gotcha:</b> names imported with <code>from send_gmail import header</code> are <i>copies</i> — reloading the module does <b>not</b> update them. <code>send_gmail.header</code> shows the new value; your bare <code>header</code> keeps the old one.</p></div>
+</section>
+
+<!-- ================= QUICK CHECK 3 ================= -->
+<section class="slide" data-tag="Quick Check" data-title="Modules: Predictions">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Modules — <span class="accent">predict first</span></h1>
+  <div class="q"><p class="prompt">1) <code>arithmetic.py</code> contains <code>def calculate(number): return number + 3</code>. What does <code>main.py</code> print?</p>
+  <div class="code-wrap"><pre><code class="language-python">import arithmetic
+
+def calculate(number):
+    return number + 10
+
+print(arithmetic.calculate(5))
+print(calculate(5))</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">8
+15</div><p class="lead" style="font-size:16px">Two namespaces, two functions: <code>arithmetic.calculate</code> adds 3; the local <code>calculate</code> adds 10. No collision — that's the point of modules.</p></div></div>
+  <div class="q"><p class="prompt">2) You want to call <code>bake()</code> from <code>potato_pie.py</code> with no prefix. What's the import statement?</p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><code>from potato_pie import bake</code></p></div></div>
+  <div class="q"><p class="prompt">3) A script runs <code>import MyMod</code>. What is <code>MyMod.__name__</code>? What is the script's own <code>__name__</code>?</p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><code>MyMod.__name__</code> is <code>"MyMod"</code>; the executing script's is always <code>"__main__"</code>.</p></div></div>
+</section>
+
+<!-- ================= BREAKOUT 4 ================= -->
+<section class="slide" data-tag="Breakout 4" data-title="Modularize Lord Kelvin">
+  <span class="pill breakout">Breakout 4 · <span class="timer">10 minutes</span> · Same teams</span>
+  <h1>🌡️ Lord Kelvin gets <span class="accent">modularized</span></h1>
+  <div class="activity">
+    <p class="task-num">SCENARIO</p>
+    <p>Last week's temperature converter is one big file. Real engineering teams would split it: conversion math in a reusable module, user interface in a script. Tonight, you refactor.</p>
+    <p class="task-num" style="margin-top:10px">YOUR TASKS</p>
+    <ul class="points" style="margin-top:8px">
+      <li><b>1.</b> Create <code>temp_tools.py</code> containing two functions: <code>c_to_f(c)</code> returning <code>c * 9 / 5 + 32</code>, and <code>c_to_k(c)</code> returning <code>c + 273.15</code>.</li>
+      <li><b>2.</b> Create <code>main.py</code> that imports the module, asks the user for a Celsius value, and prints both conversions to 2 decimal places. Use the <code>import temp_tools</code> style.</li>
+      <li><b>3.</b> Add a quick self-test to the <b>bottom of temp_tools.py</b>: print <code>c_to_f(100)</code> and <code>c_to_k(0)</code>. Run <code>main.py</code>. What ugly thing happens, and <i>why</i>?</li>
+      <li><b>4.</b> Fix it with the <code>if __name__ == "__main__":</code> guard. Run <code>main.py</code> again and confirm the side effect is gone — then run <code>temp_tools.py</code> directly and confirm the self-test still fires.</li>
+      <li><b>Stretch:</b> change <code>main.py</code> to <code>from temp_tools import c_to_f, c_to_k</code> and update the calls.</li>
+    </ul>
+  </div>
+  <div class="callout"><p><b>Deliverable:</b> both files + a one-sentence answer to task 3 in the Teams channel. This exact refactor pattern is fair game on the final.</p></div>
+</section>
+
+<!-- ================= SUMMARY ================= -->
+<section class="slide" data-tag="Summary" data-title="Chapters 10–11 Recap">
+  <span class="pill">Chapters 10 &amp; 11 · Recap</span>
+  <h1>What you can do <span class="accent">now</span></h1>
+  <ul class="points">
+    <li><b>Objects</b> — data + operations, behind an abstraction. You've used them all semester; now you build them.</li>
+    <li><b>Classes</b> — <code>class Name:</code> defines a type; <code>__init__(self)</code> constructs each instance; dot notation reads and writes attributes.</li>
+    <li><b>Methods</b> — functions in a class; <code>self</code> is the instance, auto-inserted as the first argument. "takes 0 positional arguments but 1 was given" = forgot <code>self</code>.</li>
+    <li><b>Class vs instance attributes</b> — shared constant vs per-object state; lookups check the instance namespace first, then the class.</li>
+    <li><b>Constructors</b> — required parameters first and in order; defaults with <code>name=value</code>; save arguments as <code>self.x</code> so they persist.</li>
+    <li><b>Inheritance</b> — <code>class Derived(Base):</code> inherits class attributes and methods; call <code>Base.__init__(self)</code> to get the base's instance attributes.</li>
+    <li><b>Modules</b> — <code>import mod</code> vs <code>from mod import name</code>; imports execute the module once, cached in <code>sys.modules</code>.</li>
+    <li><b>Packages</b> — directories with <code>__init__.py</code>; dotted paths organize big projects.</li>
+    <li><b>The guard</b> — <code>if __name__ == "__main__":</code> keeps script behavior out of importers; <code>importlib.reload()</code> refreshes a module in a running program.</li>
+  </ul>
+</section>
+
+<!-- ================= PART 3: DNA PROJECT ================= -->
+<section class="slide" data-tag="Part 3" data-title="DNA Sequence Search">
+  <div class="hero">
+    <span class="pill breakout">Part 3 · 8:45 – 9:45 PM · Project Walkthrough</span>
+    <h1>🧬 DNA Sequence <span class="accent">Search</span> — the full walkthrough</h1>
+    <p class="sub">150 points. Due in nine days. Tonight we read the assignment together, line by line, on Canvas — and you leave with zero unanswered questions.</p>
+    <ul class="points">
+      <li><b>What we'll do:</b> open the assignment description on Canvas, walk the requirements, the input files, the expected output, and the grading rubric — then open Q&amp;A.</li>
+      <li><b>What tonight's material buys you:</b> your search logic belongs in <i>functions in a module</i>, your script gets the <code>__name__</code> guard, and your file reading is straight from Chapter 12. This project is the whole course in one program.</li>
+      <li><b>Bring your questions now</b> — next week is final-exam review, and July 30 is a hard deadline for <i>both</i> the project and the final.</li>
+    </ul>
+    <p class="meta">Start this <b>weekend</b>. A 150-point project started on July 28 is a bad plan, and you know it.</p>
+  </div>
+</section>
+
+<!-- ================= REMINDERS ================= -->
+<section class="slide" data-tag="Reminders" data-title="Due Dates">
+  <span class="pill">Admin</span>
+  <h1>Reminders &amp; <span class="accent">due dates</span></h1>
+  <ul class="reminder-list">
+    <li>📕 <b>Due TONIGHT 11:59 PM</b> — zyBook Ch 9 Lists &amp; Dictionaries Readings &amp; Labs <span class="due">7/21</span></li>
+    <li>📗 <b>Due next Tuesday</b> — zyBook Ch 10 Classes Reading assignment <span class="due">7/28</span></li>
+    <li>⭐ <b>Extra credit</b> — zyBook Ch 11 Modules Reading assignment. Optional, but easy points and straight off tonight's slides.</li>
+    <li>🧬 <b>DNA Sequence Search project (150 pts) AND the Final Exam — BOTH due <span class="due" style="font-size:17px">Thursday 7/30, 11:59 PM</span>.</b> Same day. Nine days out. Plan for both <i>now</i>.</li>
+    <li>📝 <b>Final Exam logistics</b> — opens <span class="due">Saturday 7/25</span>; must be completed using <b>Lockdown Browser with webcam proctoring</b> before <span class="due">11:59 PM Thursday 7/30</span>. Test your webcam and Lockdown Browser <i>this week</i> — not at 11:00 PM on the 30th.</li>
+    <li>📅 <b>Next Tuesday's lecture</b> is a comprehensive review for the final — bring every question you have. Last day of the semester is <span class="due">7/31</span>.</li>
+  </ul>
+  <div class="callout warn"><p><b>AI policy reminder</b> for the DNA project: AI tools may assist your understanding, but code entirely generated by AI is not permitted, and your usage must be cited and explained. You may be asked to run and explain your own program live — write code you understand.</p></div>
+</section>
+
+</main>
+
+<nav>
+  <div class="nav-inner">
+    <button onclick="goto(0)" aria-label="First slide">⏮ First</button>
+    <button onclick="step(-1)" aria-label="Previous slide">◀ Prev</button>
+    <span id="counter">1 / 1</span>
+    <button onclick="step(1)" aria-label="Next slide">Next ▶</button>
+    <button onclick="goto(slides.length-1)" aria-label="Last slide">Last ⏭</button>
+  </div>
+</nav>
+<div class="kbd-hint">← → navigate</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+let cur = 0;
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active', i===cur));
+  document.getElementById('counter').textContent = (cur+1) + ' / ' + slides.length;
+  document.getElementById('hdrTag').textContent = slides[cur].dataset.tag || 'CH 10–11';
+  document.getElementById('hdrTitle').textContent = slides[cur].dataset.title || '';
+  document.getElementById('progress').style.width = ((cur)/(slides.length-1)*100) + '%';
+  slides[cur].scrollTop = 0;
+}
+function step(d){ cur = Math.min(Math.max(cur+d,0), slides.length-1); render(); }
+function goto(i){ cur = i; render(); }
+document.addEventListener('keydown', e=>{
+  if(e.target.tagName==='BUTTON' && (e.key===' '||e.key==='Enter')) return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ') step(1);
+  else if(e.key==='ArrowLeft'||e.key==='PageUp') step(-1);
+  else if(e.key==='Home') goto(0);
+  else if(e.key==='End') goto(slides.length-1);
+});
+render();
+</script>
+</body>
+</html>
