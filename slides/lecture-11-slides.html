@@ -676,7 +676,12 @@ print(rectangle1.width)</code></pre></div>
   <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
   <div class="answer"><div class="out">6
 9</div><p class="lead" style="font-size:16px">Positional arguments map in order: <code>rectangle2.length</code> is 6, <code>rectangle1.width</code> is 9.</p></div></div>
-  <div class="q"><p class="prompt">3) Given <code>def __init__(self, name, grade=9, honors=False):</code> — what are the attributes after <code>Student("Tommy")</code>?</p>
+<div class="q"><p class="prompt">3) Given this class, what are the attributes after <code>Student("Tommy")</code>?</p>
+  <div class="code-wrap"><pre><code class="language-python">class Student:
+    def __init__(self, name, grade=9, honors=False):
+        self.name = name
+        self.grade = grade
+        self.honors = honors</code></pre></div>
   <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
   <div class="answer"><p><code>name="Tommy"</code>, <code>grade=9</code>, <code>honors=False</code> — every default kicks in when no argument overrides it.</p></div></div>
 </section>
