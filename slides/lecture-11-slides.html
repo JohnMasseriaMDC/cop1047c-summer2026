@@ -585,6 +585,21 @@ print(database_course.students)</code></pre></div>
   <div class="callout info"><p><b>Needs internet during lecture.</b> If the classroom Wi-Fi is unreliable, fall back to Option A's static screenshot slide instead.</p></div>
 </section>
 
+<!-- ================= 10.4e: LIVE TRACE — CORRECTED VERSION ================= -->
+<section class="slide" data-tag="10.4" data-title="Shared List Bug — Corrected">
+  <span class="pill">Section 10.4 · Live Trace · Corrected</span>
+  <h1>The <span class="accent">fix</span> — one list per instance</h1>
+  <div class="code-wrap" style="background:#e9edf2;padding:10px">
+    <div class="code-head" style="background:var(--card2);margin:-10px -10px 10px -10px;border-radius:10px 10px 0 0"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">Python Tutor — live embed (corrected)</span></div>
+    <iframe width="100%" height="500" frameborder="0" style="border-radius:6px;display:block" src="https://pythontutor.com/iframe-embed.html#code=class%20Course%3A%0A%20%20%20%20def%20__init__%28self%29%3A%20%0A%20%20%20%20%20%20%20%20self.students%20%3D%20%5B%5D%0A%0Apython_course%20%3D%20Course%28%29%0Adatabase_course%20%3D%20Course%28%29%0A%0Apython_course.students.append%28%22Ana%22%29%0A%23%20%5E%20MUTATES%20the%20ONE%20shared%20list%20-%0A%23%20%20%20no%20new%20attribute,%20no%20shadowing%0A%0Aprint%28database_course.students%29&codeDivHeight=400&codeDivWidth=350&curInstr=0&origin=opt-frontend.js&py=311"></iframe>
+  </div>
+  <ul class="points">
+    <li>Moving <code>students = []</code> into <code>def __init__(self): self.students = []</code> means every instance now gets its <b>own fresh list</b> at construction time — no more shared class-level list to mutate.</li>
+    <li>Step through: <code>python_course.students.append("Ana")</code> now only ever touches <code>python_course</code>'s own list. <code>database_course.students</code> stays <code>[]</code>.</li>
+  </ul>
+  <div class="callout info"><p><b>Needs internet during lecture.</b> Same tradeoff as Option B — have the static Option A slide ready as a Wi-Fi-safe fallback if you want a corrected-version screenshot too.</p></div>
+</section>
+
 <!-- ================= 10.5 ================= -->
 <section class="slide" data-tag="10.5" data-title="Constructor Parameters">
   <span class="pill">Section 10.5</span>
