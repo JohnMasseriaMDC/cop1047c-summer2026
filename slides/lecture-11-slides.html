@@ -507,6 +507,54 @@ Time -- 4:45</div>
   </ul>
 </section>
 
+<!-- ================= 10.4b: SHADOWING & MUTABLE TRAP ================= -->
+<section class="slide" data-tag="10.4" data-title="Shadowing &amp; the Mutable Trap">
+  <span class="pill">Section 10.4 · Deeper Dive</span>
+  <h1>Shadowing, and the <span class="accent">mutable class attribute</span> trap</h1>
+  <div class="two-col">
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">shadowing.py — rebinding</span></div>
+<pre><code class="language-python">class Student:
+    school_name = "Miami Dade College"
+
+student1 = Student()
+student2 = Student()
+
+student1.school_name = "Another College"
+# ^ REBINDS: creates an INSTANCE attribute
+#   on student1 that SHADOWS the class one
+
+print(student1.school_name)
+print(student2.school_name)
+print(Student.school_name)</code></pre></div>
+      <div class="out">Another College
+Miami Dade College
+Miami Dade College</div>
+    </div>
+    <div>
+      <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">roster_bug.py — mutating</span></div>
+<pre><code class="language-python">class Course:
+    students = []          # shared list - BUG!
+
+python_course = Course()
+database_course = Course()
+
+python_course.students.append("Ana")
+# ^ MUTATES the ONE shared list -
+#   no new attribute, no shadowing
+
+print(database_course.students)</code></pre></div>
+      <div class="out">['Ana']</div>
+      <p class="lead" style="font-size:15.5px">Ana enrolled in <i>every</i> course at once. Both instances' lookups fall through to the same list object in the class namespace.</p>
+    </div>
+  </div>
+  <ul class="points">
+    <li><b>Chapter 9, meet Chapter 10:</b> assignment <b>rebinds</b> a name (creating an instance attribute that shadows); <code>.append()</code> <b>mutates</b> the object the name points at (shared by everyone). Same reference model as lists — because it <i>is</i> lists.</li>
+    <li><b>The fix:</b> per-instance mutable state belongs in the constructor — <code>def __init__(self): self.students = []</code> — one fresh list per instance.</li>
+  </ul>
+  <div class="callout warn"><p><b>Rule of thumb:</b> class attributes are for <b>constants and defaults everyone shares</b> (<code>race_distance</code>, <code>pier</code>). Anything mutable that belongs to <i>one</i> object — lists, dicts, sets — gets created in <code>__init__</code> with <code>self.</code></p></div>
+</section>
+
 <!-- ================= 10.5 ================= -->
 <section class="slide" data-tag="10.5" data-title="Constructor Parameters">
   <span class="pill">Section 10.5</span>
