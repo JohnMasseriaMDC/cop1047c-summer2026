@@ -555,6 +555,36 @@ print(database_course.students)</code></pre></div>
   <div class="callout warn"><p><b>Rule of thumb:</b> class attributes are for <b>constants and defaults everyone shares</b> (<code>race_distance</code>, <code>pier</code>). Anything mutable that belongs to <i>one</i> object — lists, dicts, sets — gets created in <code>__init__</code> with <code>self.</code></p></div>
 </section>
 
+<!-- ================= 10.4c: LIVE TRACE — OPTION A (static) ================= -->
+<section class="slide" data-tag="10.4" data-title="Shared List Bug — Traced (Option A)">
+  <span class="pill">Section 10.4 · Live Trace · Option A</span>
+  <h1>Tracing the <span class="accent">shared list bug</span> — static capture</h1>
+  <div class="code-wrap">
+    <div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">Python Tutor — Course.students shared-list bug</span></div>
+    <img src="images/pythontutor-course-bug.png" alt="Python Tutor visualization showing python_course and database_course both pointing to the same Course class students list object; after python_course.students.append('Ana'), database_course.students also shows ['Ana']" style="width:100%;display:block">
+  </div>
+  <ul class="points">
+    <li>Both <code>python_course</code> and <code>database_course</code> instances resolve <code>self.students</code> to the <b>same</b> list object living in the <code>Course</code> class namespace — one arrow, one list, in the diagram.</li>
+    <li><code>python_course.students.append("Ana")</code> doesn't create anything new or shadow anything — it <b>mutates</b> that one shared list, so <code>database_course.students</code> shows <code>['Ana']</code> too.</li>
+  </ul>
+  <div class="callout info"><p><b>Full trace link (TinyURL it before class — never Bitly, it mangles the URL fragment):</b><br>
+  <a href="https://pythontutor.com/render.html#code=class%20Course%3A%0A%20%20%20%20students%20%3D%20%5B%5D%20%20%20%20%20%20%20%20%20%20%23%20shared%20list%20-%20BUG!%0A%0Apython_course%20%3D%20Course%28%29%0Adatabase_course%20%3D%20Course%28%29%0A%0Apython_course.students.append%28%22Ana%22%29%0A%23%20%5E%20MUTATES%20the%20ONE%20shared%20list%20-%0A%23%20%20%20no%20new%20attribute,%20no%20shadowing%0A%0Aprint%28database_course.students%29&cumulative=false&curInstr=0&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=311&rawInputLstJSON=%5B%5D&textReferences=false" target="_blank" rel="noopener" style="color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:15px;word-break:break-all">Open in Python Tutor →</a></p></div>
+</section>
+
+<!-- ================= 10.4d: LIVE TRACE — OPTION B (interactive) ================= -->
+<section class="slide" data-tag="10.4" data-title="Shared List Bug — Traced (Option B)">
+  <span class="pill">Section 10.4 · Live Trace · Option B</span>
+  <h1>Tracing the <span class="accent">shared list bug</span> — live &amp; interactive</h1>
+  <div class="code-wrap" style="background:#e9edf2;padding:10px">
+    <div class="code-head" style="background:var(--card2);margin:-10px -10px 10px -10px;border-radius:10px 10px 0 0"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">Python Tutor — live embed</span></div>
+    <iframe width="100%" height="500" frameborder="0" style="border-radius:6px;display:block" src="https://pythontutor.com/iframe-embed.html#code=class%20Course%3A%0A%20%20%20%20students%20%3D%20%5B%5D%20%20%20%20%20%20%20%20%20%20%23%20shared%20list%20-%20BUG!%0A%0Apython_course%20%3D%20Course%28%29%0Adatabase_course%20%3D%20Course%28%29%0A%0Apython_course.students.append%28%22Ana%22%29%0A%23%20%5E%20MUTATES%20the%20ONE%20shared%20list%20-%0A%23%20%20%20no%20new%20attribute,%20no%20shadowing%0A%0Aprint%28database_course.students%29&codeDivHeight=400&codeDivWidth=350&curInstr=5&origin=opt-frontend.js&py=311"></iframe>
+  </div>
+  <ul class="points">
+    <li>Click <b>Next</b> inside the embed and step through frame by frame — watch both instance arrows converge on the one <code>students</code> list before and after the <code>.append("Ana")</code> call.</li>
+  </ul>
+  <div class="callout info"><p><b>Needs internet during lecture.</b> If the classroom Wi-Fi is unreliable, fall back to Option A's static screenshot slide instead.</p></div>
+</section>
+
 <!-- ================= 10.5 ================= -->
 <section class="slide" data-tag="10.5" data-title="Constructor Parameters">
   <span class="pill">Section 10.5</span>
