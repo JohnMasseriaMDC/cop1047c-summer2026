@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 11: Classes &amp; Modules — COP 1047C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c14; --surface:#0f1724; --surface2:#16202e; --border:#1e2d42; --border2:#253347;
+  --accent:#f59e0b; --accent-dk:#d97706; --text:#e2e8f0; --muted:#7d93af;
+  --green-bg:#071510; --green-bdr:#0d3322; --green-txt:#34d399;
+  --mono:'JetBrains Mono','Courier New',monospace; --sans:'Outfit',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;}
+pre, code, kbd{
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "calt" 0 !important;
+}
+header{position:sticky;top:0;z-index:100;background:rgba(8,12,20,0.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:16px 24px;}
+.header-inner{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;}
+.course-tag{display:inline-block;background:var(--accent);color:#1a1005;font-weight:700;font-size:0.72rem;letter-spacing:0.06em;padding:3px 10px;border-radius:20px;text-transform:uppercase;}
+h1{font-size:1.3rem;margin:6px 0 2px;font-weight:700;}
+.meta{color:var(--muted);font-size:0.85rem;text-align:right;}
+nav{max-width:860px;margin:10px auto 0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:0.85rem;}
+nav a{color:var(--muted);text-decoration:none;border-bottom:1px dotted transparent;}
+nav a:hover{color:var(--accent);border-bottom-color:var(--accent);}
+main{max-width:860px;margin:0 auto;padding:20px 24px 80px;}
+html{scroll-padding-top:150px;scroll-behavior:smooth;}
+.section{padding:38px 0;border-bottom:1px solid var(--border);}
+.section:last-of-type{border-bottom:none;}
+.section-eyebrow{font-family:var(--mono);color:var(--accent);font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+h2{font-size:1.5rem;margin:0 0 18px;}
+h3{font-size:1.1rem;color:var(--text);margin:26px 0 10px;}
+p{color:#c9d5e3;}
+.topic-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--surface2);color:var(--accent);border-radius:6px;font-family:var(--mono);font-size:0.75rem;margin-right:8px;}
+.callout-warn, .callout-info, .callout-note{border-radius:10px;padding:16px 18px;margin:18px 0;font-size:0.94rem;}
+.callout-warn{background:#1a0d0d;border:1px solid #4a1f1f;color:#fca5a5;}
+.callout-info{background:#0a1420;border:1px solid #1e3a5f;color:#93c5fd;}
+.callout-note{background:#1a1408;border:1px solid #4a3a1a;color:#fcd34d;}
+.callout-warn strong, .callout-info strong, .callout-note strong{color:#fff;}
+.code-wrap{background:var(--surface);border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin:16px 0;}
+.code-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface2);border-bottom:1px solid var(--border2);}
+.dot-r{width:10px;height:10px;border-radius:50%;background:#ef4444;}
+.dot-y{width:10px;height:10px;border-radius:50%;background:#f59e0b;}
+.dot-g{width:10px;height:10px;border-radius:50%;background:#22c55e;}
+.code-filename{color:var(--muted);font-family:var(--mono);font-size:0.78rem;margin-left:4px;}
+pre{margin:0;padding:16px;overflow-x:auto;background:transparent !important;}
+code{font-family:var(--mono);font-size:0.87rem;}
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:0.9rem;}
+th{background:var(--surface2);color:var(--accent);text-align:left;padding:10px 12px;border-bottom:2px solid var(--border2);}
+td{padding:9px 12px;border-bottom:1px solid var(--border);color:#c9d5e3;}
+.activity{background:var(--green-bg);border:1px solid var(--green-bdr);border-radius:10px;padding:18px 20px;margin:18px 0;}
+.activity-tag{display:inline-block;background:var(--green-bdr);color:var(--green-txt);font-family:var(--mono);font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
+.reminder-list{margin:16px 0;}
+.reminder-list div{border-left:3px solid var(--accent);background:var(--surface);padding:10px 14px;margin-bottom:8px;border-radius:0 8px 8px 0;color:#c9d5e3;font-size:0.92rem;}
+footer{max-width:860px;margin:0 auto;padding:30px 24px 60px;color:var(--muted);font-size:0.85rem;border-top:1px solid var(--border);}
+footer a{color:var(--accent);text-decoration:none;}
+ul{color:#c9d5e3;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <span class="course-tag">COP 1047C</span>
+      <h1>Lecture 11: Classes &amp; Modules</h1>
+    </div>
+    <div class="meta">July 21, 2026 &middot; Chapters 10 &amp; 11 &middot; John Masseria</div>
+  </div>
+  <nav>
+    <a href="#objectives">Objectives</a>
+    <a href="#oop-concepts">Encapsulation &amp; Abstraction</a>
+    <a href="#classes-basics">Building a Class</a>
+    <a href="#aliasing">The Aliasing Gotcha</a>
+    <a href="#class-attrs">Class Attributes</a>
+    <a href="#params">Default &amp; Named Parameters</a>
+    <a href="#inheritance">Inheritance</a>
+    <a href="#gist">Sharing Code with GitHub Gist</a>
+    <a href="#modules-basics">Modules Basics</a>
+    <a href="#packages">Packages</a>
+    <a href="#hashing">Bonus: Hashing &amp; HTTPS</a>
+    <a href="#main-guard">The if __name__ Guard</a>
+    <a href="#venv">Virtual Environments</a>
+    <a href="#dna-project">DNA Sequence Search</a>
+    <a href="#looking-ahead">Final Exam Logistics</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="section" id="objectives">
+  <div class="section-eyebrow">Agenda</div>
+  <h2>🎯 What You'll Be Able to Do After Tonight</h2>
+  <p>This was the last full lecture of the semester. By the end of it, you should be able to:</p>
+  <ul>
+    <li>Explain encapsulation and abstraction, and why "hiding" implementation details behind an object's methods is good design</li>
+    <li>Write a class with <code>__init__</code>, instance attributes, and instance methods (including <code>self</code>)</li>
+    <li>Distinguish class attributes (shared by all instances) from instance attributes (unique per object)</li>
+    <li>Recognize the aliasing gotcha — assigning one object variable to another doesn't copy it</li>
+    <li>Use default and named parameters in a constructor</li>
+    <li>Explain inheritance: base classes, derived classes, and calling a parent's <code>__init__</code></li>
+    <li>Import modules and packages correctly, and explain why <code>from module import *</code> is discouraged</li>
+    <li>Explain what <code>if __name__ == "__main__":</code> does and why your DNA Sequence Search program needs it</li>
+    <li>Set up and use a Python virtual environment with <code>pip</code></li>
+  </ul>
+  <div class="reminder-list">
+    <div>📌 Only one more class session remains: a final exam review on <strong>July 28</strong>.</div>
+    <div>📌 The final exam (50 questions, LockDown Browser, same format as the midterm) will open early for testing — <strong>test your LockDown Browser this week</strong> before the real thing.</div>
+    <div>📌 Everything is due <strong>July 30</strong>: the final exam, the DNA Sequence Search project, and any remaining assignments.</div>
+    <div>📌 Chapter 11 reading remains extra credit; there's no lab component for either Chapter 10 or Chapter 11.</div>
+    <div>📌 Office hours this week: tomorrow and Thursday at 6 PM, plus weekend availability by request.</div>
+  </div>
+</section>
+
+<section class="section" id="oop-concepts">
+  <div class="section-eyebrow">Chapter 10 &middot; Object-Oriented Programming</div>
+  <h2>🔒 Encapsulation &amp; Abstraction: Why Objects Hide Their Insides</h2>
+  <p><span class="topic-num">1</span>You've been using objects all along without necessarily calling them that. Every time you call <code>my_string.lower()</code>, <code>my_list.append()</code>, or <code>my_dict.get()</code>, you're calling a method on an object. Python is a purely object-oriented language — strings, lists, dictionaries, floats, everything is an object.</p>
+  <div class="callout-info">
+    <strong>The core idea — a "contract," not a peek under the hood:</strong> when you call <code>math.sqrt(41)</code>, you don't need to know <em>how</em> it computes a square root (iterative averaging? a hardware floating-point instruction? a lookup table?) — you just need to know it takes a number and returns the square root. That's the contract. This is <strong>abstraction</strong>: the user of an object is shielded from its implementation details.
+  </div>
+  <p><strong>Encapsulation</strong> is the related idea that an object bundles its data and the operations on that data together, and controls access to that data through its methods rather than exposing it directly.</p>
+  <div class="callout-note">
+    <strong>Design example: storing age vs. storing a birthdate.</strong> A person's age changes every year (and depends on today's date), so storing "age" directly as a number is fragile — the value goes stale the moment the calendar turns over. The better design stores the birthdate (which never changes) and computes age on demand through a method. This also matters for a security reason: birthdate is personally identifiable information, something worth being deliberately careful with in any real system that handles guest or customer data.
+  </div>
+  <p>A "don't store data that doesn't belong to this object" rule applies broadly — a car-on-a-lot object shouldn't store the dealership's total salesperson count, and a restaurant object shouldn't store today's weather. If it's not intrinsic to that one object, it belongs somewhere else in your program.</p>
+</section>
+
+<section class="section" id="classes-basics">
+  <h2>🏗️ Building a Class: The Time Example</h2>
+  <p><span class="topic-num">2</span>A class definition includes a constructor (<code>__init__</code>) and any instance methods. <code>self</code> is the placeholder name (by convention — it could technically be anything) for a pointer to the specific object instance a method is operating on. Python passes it automatically when you call a method; you only write it explicitly in the method's own definition.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">time_class.py</span></div>
+    <pre><code class="language-python">class Time:
+    def __init__(self):
+        self.hours = 0
+        self.minutes = 0
+
+    def print_time(self):
+        print(f"{self.hours:02d}:{self.minutes:02d}")
+
+time1 = Time()
+time1.hours = 5
+time1.minutes = 30
+time1.print_time()   # 05:30</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>If you forget <code>self</code> in a method definition</strong>, you'll get an error like <code>takes 0 positional arguments but 1 was given</code> — because Python is always silently passing the object reference as the first argument, whether or not you declared a parameter to receive it.
+  </div>
+  <p>Other languages use different names for this same concept — Java and C++ typically use <code>this</code>. Python's convention is <code>self</code>. Python's equivalent of Java's <code>toString()</code> method (for defining how an object prints/displays itself) is <code>__str__</code>.</p>
+</section>
+
+<section class="section" id="aliasing">
+  <h2>⚠️ The Aliasing Gotcha</h2>
+  <p><span class="topic-num">3</span>This is one of the most important — and most commonly misunderstood — behaviors in Python. Assigning one variable to another doesn't copy the object; it creates a second name pointing to the <strong>same</strong> object.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">aliasing.py</span></div>
+    <pre><code class="language-python">time1 = Time()
+time1.hours = 7
+
+time2 = time1     # NOT a new Time object — an alias
+print(time2.hours)   # 7, because time2 IS time1</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>Real-world version: a cabin check-in system.</strong> If <code>cabin3 = cabin1</code>, then <code>cabin3</code> isn't a new cabin — it's another name for the exact same cabin object. Checking a guest into "cabin3" actually updates cabin1's occupancy, because there was never a second cabin created. If you need an independent copy rather than an alias, you have to explicitly construct a new object rather than just assigning one variable to another.
+  </div>
+</section>
+
+<section class="section" id="class-attrs">
+  <h2>🌐 Class Attributes vs. Instance Attributes</h2>
+  <p><span class="topic-num">4</span>An attribute defined inside <code>__init__</code> with <code>self.</code> is an <strong>instance attribute</strong> — every object gets its own separate copy. An attribute defined at the class level (outside any method, no <code>self</code>) is a <strong>class attribute</strong> — it's shared by every instance of that class.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">marathon_runner.py</span></div>
+    <pre><code class="language-python">class MarathonRunner:
+    race_distance_km = 42.195   # class attribute — shared by ALL runners
+
+    def __init__(self, speed):
+        self.speed = speed      # instance attribute — unique per runner
+
+runner1 = MarathonRunner(7.5)
+runner2 = MarathonRunner(8.0)
+print(runner1.race_distance_km)   # 42.195
+print(runner2.race_distance_km)   # 42.195 — same value, shared</code></pre>
+  </div>
+  <div class="callout-info">
+    <strong>Fallback lookup behavior:</strong> if you reference <code>self.some_name</code> inside a method and no instance attribute by that name exists, Python falls back to checking the class for a class attribute with that name. This is genuinely useful (a GMT-offset example used this to apply one shared offset across every <code>Time</code> instance), but it can also mask bugs — be intentional about which kind of attribute you actually mean to use.
+  </div>
+  <p>To update a class attribute, reference it through the class name (<code>MarathonRunner.race_distance_km = ...</code>), not through an instance — updating via the class name changes the value for every existing instance at once.</p>
+</section>
+
+<section class="section" id="params">
+  <h2>🎛️ Default and Named Parameters</h2>
+  <p><span class="topic-num">5</span>Constructor parameters can have default values, and can be passed by name in any order — which is exactly why descriptive parameter names (not single letters like <code>a</code>, <code>b</code>, <code>c</code>) matter.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">employee.py</span></div>
+    <pre><code class="language-python">class Employee:
+    def __init__(self, name, wage=8.25, hours=20):
+        self.name = name
+        self.wage = wage
+        self.hours = hours
+
+todd = Employee("Todd")                          # uses both defaults
+trisha = Employee("Trisha", wage=12.50, hours=40) # overrides both
+john = Employee(hours=40, wage=9, name="John")    # named args, any order</code></pre>
+  </div>
+  <p><code>name</code> has no default, so it's a required (positional) parameter — every <code>Employee</code> must be given one. <code>wage</code> and <code>hours</code> can be skipped, overridden positionally, or overridden by name in any order, as the <code>john</code> example shows.</p>
+</section>
+
+<section class="section" id="inheritance">
+  <h2>🧬 Inheritance: Building on a Base Class</h2>
+  <p><span class="topic-num">6</span>A class can inherit (or "derive") from another class, gaining everything the parent (<strong>base class</strong>) defines, and adding its own attributes and methods on top.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">grocery_inheritance.py</span></div>
+    <pre><code class="language-python">class Item:
+    def __init__(self):
+        self.name = ""
+        self.quantity = 0
+
+    def set_name(self, name):
+        self.name = name
+
+    def set_quantity(self, quantity):
+        self.quantity = quantity
+
+    def display(self):
+        print(f"{self.name}: {self.quantity}")
+
+class Produce(Item):
+    def __init__(self):
+        Item.__init__(self)      # calls the parent's constructor
+        self.expiration = ""
+
+    def set_expiration(self, date):
+        self.expiration = date
+
+apples = Produce()
+apples.set_name("Apples")
+apples.set_quantity(40)
+apples.set_expiration("2027-01-01")
+apples.display()   # "Apples: 40" — display() only knows about Item's fields</code></pre>
+  </div>
+  <div class="callout-note">
+    <strong>Terminology, all describing the same relationship:</strong> <code>Produce</code> "derives from," "inherits from," or "extends" <code>Item</code>. <code>Item</code> is the <strong>base class</strong>. Any class can itself be a base class for something else — a grocery store's hierarchy might go <code>Item</code> → <code>Produce</code> → <code>Fruit</code>, with each level in the chain needing to call its immediate parent's <code>__init__</code>, cascading all the way up. This kind of class hierarchy is often documented with <strong>UML</strong> (Unified Modeling Language) diagrams — a notation used for both object designs and database schemas.
+  </div>
+  <div class="callout-warn">
+    <strong>Every class already inherits from something.</strong> Even a class with nothing in parentheses after its name (<code>class Item:</code>) implicitly inherits from Python's built-in <code>object</code> class — there's no such thing as a completely standalone class in Python.
+  </div>
+</section>
+
+<section class="section" id="gist">
+  <div class="section-eyebrow">Tooling</div>
+  <h2>🔗 Sharing Code with GitHub Gist</h2>
+  <p><span class="topic-num">7</span>A <a href="https://gist.github.com" target="_blank" rel="noopener">GitHub Gist</a> is a lightweight way to share a code snippet via a URL — useful for breakout collaboration without needing a full repository. Creating one requires a free GitHub account.</p>
+  <div class="callout-warn">
+    <strong>Secret gists are not private.</strong> A "secret" gist just isn't publicly listed or searchable — anyone with the URL can still view it (though they can't edit it without their own account). Never put real secrets (passwords, API keys, personal data) into a gist, secret or not. GitHub also keeps a full revision history: editing a secret out of a gist doesn't erase it — the original version is still reachable through the revision history. Treat anything ever committed as permanently visible.
+  </div>
+</section>
+
+<section class="section" id="modules-basics">
+  <div class="section-eyebrow">Chapter 11 &middot; Modules</div>
+  <h2>📦 Modules: Splitting Code Across Files</h2>
+  <p><span class="topic-num">8</span>You've been using modules since early in the course — <code>math</code>, <code>sys</code>, <code>os</code> are all modules. In its simplest form, a module is just another <code>.py</code> file that you import.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">my_funcs.py</span></div>
+    <pre><code class="language-python">def factorial(n):
+    x = 1
+    for i in range(1, n + 1):
+        x *= i
+    return x</code></pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">main.py</span></div>
+    <pre><code class="language-python">import my_funcs
+print(my_funcs.factorial(7))   # 5040 — must prefix with the module name
+
+# OR:
+from my_funcs import factorial
+print(factorial(7))   # 5040 — no prefix needed</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>Module names are case-sensitive</strong>, and Python looks for the file by its exact name plus <code>.py</code> — <code>import my_funcs</code> looks for <code>my_funcs.py</code> in the same directory. For consistency, it's simplest to keep module filenames all lowercase.
+  </div>
+  <div class="callout-warn">
+    <strong>Avoid <code>from module import *</code>.</strong> It's valid syntax, but importing everything from a module risks name collisions — if that module defines a function with the same name as one of yours (or as one from another module you've imported), one silently overwrites the other. Import only the specific names you need, or use the module-prefixed form.
+  </div>
+</section>
+
+<section class="section" id="packages">
+  <h2>🗂️ Packages: Directories of Modules</h2>
+  <p><span class="topic-num">9</span>A package is a directory containing modules (and possibly sub-packages). Historically an <code>__init__.py</code> file was required to mark a directory as a package; this is no longer strictly enforced in current Python, but any code inside <code>__init__.py</code> still runs automatically whenever the package is imported, which makes it a useful place for package-level setup.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">package_imports.py</span></div>
+    <pre><code class="language-python">import ascii_art.canvas
+ascii_art.canvas.draw_canvas()
+
+from ascii_art.figures import cow
+cow.draw()
+
+from ascii_art.figures.cow import draw
+draw()   # no prefix needed at all</code></pre>
+  </div>
+</section>
+
+<section class="section" id="hashing">
+  <div class="section-eyebrow">Bonus Background &middot; Not Tested</div>
+  <h2>🔐 A Quick Look at Hashing and HTTPS</h2>
+  <p>This section is background context on the <code>hashlib</code> module, not required material for the final. A hash function takes in data and produces a fixed-size number (a "hash") that changes dramatically if even a single bit of the input changes.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">hashlib_example.py</span></div>
+    <pre><code class="language-python">import hashlib
+
+text = "to be or not to be"
+digest = hashlib.md5(text.encode("utf-8")).hexdigest()
+print(digest)</code></pre>
+  </div>
+  <div class="callout-note">
+    <strong>Why this matters in the real world:</strong> hashing algorithms underpin how HTTPS certificates are trusted. A certificate authority hashes a website's certificate and encrypts that hash with its private key. Your browser, which ships with a built-in list of trusted certificate authorities' public keys, can decrypt that hash and independently compute its own hash of the certificate — if the two match, the certificate hasn't been tampered with. MD5 itself is no longer considered secure for this purpose; modern systems use algorithms like SHA-256.
+  </div>
+</section>
+
+<section class="section" id="main-guard">
+  <h2>🚪 The <code>if __name__ == "__main__":</code> Guard</h2>
+  <p><span class="topic-num">10</span>Every Python file has a built-in variable <code>__name__</code>. When you run a file directly, <code>__name__</code> is set to <code>"__main__"</code>. When that same file is instead <em>imported</em> as a module by another program, <code>__name__</code> is set to the module's filename instead.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">guarded_module.py</span></div>
+    <pre><code class="language-python">def factorial(n):
+    x = 1
+    for i in range(1, n + 1):
+        x *= i
+    return x
+
+if __name__ == "__main__":
+    n = int(input("Enter a number: "))
+    print(factorial(n))</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>Without this guard, importing a module can trigger code you didn't intend to run.</strong> If the input/print block above weren't wrapped in the <code>if __name__ == "__main__":</code> check, simply <em>importing</em> this file into another program would immediately prompt for input and print a result — before your own program even got a chance to run. This is exactly the pattern your DNA Sequence Search program should use: define your functions and classes first, then guard your "run the program" code at the bottom with this check.
+  </div>
+</section>
+
+<section class="section" id="venv">
+  <h2>🧪 Virtual Environments</h2>
+  <p><span class="topic-num">11</span>Not every module is built into Python — third-party packages (like <code>requests</code>) need to be installed with <code>pip</code>. Installing packages directly into your system Python can require elevated privileges and risks version conflicts between projects. A <strong>virtual environment</strong> gives each project its own isolated set of installed packages.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">venv_commands.sh</span></div>
+    <pre><code class="language-bash"># Create a virtual environment (commonly named .venv)
+python3 -m venv .venv
+
+# Activate it (macOS/Linux)
+source .venv/bin/activate
+
+# Now pip installs go into this isolated environment
+pip install requests
+
+# Leave the virtual environment
+deactivate</code></pre>
+  </div>
+  <div class="callout-info">
+    <strong>Naming convention:</strong> a virtual environment folder starting with a dot (like <code>.venv</code>) is hidden from a plain <code>ls</code> on macOS/Linux — don't assume it's missing just because you don't see it listed. Visual Studio Code automatically detects a virtual environment in your project folder and can use it to manage which packages are available to your code.
+  </div>
+  <p>You can browse the universe of installable third-party packages at <a href="https://pypi.org" target="_blank" rel="noopener">PyPI</a> (the Python Package Index) — there are hundreds of thousands of published projects there.</p>
+</section>
+
+<section class="section" id="dna-project">
+  <div class="section-eyebrow">Capstone Project</div>
+  <h2>🧬 DNA Sequence Search — Full Walkthrough</h2>
+  <p><span class="topic-num">12</span>You now have every tool needed for this 150-point capstone project. Two provided files contain known DNA sequences and unknown sequences to identify.</p>
+  <div class="activity">
+    <span class="activity-tag">Recommended Approach</span>
+    <ul>
+      <li>Read the known-sequences file into <strong>two parallel lists</strong>: one of species/organism names, one of their DNA sequences (split each line on the delimiter to separate name from sequence) — or use a dictionary instead, if you prefer</li>
+      <li>Read each unknown sequence as a string</li>
+      <li>For each unknown, loop through the known sequences and check whether the unknown string appears <em>within</em> a known sequence</li>
+      <li>If found, print which species it matched; if not found in any known sequence, print that it's unrecognized</li>
+      <li>Keep all data files in the same directory as your script so you don't have to deal with file paths</li>
+      <li>Use the <code>with</code> statement to open your files, as covered in the Files chapter</li>
+    </ul>
+  </div>
+  <div class="callout-warn">
+    <strong>Submission requirements — read carefully:</strong>
+    <ul>
+      <li>Submit your program as an actual <code>.py</code> file — <strong>not</strong> a Word document. It gets downloaded and run directly for grading.</li>
+      <li>Include a screenshot (JPEG or PNG) proving your program ran correctly.</li>
+      <li>Record yourself explaining your code line by line (Zoom or Teams instructions were provided) — this is roughly half of your grade on this assignment. Correct code alone isn't sufficient.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="looking-ahead">
+  <div class="section-eyebrow">Coming Up</div>
+  <h2>📝 Final Exam &amp; Closing Logistics</h2>
+  <ul>
+    <li>The final exam mirrors the midterm's format: 50 multiple-choice questions, LockDown Browser required. Roughly 10 questions will draw from midterm-era material; the rest covers Chapters 5–12.</li>
+    <li><strong>Test your LockDown Browser this week</strong>, before the exam opens, to catch any technical issues early.</li>
+    <li>The exam will open early (this Saturday) for anyone who wants extra time to work through it.</li>
+    <li>The final class session (July 28) will be a comprehensive review — expect it to run shorter than a normal lecture.</li>
+    <li>Final exam, DNA Sequence Search, and all remaining assignments are due <strong>July 30</strong>.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  COP 1047C &middot; Introduction to Python Programming &middot; Summer 2026 &middot; Miami Dade College West Campus<br>
+  Questions? <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+(function () {
+  const header = document.querySelector('header');
+  function setScrollOffset() {
+    document.documentElement.style.scrollPaddingTop = (header.offsetHeight + 12) + 'px';
+  }
+  setScrollOffset();
+  window.addEventListener('resize', setScrollOffset);
+})();
+</script>
+</body>
+</html>
