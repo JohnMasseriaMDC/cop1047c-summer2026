@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Final Exam Review — Chapters 1&#8211;12 | COP 1047C</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+/* ============================================================
+   ACCESSIBILITY / CONTRAST NOTES (WCAG 2.1 AA)
+   Background: #080c14 (near-black navy)
+   All body/small text colors verified >= 4.5:1 against #080c14
+   and against card background #0e1523:
+     --text      #e8eef6  -> ~16.5:1
+     --muted     #a9b4c4  -> ~ 8.9:1   (safe for small text)
+     --amber     #fbbf24  -> ~10.9:1
+     --teal      #5eead4  -> ~11.9:1
+     --green     #7ee787  -> ~11.6:1
+     --red       #ff8f8f  -> ~ 8.2:1
+     --code-com  #9aa7b8  -> ~ 7.6:1   (Prism comment override)
+   Nothing smaller than 18px uses a color below 4.5:1.
+   ============================================================ */
+:root{
+  --bg:#080c14;
+  --card:#0e1523;
+  --card2:#101a2c;
+  --border:#22304a;
+  --text:#e8eef6;
+  --muted:#a9b4c4;
+  --amber:#fbbf24;
+  --teal:#5eead4;
+  --green:#7ee787;
+  --red:#ff8f8f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Outfit',sans-serif;
+  overflow:hidden;
+}
+pre,code,kbd{
+  font-family:'JetBrains Mono',monospace !important;
+  font-variant-ligatures:none !important;
+  font-feature-settings:"liga" 0,"calt" 0 !important;
+}
+#progress{position:fixed;top:0;left:0;height:4px;background:var(--amber);width:0%;z-index:60;transition:width .25s ease}
+.slide-header{
+  position:fixed;top:4px;left:0;right:0;height:58px;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;background:rgba(8,12,20,.92);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--border);
+}
+.header-top{max-width:900px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
+.chapter-tag{
+  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+  color:var(--amber);letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid var(--border);border-radius:6px;padding:4px 10px;background:var(--card);
+}
+.slide-title-hdr{font-size:15px;font-weight:600;color:var(--muted)}
+.mdc-badge{font-size:13px;font-weight:700;color:var(--text);letter-spacing:.04em}
+.mdc-badge span{color:var(--amber)}
+.deck{height:100vh;padding:78px 28px 74px;display:flex;justify-content:center}
+.slide{display:none;width:100%;max-width:960px;overflow-y:auto;padding-bottom:12px}
+.slide.active{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h1{font-size:34px;font-weight:800;line-height:1.15;margin-bottom:14px}
+h2{font-size:24px;font-weight:700;margin:18px 0 10px}
+h1 .accent,h2 .accent{color:var(--amber)}
+p,li{font-size:18px;line-height:1.55;color:var(--text)}
+.lead{font-size:20px;color:var(--muted)}
+ul.points{margin:12px 0 12px 22px}
+ul.points li{margin-bottom:9px}
+ul.points li b{color:var(--amber);font-weight:600}
+.pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+  color:var(--teal);border:1px solid var(--border);border-radius:999px;padding:3px 12px;
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;background:var(--card)}
+.pill.breakout{color:var(--bg);background:var(--amber);border-color:var(--amber)}
+.pill.quiz{color:var(--bg);background:var(--teal);border-color:var(--teal)}
+.hero{display:flex;flex-direction:column;justify-content:center;min-height:70vh;text-align:left}
+.hero h1{font-size:52px;margin-bottom:16px}
+.hero .sub{font-size:22px;color:var(--muted);margin-bottom:26px}
+.hero .meta{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--muted)}
+.hero .meta b{color:var(--amber);font-weight:600}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin:12px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+.callout{border-left:4px solid var(--amber);background:var(--card);border-radius:0 10px 10px 0;padding:14px 16px;margin:14px 0}
+.callout.warn{border-left-color:var(--red)}
+.callout.info{border-left-color:var(--teal)}
+.callout b{color:var(--amber)}
+.callout.warn b{color:var(--red)}
+.callout.info b{color:var(--teal)}
+.callout p{font-size:17px}
+.code-wrap{background:#0b111d;border:1px solid var(--border);border-radius:10px;margin:12px 0;overflow:hidden}
+.code-head{display:flex;align-items:center;gap:7px;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--card2)}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot-r{background:#f87171}.dot-y{background:var(--amber)}.dot-g{background:#4ade80}
+.code-head .fname{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);margin-left:6px}
+pre[class*="language-"]{margin:0;background:transparent !important;padding:14px 16px;font-size:15.5px;line-height:1.55}
+code[class*="language-"]{font-size:15.5px;text-shadow:none}
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color:#9aa7b8 !important}
+.token.punctuation{color:#c3ccd9 !important}
+.out{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--green);background:#0b111d;
+  border:1px dashed var(--border);border-radius:10px;padding:12px 16px;margin:10px 0;white-space:pre-wrap}
+.table-wrap{overflow-x:auto;margin:12px 0;border:1px solid var(--border);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{background:var(--card2);color:var(--amber);text-align:left;padding:10px 14px;font-weight:600;border-bottom:1px solid var(--border)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
+tr:last-child td{border-bottom:none}
+td code,li code,p code{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:1px 7px;font-size:14.5px;color:var(--teal)}
+.q{margin:14px 0}
+.q .prompt{font-weight:600;margin-bottom:8px}
+.reveal-btn{font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--bg);
+  background:var(--teal);border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-top:6px}
+.reveal-btn:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.answer{display:none;margin-top:10px}
+.answer.shown{display:block}
+.activity{background:linear-gradient(135deg,#141c2e,#0e1523);border:1px solid var(--amber);border-radius:14px;padding:20px 22px;margin:14px 0}
+.activity .task-num{font-family:'JetBrains Mono',monospace;color:var(--amber);font-weight:600;font-size:14px}
+.timer{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:15px;font-weight:600}
+.reminder-list{list-style:none;margin:12px 0}
+.reminder-list li{padding:11px 14px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:9px;font-size:17px}
+.reminder-list li b{color:var(--amber)}
+.reminder-list li .due{font-family:'JetBrains Mono',monospace;color:var(--teal);font-size:14.5px}
+nav{position:fixed;bottom:0;left:0;right:0;height:58px;background:rgba(8,12,20,.94);
+  border-top:1px solid var(--border);z-index:50;display:flex;align-items:center}
+.nav-inner{max-width:900px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 20px}
+nav button{font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--text);
+  background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 16px;cursor:pointer}
+nav button:hover{border-color:var(--amber);color:var(--amber)}
+nav button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+#counter{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--muted);min-width:86px;text-align:center}
+.kbd-hint{position:fixed;bottom:66px;right:18px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);z-index:40}
+.part-divider{border:1px solid var(--amber);background:linear-gradient(135deg,#1a1508,#0e1523)}
+@media (max-width:760px){
+  .two-col{grid-template-columns:1fr}
+  .hero h1{font-size:36px}
+  h1{font-size:27px}
+  .slide-title-hdr{display:none}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="slide-header">
+  <div class="header-top">
+    <span class="chapter-tag" id="hdrTag">REVIEW</span>
+    <span class="slide-title-hdr" id="hdrTitle">Final Exam Review</span>
+    <span class="mdc-badge">MDC <span>COP 1047C</span></span>
+  </div>
+</header>
+
+<main class="deck" id="deck">
+
+<!-- ================= 1. HERO ================= -->
+<section class="slide" data-tag="Lecture 12" data-title="Final Exam Review">
+  <div class="hero">
+    <span class="pill">Tuesday, July 28, 2026 &nbsp;·&nbsp; 5:40 PM – 10:00 PM &nbsp;·&nbsp; MDC Live</span>
+    <h1>Final Exam <span class="accent">Review</span> — Chapters 1&#8211;12</h1>
+    <p class="sub">A comprehensive pass over the whole semester, weighted toward the material the final draws from most heavily: Chapters 6&#8211;12. Bring every question you have — this is the last lecture before the exam.</p>
+    <p class="meta"><b>Part 1 (~30 min):</b> Rapid recap — Chapters 1&#8211;5 fundamentals, with Breakout 1<br>
+    <b>Part 2 (~90 min):</b> Deep review — Chapters 6&#8211;12, with Breakouts 2&#8211;4<br>
+    <b>Part 3 (~15 min):</b> DNA Sequence Search reminder + final exam logistics<br><br>
+    John Masseria · jmasseri@mdc.edu · West Campus, School of Engineering &amp; Technology</p>
+  </div>
+</section>
+
+<!-- ================= 2. AGENDA ================= -->
+<section class="slide" data-tag="Agenda" data-title="Tonight's Plan">
+  <span class="pill">Learning Objectives</span>
+  <h1>By the end of tonight, you should feel <span class="accent">exam-ready</span></h1>
+  <ul class="points">
+    <li><b>Refresh the fundamentals</b> — variables, types, branching, loops — fast, since you've used these every week since May.</li>
+    <li><b>Go deep on functions, strings, and exceptions</b> — tuple returns, string methods/comparisons, and try/except patterns show up constantly on the final.</li>
+    <li><b>Nail lists &amp; dictionaries</b> — mutation vs. rebinding, aliasing, and the dict-to-sorted-list pattern.</li>
+    <li><b>Solidify classes, modules, and files</b> — constructors, attribute lookup, imports, and reading/writing text files.</li>
+    <li><b>Practice exam-style questions</b> in four breakouts, each mirroring the final's format.</li>
+    <li><b>Leave with zero unanswered questions</b> about the DNA project or final exam logistics.</li>
+  </ul>
+  <div class="callout info"><p><b>Flight plan:</b> Chapters 1&#8211;5 get a fast recap and one breakout — you know this material. Chapters 6&#8211;12 get the bulk of tonight's time, since that's where most of the final's questions live. We close with the DNA project and exam logistics.</p></div>
+</section>
+
+<!-- ================================================================
+     PART 1: CHAPTERS 1-5 RAPID RECAP
+     ================================================================ -->
+<section class="slide part-divider" data-tag="Part 1" data-title="Chapters 1-5 Recap">
+  <div class="hero">
+    <span class="pill">Part 1 &nbsp;·&nbsp; ~30 minutes</span>
+    <h1>Rapid recap: <span class="accent">Chapters 1&#8211;5</span></h1>
+    <p class="sub">Intro, Variables &amp; Expressions, Types, Branching, Loops. You've written hundreds of lines using this material — tonight's goal is just to knock the rust off before we move to the heavier material.</p>
+  </div>
+</section>
+
+<section class="slide" data-tag="Ch 1-2" data-title="Intro, Variables &amp; Expressions">
+  <span class="pill">Chapters 1&#8211;2</span>
+  <h1>Variables, <span class="accent">expressions</span>, and operators</h1>
+  <div class="two-col">
+    <div class="card">
+      <h2 style="margin-top:0">Core facts</h2>
+      <ul class="points" style="margin-bottom:0">
+        <li>A variable is a <b>name bound to a value</b>. Names must start with a letter or underscore; use descriptive, meaningful names.</li>
+        <li>Assignment (<code>=</code>) is <b>not</b> equality — it binds a name to a value, evaluated right-to-left.</li>
+        <li>Arithmetic operators: <code>+ - * / % **</code> (exponent) and <code>//</code> (integer division).</li>
+      </ul>
+    </div>
+    <div class="code-wrap"><pre><code class="language-python">price = 19.99
+qty = 3
+total = price * qty
+print(f"Total: {total:.2f}")
+
+print(17 // 5)   # 3  (integer division)
+print(17 % 5)    # 2  (remainder)
+print(2 ** 5)    # 32 (exponent)</code></pre></div>
+  </div>
+  <div class="callout"><p><b>Watch for:</b> operator precedence — <code>**</code> binds tighter than unary minus in some expressions, and <code>%</code>/<code>//</code> are common exam trick spots. When unsure, add parentheses.</p></div>
+</section>
+
+<section class="slide" data-tag="Ch 3" data-title="Types &amp; Casting">
+  <span class="pill">Chapter 3</span>
+  <h1><span class="accent">Types</span> and casting between them</h1>
+  <div class="table-wrap"><table>
+    <tr><th>Type</th><th>Example</th><th>Cast function</th></tr>
+    <tr><td><code>int</code></td><td><code>42</code></td><td><code>int(x)</code></td></tr>
+    <tr><td><code>float</code></td><td><code>3.14</code></td><td><code>float(x)</code></td></tr>
+    <tr><td><code>str</code></td><td><code>"hello"</code></td><td><code>str(x)</code></td></tr>
+    <tr><td><code>bool</code></td><td><code>True</code>/<code>False</code></td><td><code>bool(x)</code></td></tr>
+  </table></div>
+  <div class="code-wrap"><pre><code class="language-python">user_input = input("Enter your age: ")   # ALWAYS a string
+age = int(user_input)                    # must cast to compute with it
+print(age + 1)
+
+print(int("7") + int("3"))    # 10  - both cast, then added
+print("7" + "3")              # "73" - string concatenation!
+print(int(9.8))                # 9  - truncates, does NOT round</code></pre></div>
+  <div class="callout warn"><p><b>Classic exam trap:</b> <code>input()</code> always returns a <code>str</code>. Forgetting to cast before arithmetic is the single most common beginner bug — and a favorite "what is the output" question.</p></div>
+</section>
+
+<section class="slide" data-tag="Ch 4" data-title="Branching">
+  <span class="pill">Chapter 4</span>
+  <h1><span class="accent">Branching</span> — if, elif, else</h1>
+  <div class="two-col">
+    <div class="code-wrap"><pre><code class="language-python">def classify(score):
+    if score >= 90:
+        return "A"
+    elif score >= 80:
+        return "B"
+    elif score >= 70:
+        return "C"
+    else:
+        return "F"
+
+print(classify(85))   # B
+print(classify(65))   # F</code></pre></div>
+    <div>
+      <ul class="points">
+        <li>Conditions are checked <b>top to bottom</b>; the first true branch runs and the rest are skipped — order matters.</li>
+        <li>Comparison operators: <code>== != &lt; &gt; &lt;= &gt;=</code>. Logical operators: <code>and</code>, <code>or</code>, <code>not</code>.</li>
+        <li>Nested conditionals are legal but get hard to trace fast — the final loves a 3-4 level nested <code>if</code> to trace by hand.</li>
+        <li><b>Truthiness:</b> <code>0</code>, <code>""</code>, <code>[]</code>, <code>None</code>, and <code>False</code> are all falsy; everything else is truthy.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-tag="Ch 5" data-title="Loops">
+  <span class="pill">Chapter 5</span>
+  <h1><span class="accent">Loops</span> — while, for, and nesting</h1>
+  <div class="two-col">
+    <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">nested_loop.py</span></div>
+<pre><code class="language-python">for row in range(3):
+    for col in range(3):
+        print(f"({row},{col})", end=" ")
+    print()   # newline after each row</code></pre></div>
+    <div class="out">(0,0) (0,1) (0,2)
+(1,0) (1,1) (1,2)
+(2,0) (2,1) (2,2)</code></div>
+    <div>
+      <ul class="points">
+        <li><code>while</code> loops when you don't know the count ahead of time (sentinel-controlled); <code>for</code> loops when iterating a known range or sequence.</li>
+        <li><code>range(start, stop, step)</code> — <code>stop</code> is <b>exclusive</b>. <code>range(5)</code> gives 0,1,2,3,4 — a very common off-by-one trap.</li>
+        <li><b>Nested loops:</b> the inner loop completes fully for every single pass of the outer loop — trace row-by-row, not all-at-once.</li>
+        <li><code>break</code> exits the nearest enclosing loop entirely; <code>continue</code> skips to the next iteration.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout warn"><p><b>Trace nested loops on paper.</b> The final will show you a double loop and ask for exact output — write out each outer-loop pass as its own line before you trust your answer.</p></div>
+</section>
+
+<!-- ================= QUICK CHECK: CH 1-5 ================= -->
+<section class="slide" data-tag="Quick Check" data-title="Chapters 1-5">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Fundamentals — <span class="accent">predict first</span></h1>
+  <div class="q"><p class="prompt">1) What prints?</p>
+  <div class="code-wrap"><pre><code class="language-python">x = "4"
+y = 2
+print(x * y)</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">44</div><p class="lead" style="font-size:16px">String repetition, not multiplication — <code>"4" * 2</code> repeats the string.</p></div></div>
+  <div class="q"><p class="prompt">2) How many times does the loop body run?</p>
+  <div class="code-wrap"><pre><code class="language-python">for i in range(2, 10, 3):
+    print(i)</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">2
+5
+8</div><p class="lead" style="font-size:16px">3 times — start at 2, step by 3, stop before 10: 2, 5, 8.</p></div></div>
+  <div class="q"><p class="prompt">3) True or false: <code>if 0:</code> runs its body.</p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><b>False.</b> <code>0</code> is falsy — the body is skipped.</p></div></div>
+</section>
+
+<!-- ================= BREAKOUT 1 ================= -->
+<section class="slide" data-tag="Breakout 1" data-title="Warm-Up Trace">
+  <span class="pill breakout">Breakout 1 · <span class="timer">8 minutes</span> · Teams of 3&#8211;4</span>
+  <h1>🔥 Warm-up: <span class="accent">trace it, then fix it</span></h1>
+  <div class="activity">
+    <p class="task-num">SCENARIO</p>
+    <p>Practice tracing loops and branching by hand — the same skill the final expects for its "what is the output" questions.</p>
+    <p class="task-num" style="margin-top:10px">YOUR TASKS</p>
+    <ul class="points" style="margin-top:8px">
+      <li><b>1.</b> Without running it, trace this by hand and write down the exact output:
+        <div class="code-wrap" style="margin-top:8px"><pre><code class="language-python">total = 0
+for n in range(1, 6):
+    if n % 2 == 0:
+        total += n
+    else:
+        total -= n
+print(total)</code></pre></div>
+      </li>
+      <li><b>2.</b> Now run it in VS Code and check your trace. If you got it wrong, find the exact step where your mental trace diverged.</li>
+      <li><b>3.</b> This code has a bug — it's supposed to print each number 1&#8211;5 and then "Done!", but it never terminates. Find and fix it:
+        <div class="code-wrap" style="margin-top:8px"><pre><code class="language-python">n = 1
+while n &lt;= 5:
+    print(n)
+print("Done!")</code></pre></div>
+      </li>
+      <li><b>Stretch:</b> rewrite the fixed loop above as a <code>for</code> loop instead.</li>
+    </ul>
+  </div>
+  <div class="callout"><p><b>Deliverable:</b> post your task 1 answer and your fixed code (Gist link) in the Teams channel.</p></div>
+</section>
+
+<!-- ================================================================
+     PART 2: CHAPTERS 6-12 DEEP REVIEW
+     ================================================================ -->
+<section class="slide part-divider" data-tag="Part 2" data-title="Chapters 6-12 Deep Review">
+  <div class="hero">
+    <span class="pill">Part 2 &nbsp;·&nbsp; ~90 minutes &nbsp;·&nbsp; Most of tonight lives here</span>
+    <h1>Deep review: <span class="accent">Chapters 6&#8211;12</span></h1>
+    <p class="sub">Functions, Strings, Exceptions, Lists &amp; Dictionaries, Classes, Modules, Files. This is where most of the final's questions come from — slow down, ask questions, and use the breakouts to practice the exact skills you'll be tested on.</p>
+  </div>
+</section>
+
+<!-- ================= CHAPTER 6: FUNCTIONS ================= -->
+<section class="slide" data-tag="Ch 6" data-title="Function Basics">
+  <span class="pill">Chapter 6</span>
+  <h1><span class="accent">Functions</span> — parameters, return values, scope</h1>
+  <div class="two-col">
+    <div class="code-wrap"><pre><code class="language-python">def compute_area(length, width=1):
+    area = length * width
+    return area
+
+result = compute_area(5, 3)
+print(result)              # 15
+print(compute_area(4))     # 4  (width defaults to 1)</code></pre></div>
+    <div>
+      <ul class="points">
+        <li><b>Parameters</b> without defaults must come <b>first</b>, and are <b>required</b> in the order defined; defaulted parameters are optional.</li>
+        <li><code>return</code> hands a value back to the caller and immediately exits the function — code after it never runs.</li>
+        <li>A function with no <code>return</code> statement (or a bare <code>return</code>) returns <code>None</code>.</li>
+        <li><b>Scope:</b> variables created inside a function are <b>local</b> — they don't exist outside it, and they don't persist between calls.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-tag="Ch 6" data-title="Multiple Return Values">
+  <span class="pill">Chapter 6</span>
+  <h1>Returning <span class="accent">multiple values</span> — tuple unpacking</h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">order_totals.py</span></div>
+<pre><code class="language-python">def order_totals(prices):
+    subtotal = 0
+    cheapest = prices[0]
+    priciest = prices[0]
+    for price in prices:
+        subtotal += price
+        if price < cheapest:
+            cheapest = price
+        if price > priciest:
+            priciest = price
+    return subtotal, cheapest, priciest
+
+prices = [12, 45, 9, 30]
+low, high, total = order_totals(prices)   # WRONG ORDER on purpose - see below
+print(f"{low}, {high}, {total}")</code></pre></div>
+  <ul class="points">
+    <li><code>return a, b, c</code> packages the values into a <b>tuple</b> — <code>(subtotal, cheapest, priciest)</code>.</li>
+    <li>Unpacking on the left, <code>x, y, z = func()</code>, assigns <b>by position</b>, not by the original variable names inside the function. The example above deliberately unpacks into <code>low, high, total</code> in the <i>wrong</i> order — walk through it and figure out what actually prints.</li>
+    <li><b>This exact "which line replaces XXX" / "what does this unpacking print" pattern shows up on the final.</b> The fix is always the same: work out the returned tuple's values in order first, then match them to the assignment targets left-to-right.</li>
+  </ul>
+  <div class="callout warn"><p><b>Exam strategy:</b> write the returned tuple down as <code>(value1, value2, value3)</code> before looking at the unpacking line at all. Then match position by position — never by guessing which name "sounds right."</p></div>
+</section>
+
+<!-- ================= QUICK CHECK: CH 6 ================= -->
+<section class="slide" data-tag="Quick Check" data-title="Chapter 6">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Functions — <span class="accent">predict first</span></h1>
+  <div class="q"><p class="prompt">1) What prints?</p>
+  <div class="code-wrap"><pre><code class="language-python">def mystery(a, b=10):
+    return a + b
+
+print(mystery(5))
+print(mystery(5, 2))</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">15
+7</div></div></div>
+  <div class="q"><p class="prompt">2) Given <code>def get_pair(): return 3, 7</code>, what is <code>b</code> after <code>a, b = get_pair()</code>?</p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><b>7</b> — positional unpacking: <code>a</code> gets the first returned value, <code>b</code> gets the second.</p></div></div>
+</section>
+
+<!-- ================= CHAPTER 7: STRINGS ================= -->
+<section class="slide" data-tag="Ch 7" data-title="String Methods &amp; Slicing">
+  <span class="pill">Chapter 7</span>
+  <h1><span class="accent">Strings</span> — methods, slicing, immutability</h1>
+  <div class="two-col">
+    <div class="code-wrap"><pre><code class="language-python">s = "Miami Dade College"
+print(s.lower())          # miami dade college
+print(s.upper())          # MIAMI DADE COLLEGE
+print(s.split())          # ['Miami','Dade','College']
+print(s.replace("e", "3"))
+print(s[0:5])              # Miami
+print(s[-7:])              # College
+print(len(s))              # 19
+print("Dade" in s)         # True</code></pre></div>
+    <div>
+      <ul class="points">
+        <li>Strings are <b>immutable</b> — every method (<code>.lower()</code>, <code>.replace()</code>) returns a <b>new</b> string; the original is unchanged unless reassigned.</li>
+        <li><b>Slicing</b> <code>s[start:stop]</code> — <code>stop</code> is exclusive, negative indices count from the end.</li>
+        <li><code>in</code> tests substring membership and returns a <code>bool</code>.</li>
+        <li><code>+</code> concatenates; <code>*</code> repeats a string that many times.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-tag="Ch 7" data-title="String Comparison &amp; f-strings">
+  <span class="pill">Chapter 7</span>
+  <h1>String <span class="accent">comparison</span> and formatting</h1>
+  <div class="code-wrap"><pre><code class="language-python">word1 = "Apple"
+word2 = "apple"
+print(word1 == word2)        # False - case sensitive
+print(word1.lower() == word2.lower())   # True
+print("Banana" > "Apple")    # True - alphabetical, by character codes
+print("apple" > "Apple")     # True - lowercase letters sort AFTER uppercase
+
+name, score = "Sam", 92.5
+print(f"{name} scored {score:.1f}%")     # Sam scored 92.5%</code></pre></div>
+  <ul class="points">
+    <li>String comparison (<code>&lt; &gt; ==</code>) is <b>case-sensitive</b> and based on character codes — uppercase letters (A&#8211;Z) all sort <i>before</i> lowercase letters (a&#8211;z) in standard ASCII/Unicode ordering.</li>
+    <li>f-strings: <code>f"{expr}"</code> evaluates <code>expr</code> inline; format specs like <code>:.2f</code> (2 decimal places) and <code>:>10</code> (right-align width 10) are exam favorites.</li>
+  </ul>
+  <div class="callout warn"><p><b>Watch for:</b> "what is output" questions comparing strings with different cases, or comparing a string to itself after a <code>.lower()</code>/<code>.upper()</code> call on only one side.</p></div>
+</section>
+
+<!-- ================= QUICK CHECK: CH 7 ================= -->
+<section class="slide" data-tag="Quick Check" data-title="Chapter 7">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Strings — <span class="accent">predict first</span></h1>
+  <div class="q"><p class="prompt">1) What prints?</p>
+  <div class="code-wrap"><pre><code class="language-python">greeting = "Hello, World!"
+print(greeting[7:12])
+print("world" in greeting)</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">World
+False</div><p class="lead" style="font-size:16px">Slicing gives "World" (capital W); the membership test is case-sensitive, and lowercase "world" isn't in the string.</p></div></div>
+</section>
+
+<!-- ================= BREAKOUT 2 ================= -->
+<section class="slide" data-tag="Breakout 2" data-title="Functions &amp; Strings Practice">
+  <span class="pill breakout">Breakout 2 · <span class="timer">10 minutes</span> · Same teams</span>
+  <h1>📊 Functions &amp; strings — <span class="accent">exam-style practice</span></h1>
+  <div class="activity">
+    <p class="task-num">SCENARIO</p>
+    <p>These two tasks mirror exactly the style of question you'll see on the final — a multi-return function to trace, and a string-comparison prediction.</p>
+    <p class="task-num" style="margin-top:10px">YOUR TASKS</p>
+    <ul class="points" style="margin-top:8px">
+      <li><b>1.</b> Trace this function by hand first, then run it to check. Write down the returned tuple's three values <i>in the order returned</i> before looking at the print line:
+        <div class="code-wrap" style="margin-top:8px"><pre><code class="language-python">def temps_summary(readings):
+    total = 0
+    lowest = readings[0]
+    highest = readings[0]
+    for r in readings:
+        total += r
+        if r < lowest:
+            lowest = r
+        if r > highest:
+            highest = r
+    return total, lowest, highest
+
+readings = [70, 55, 88, 62]
+hi, total, low = temps_summary(readings)
+print(f"{low}, {hi}, {total}")</code></pre></div>
+      </li>
+      <li><b>2.</b> Predict, then run: <code>print("Zebra" &lt; "apple")</code> and <code>print("Zebra".lower() &lt; "apple")</code>. Explain in one sentence <i>why</i> the two answers differ.</li>
+      <li><b>3.</b> Write a function <code>name_stats(names)</code> that takes a list of strings and returns a tuple of <code>(count, shortest, longest)</code> — the number of names, and the shortest/longest name by length. Test it on <code>["Ana", "Christopher", "Mo"]</code>.</li>
+    </ul>
+  </div>
+  <div class="callout"><p><b>Deliverable:</b> your task 1 trace (written out) + a Gist link with tasks 2&#8211;3's code and output, in the Teams channel.</p></div>
+</section>
+
+<!-- ================= CHAPTER 8: EXCEPTIONS ================= -->
+<section class="slide" data-tag="Ch 8" data-title="Exception Handling">
+  <span class="pill">Chapter 8</span>
+  <h1><span class="accent">Exceptions</span> — try, except, else, finally</h1>
+  <div class="two-col">
+    <div class="code-wrap"><pre><code class="language-python">try:
+    num = int(input("Enter a number: "))
+    result = 100 / num
+except ValueError:
+    print("That wasn't a number.")
+except ZeroDivisionError:
+    print("Can't divide by zero.")
+else:
+    print(f"Result: {result}")
+finally:
+    print("Done trying.")</code></pre></div>
+    <div>
+      <ul class="points">
+        <li>Code in <code>try:</code> runs first; if an exception occurs, Python jumps to the <b>first matching</b> <code>except</code> block and skips the rest of the <code>try</code>.</li>
+        <li><code>else:</code> runs only if <b>no</b> exception occurred. <code>finally:</code> always runs, exception or not.</li>
+        <li>Multiple <code>except</code> blocks are checked <b>top to bottom</b> — order them most-specific first.</li>
+        <li>Common exception types: <code>ValueError</code> (bad conversion), <code>ZeroDivisionError</code>, <code>IndexError</code> (out-of-range), <code>KeyError</code> (missing dict key), <code>TypeError</code> (wrong type for an operation).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= QUICK CHECK: CH 8 ================= -->
+<section class="slide" data-tag="Quick Check" data-title="Chapter 8">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Exceptions — <span class="accent">predict first</span></h1>
+  <div class="q"><p class="prompt">1) What prints?</p>
+  <div class="code-wrap"><pre><code class="language-python">values = [10, 20, 30]
+try:
+    print(values[5])
+except IndexError:
+    print("Index out of range")
+finally:
+    print("Cleanup")</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">Index out of range
+Cleanup</div></div></div>
+  <div class="q"><p class="prompt">2) Which exception type fires here?</p>
+  <div class="code-wrap"><pre><code class="language-python">scores = {"math": 90, "science": 85}
+print(scores["history"])</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><b><code>KeyError</code></b> — <code>"history"</code> is not a key in the dictionary.</p></div></div>
+</section>
+
+<!-- ================= CHAPTER 9: LISTS & DICTIONARIES ================= -->
+<section class="slide" data-tag="Ch 9" data-title="Lists — Mutation vs. Rebinding">
+  <span class="pill">Chapter 9</span>
+  <h1><span class="accent">Lists</span> — mutation, rebinding, aliasing</h1>
+  <div class="two-col">
+    <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">alias_trap.py</span></div>
+<pre><code class="language-python">list_a = [1, 2, 3]
+list_b = list_a          # ALIAS - same list object!
+list_b.append(4)
+print(list_a)             # [1, 2, 3, 4] - changed too!
+
+list_c = list_a.copy()    # a NEW, separate list
+list_c.append(99)
+print(list_a)             # unaffected: [1, 2, 3, 4]</code></pre></div>
+    <div>
+      <ul class="points">
+        <li><code>list_b = list_a</code> does <b>not</b> copy the list — both names point at the <b>same</b> object. Mutating through either name affects both.</li>
+        <li><code>.append()</code>, <code>.remove()</code>, <code>.sort()</code>, and index assignment (<code>lst[0] = x</code>) all <b>mutate</b> the existing list in place.</li>
+        <li><code>list_a = list_a + [x]</code> (or <code>list_a.copy()</code>) creates a <b>new</b> list — the original, if aliased elsewhere, is untouched.</li>
+        <li>This is the exact same reference model that caused the shared-class-attribute bug in Chapter 10 — same concept, different chapter.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-tag="Ch 9" data-title="Dictionaries">
+  <span class="pill">Chapter 9</span>
+  <h1><span class="accent">Dictionaries</span> — keys, values, and the sorted-list pattern</h1>
+  <div class="code-wrap"><div class="code-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="fname">roster_scores.py</span></div>
+<pre><code class="language-python">scores = {}
+scores["Ana"] = 88
+scores["Ben"] = 95
+scores["Cid"] = 71
+
+print(scores.get("Ana"))          # 88
+print(scores.get("Drew", 0))      # 0  - default if key missing
+
+all_scores = list(scores.values())    # [88, 95, 71]
+sorted_scores = sorted(all_scores)    # [71, 88, 95]
+for s in sorted_scores:
+    print(s, end=" ")</code></pre></div>
+  <ul class="points">
+    <li><code>dict[key] = value</code> adds or updates; <code>.get(key, default)</code> looks up safely without raising <code>KeyError</code>.</li>
+    <li><code>.keys()</code>, <code>.values()</code>, <code>.items()</code> give view objects — wrap in <code>list()</code> to get an actual list you can sort or index.</li>
+    <li><b>This "convert dict values to a list, then sort it" pattern is a favorite final question</b> — trace it by writing out the unsorted list first, then the sorted result, before predicting the loop's output.</li>
+  </ul>
+</section>
+
+<!-- ================= QUICK CHECK: CH 9 ================= -->
+<section class="slide" data-tag="Quick Check" data-title="Chapter 9">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Lists &amp; dictionaries — <span class="accent">predict first</span></h1>
+  <div class="q"><p class="prompt">1) What prints?</p>
+  <div class="code-wrap"><pre><code class="language-python">inventory = {"pens": 12, "pencils": 30, "erasers": 5}
+counts = list(inventory.values())
+counts.sort()
+print(counts)</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">[5, 12, 30]</div></div></div>
+  <div class="q"><p class="prompt">2) After this code runs, what does <code>original</code> contain?</p>
+  <div class="code-wrap"><pre><code class="language-python">original = [5, 10, 15]
+copy = original
+copy.append(20)</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><div class="out">[5, 10, 15, 20]</div><p class="lead" style="font-size:16px">Alias, not a copy — both names point at the same list.</p></div></div>
+</section>
+
+<!-- ================= BREAKOUT 3 ================= -->
+<section class="slide" data-tag="Breakout 3" data-title="Exceptions &amp; Data Structures Practice">
+  <span class="pill breakout">Breakout 3 · <span class="timer">10 minutes</span> · Same teams</span>
+  <h1>🗂️ Exceptions, lists &amp; dicts — <span class="accent">exam-style practice</span></h1>
+  <div class="activity">
+    <p class="task-num">SCENARIO</p>
+    <p>Practice the exact skills the final tests: identifying which exception fires, and tracing the dict-to-sorted-list pattern.</p>
+    <p class="task-num" style="margin-top:10px">YOUR TASKS</p>
+    <ul class="points" style="margin-top:8px">
+      <li><b>1.</b> For each snippet, write down which exception type (if any) is raised, <i>before</i> running it:
+        <div class="code-wrap" style="margin-top:8px"><pre><code class="language-python"># snippet A
+nums = [1, 2, 3]
+print(nums[10])
+
+# snippet B
+print(int("twelve"))
+
+# snippet C
+data = {"a": 1, "b": 2}
+print(data["c"])
+
+# snippet D
+print("5" + 5)</code></pre></div>
+      </li>
+      <li><b>2.</b> Trace this by hand, writing the unsorted list, then the sorted list, then the final output:
+        <div class="code-wrap" style="margin-top:8px"><pre><code class="language-python">inventory_counts = {}
+inventory_counts["A"] = 40
+inventory_counts["B"] = 15
+inventory_counts["C"] = 62
+inventory_counts["D"] = 8
+
+counts_list = list(inventory_counts.values())
+sorted_counts = sorted(counts_list)
+for c in sorted_counts:
+    print(c, end=" ")</code></pre></div>
+      </li>
+      <li><b>3.</b> Wrap snippet B in a <code>try/except ValueError</code> that prints <code>"Please enter digits only."</code> instead of crashing.</li>
+    </ul>
+  </div>
+  <div class="callout"><p><b>Deliverable:</b> your task 1 answers (4 exception types/none) + task 2's trace + a Gist link for task 3, in the Teams channel.</p></div>
+</section>
+
+<!-- ================= CHAPTER 10: CLASSES ================= -->
+<section class="slide" data-tag="Ch 10" data-title="Classes — Core Concepts">
+  <span class="pill">Chapter 10</span>
+  <h1><span class="accent">Classes</span> — the core vocabulary</h1>
+  <div class="code-wrap"><pre><code class="language-python">class Book:
+    library_name = "MDC West Campus"     # class attribute - shared
+
+    def __init__(self, title, author, pages=0):
+        self.title = title                # instance attributes -
+        self.author = author               # unique to each object
+        self.pages = pages
+
+    def summary(self):
+        return f"{self.title} by {self.author} ({self.pages}p)"
+
+b1 = Book("Fluent Python", "Ramalho", 750)
+b2 = Book("Automate the Boring Stuff", "Sweigart")
+print(b1.summary())
+print(b2.pages)          # 0 - used the default</code></pre></div>
+  <ul class="points">
+    <li><code>__init__(self, ...)</code> runs automatically at instantiation — <code>self</code> is auto-bound to the new instance; never pass it yourself.</li>
+    <li><b>Required parameters first, in order; defaults after.</b> Missing the <code>self</code> parameter on any method is the #1 rookie bug: <code>"takes 0 positional arguments but 1 was given"</code>.</li>
+    <li><b>Class attributes</b> (defined in class scope, outside methods) are <b>shared by every instance</b>. <b>Instance attributes</b> (<code>self.x = ...</code>) belong to one object only.</li>
+  </ul>
+</section>
+
+<section class="slide" data-tag="Ch 10" data-title="Constructors &amp; Instantiation">
+  <span class="pill">Chapter 10</span>
+  <h1><span class="accent">Instantiation</span> — matching arguments to parameters</h1>
+  <div class="code-wrap"><pre><code class="language-python">class Reservation:
+    def __init__(self, guest, party_size=2, notes="none"):
+        self.guest = guest
+        self.party_size = party_size
+        self.notes = notes
+
+# Which of these correctly creates a reservation for "Nguyen",
+# party of 4, with no special notes?
+r1 = Reservation("Nguyen", 4)
+r2 = Reservation(4, "Nguyen")
+r3 = Reservation("Nguyen", notes=4)
+r4 = Reservation(party_size=4, guest="Nguyen")</code></pre></div>
+  <ul class="points">
+    <li><b>"Which statement correctly instantiates..." is a guaranteed final-exam question format.</b> The method: identify the constructor's parameter order and defaults, then check each candidate call against it <i>positionally</i> unless it uses keyword syntax (<code>name=value</code>).</li>
+    <li>Above: <code>r1</code> and <code>r4</code> are correct (positional and keyword respectively); <code>r2</code> swaps the types into the wrong slots; <code>r3</code> puts <code>4</code> into <code>notes</code>, not <code>party_size</code>.</li>
+  </ul>
+  <div class="callout warn"><p><b>Exam strategy:</b> write the constructor's signature down first — <code>__init__(self, guest, party_size=2, notes="none")</code> — then check each answer choice against it one parameter at a time. Don't just "feel out" which one looks right.</p></div>
+</section>
+
+<section class="slide" data-tag="Ch 10" data-title="Inheritance">
+  <span class="pill">Chapter 10</span>
+  <h1><span class="accent">Inheritance</span> — base and derived classes</h1>
+  <div class="code-wrap"><pre><code class="language-python">class Vehicle:
+    def __init__(self, make, model):
+        self.make = make
+        self.model = model
+    def display(self):
+        print(f"{self.make} {self.model}")
+
+class Car(Vehicle):                 # derived from Vehicle
+    def __init__(self, make, model, doors):
+        Vehicle.__init__(self, make, model)   # call base constructor
+        self.doors = doors
+
+my_car = Car("Toyota", "Camry", 4)
+my_car.display()          # inherited from Vehicle
+print(my_car.doors)       # 4</code></pre></div>
+  <ul class="points">
+    <li><code>class Car(Vehicle):</code> inherits every class attribute and method from <code>Vehicle</code> — no copy-pasting.</li>
+    <li>Instance attributes are <b>not</b> automatically inherited — the derived class's <code>__init__</code> must explicitly call <code>Vehicle.__init__(self, make, model)</code> to set them up.</li>
+  </ul>
+</section>
+
+<!-- ================= QUICK CHECK: CH 10 ================= -->
+<section class="slide" data-tag="Quick Check" data-title="Chapter 10">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Classes — <span class="accent">predict first</span></h1>
+  <div class="q"><p class="prompt">1) Class attribute or instance attribute — which is <code>rate</code>?</p>
+  <div class="code-wrap"><pre><code class="language-python">class Loan:
+    rate = 0.05
+    def __init__(self, amount):
+        self.amount = amount</code></pre></div>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><b>Class attribute</b> — defined in class scope, outside any method.</p></div></div>
+  <div class="q"><p class="prompt">2) Given <code>def __init__(self, name, age=18):</code>, which call is valid?</p>
+  <p style="margin-left:10px"><code>(a)</code> <code>Person(age=21, name="Kai")</code> &nbsp; <code>(b)</code> <code>Person()</code></p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><b>(a) only.</b> <code>name</code> has no default and is required — <code>Person()</code> with no arguments raises a <code>TypeError</code>.</p></div></div>
+</section>
+
+<!-- ================= CHAPTER 11: MODULES ================= -->
+<section class="slide" data-tag="Ch 11" data-title="Modules">
+  <span class="pill">Chapter 11 · Extra Credit</span>
+  <h1><span class="accent">Modules</span> — organizing code across files</h1>
+  <div class="two-col">
+    <div class="code-wrap"><pre><code class="language-python"># calc_tools.py
+def add(a, b):
+    return a + b
+def multiply(a, b):
+    return a * b
+
+# main.py
+import calc_tools
+print(calc_tools.add(2, 3))
+
+from calc_tools import multiply
+print(multiply(4, 5))     # no prefix needed</code></pre></div>
+    <div>
+      <ul class="points">
+        <li><code>import module_name</code> — access names with the <code>module_name.</code> prefix.</li>
+        <li><code>from module_name import name</code> — brings <code>name</code> directly into your namespace, no prefix.</li>
+        <li>A module is only executed <b>once</b> per program run, no matter how many times it's imported — Python caches it in <code>sys.modules</code>.</li>
+        <li><code>if __name__ == "__main__":</code> guards code so it runs only when the file is executed directly, not when imported.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CHAPTER 12: FILES ================= -->
+<section class="slide" data-tag="Ch 12" data-title="Reading Files">
+  <span class="pill">Chapter 12</span>
+  <h1><span class="accent">Reading</span> text files</h1>
+  <div class="code-wrap"><pre><code class="language-python">with open("roster.txt", "r") as infile:
+    for line in infile:
+        print(line.strip())      # .strip() removes the trailing newline
+
+with open("roster.txt", "r") as infile:
+    all_lines = infile.readlines()   # list of strings, one per line
+
+with open("roster.txt", "r") as infile:
+    contents = infile.read()          # one big string, whole file</code></pre></div>
+  <ul class="points">
+    <li><code>with open(...) as f:</code> is preferred — it <b>automatically closes</b> the file when the block ends, even if an error occurs.</li>
+    <li>Iterating a file object directly (<code>for line in infile:</code>) gives one line at a time, <b>including</b> the trailing <code>\n</code> — <code>.strip()</code> removes it.</li>
+    <li><code>.readlines()</code> returns a list of every line; <code>.read()</code> returns the entire file as one string.</li>
+  </ul>
+</section>
+
+<section class="slide" data-tag="Ch 12" data-title="Writing Files">
+  <span class="pill">Chapter 12</span>
+  <h1><span class="accent">Writing</span> text files</h1>
+  <div class="code-wrap"><pre><code class="language-python">with open("output.txt", "w") as outfile:
+    outfile.write("First line\n")
+    outfile.write("Second line\n")
+
+with open("output.txt", "a") as outfile:
+    outfile.write("Appended line\n")     # "a" adds to the end</code></pre></div>
+  <div class="table-wrap"><table>
+    <tr><th>Mode</th><th>Meaning</th></tr>
+    <tr><td><code>"r"</code></td><td>Read (default) — file must already exist</td></tr>
+    <tr><td><code>"w"</code></td><td>Write — creates the file, or <b>erases existing contents</b></td></tr>
+    <tr><td><code>"a"</code></td><td>Append — adds to the end without erasing</td></tr>
+  </table></div>
+  <div class="callout warn"><p><b>Classic exam trap:</b> opening a file in <code>"w"</code> mode when you meant <code>"a"</code> silently wipes out everything already in the file — no error, no warning.</p></div>
+</section>
+
+<!-- ================= QUICK CHECK: CH 11-12 ================= -->
+<section class="slide" data-tag="Quick Check" data-title="Chapters 11-12">
+  <span class="pill quiz">Quick Check</span>
+  <h1>Modules &amp; files — <span class="accent">predict first</span></h1>
+  <div class="q"><p class="prompt">1) True or false: importing the same module three times in one program executes its top-level code three times.</p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p><b>False.</b> Python caches loaded modules in <code>sys.modules</code> — subsequent imports reuse the cached module without re-executing it.</p></div></div>
+  <div class="q"><p class="prompt">2) What happens if <code>"data.txt"</code> already has content and you run <code>open("data.txt", "w")</code>?</p>
+  <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('shown')">Reveal</button>
+  <div class="answer"><p>The existing content is <b>erased</b> — <code>"w"</code> mode truncates the file immediately upon opening.</p></div></div>
+</section>
+
+<!-- ================= BREAKOUT 4 ================= -->
+<section class="slide" data-tag="Breakout 4" data-title="Classes &amp; Files Practice">
+  <span class="pill breakout">Breakout 4 · <span class="timer">12 minutes</span> · Same teams</span>
+  <h1>🎓 Classes &amp; files — <span class="accent">exam-style practice</span></h1>
+  <div class="activity">
+    <p class="task-num">SCENARIO</p>
+    <p>This breakout combines two of the final's most common formats: "which statement correctly instantiates" and a file read/write trace.</p>
+    <p class="task-num" style="margin-top:10px">YOUR TASKS</p>
+    <ul class="points" style="margin-top:8px">
+      <li><b>1.</b> Given this constructor, which of the four calls below correctly creates a course titled "Intro to Python", 3 credits, with instructor "Masseria"? Work out the signature first, then check each one:
+        <div class="code-wrap" style="margin-top:8px"><pre><code class="language-python">class Course:
+    def __init__(self, title, instructor, credits=3):
+        self.title = title
+        self.instructor = instructor
+        self.credits = credits</code></pre></div>
+        <p style="margin-left:4px">(a) <code>Course("Masseria", "Intro to Python")</code><br>
+        (b) <code>Course("Intro to Python", "Masseria")</code><br>
+        (c) <code>Course("Intro to Python", credits="Masseria")</code><br>
+        (d) <code>Course(instructor="Masseria", title="Intro to Python", credits=3)</code></p>
+      </li>
+      <li><b>2.</b> Write code that creates a file <code>students.txt</code> containing three names, one per line, using <code>"w"</code> mode. Then write a second block that opens it in <code>"r"</code> mode and prints each name in uppercase.</li>
+      <li><b>3. Predict, then run:</b> if you accidentally reopen <code>students.txt</code> in <code>"w"</code> mode and write just one new name, what does the file contain afterward? Confirm your prediction.</li>
+    </ul>
+  </div>
+  <div class="callout"><p><b>Deliverable:</b> your task 1 answer(s) with one-sentence justification + a Gist link for tasks 2&#8211;3, in the Teams channel.</p></div>
+</section>
+
+<!-- ================= SUMMARY ================= -->
+<section class="slide" data-tag="Summary" data-title="Chapters 1-12 Recap">
+  <span class="pill">Full Course · Recap</span>
+  <h1>The whole semester, <span class="accent">in one slide</span></h1>
+  <ul class="points">
+    <li><b>Ch 1&#8211;3</b> — variables, expressions, and types; casting between <code>str</code>/<code>int</code>/<code>float</code>.</li>
+    <li><b>Ch 4&#8211;5</b> — branching (order matters, top to bottom) and loops (trace nested loops row by row).</li>
+    <li><b>Ch 6</b> — functions, default parameters, and multiple return values via tuple unpacking (match by position).</li>
+    <li><b>Ch 7</b> — strings are immutable; comparisons are case-sensitive; f-strings for formatting.</li>
+    <li><b>Ch 8</b> — try/except/else/finally; know which exception type each failure raises.</li>
+    <li><b>Ch 9</b> — mutation vs. rebinding vs. aliasing; the dict-values-to-sorted-list pattern.</li>
+    <li><b>Ch 10</b> — classes, <code>self</code>, constructors (required-then-default order), class vs. instance attributes, inheritance.</li>
+    <li><b>Ch 11</b> — modules, import styles, the <code>sys.modules</code> cache, the <code>__name__</code> guard.</li>
+    <li><b>Ch 12</b> — reading/writing files with <code>with open(...)</code>; <code>"r"</code>/<code>"w"</code>/<code>"a"</code> modes.</li>
+  </ul>
+</section>
+
+<!-- ================= PART 3: DNA PROJECT REMINDER ================= -->
+<section class="slide" data-tag="Part 3" data-title="DNA Sequence Search">
+  <div class="hero">
+    <span class="pill breakout">Part 3 · Quick Reminder</span>
+    <h1>🧬 DNA Sequence Search — <span class="accent">quick reminder</span></h1>
+    <p class="sub">150 points, due the same day as the final. If you haven't started, tonight is the night.</p>
+    <ul class="points">
+      <li><b>Same day, same deadline:</b> both the project and the final are due Thursday, July 30 at 11:59 PM.</li>
+      <li><b>It's a synthesis project</b> — functions, file reading, and (if you use them) modules all show up in a clean submission.</li>
+      <li><b>Office hours are open this week</b> for project-specific questions — email me to schedule.</li>
+    </ul>
+    <p class="meta">Full walkthrough was covered in Lecture 11 — this is just the reminder, not a repeat.</p>
+  </div>
+</section>
+
+<!-- ================= REMINDERS / LOGISTICS ================= -->
+<section class="slide" data-tag="Reminders" data-title="Final Exam Logistics">
+  <span class="pill">Admin</span>
+  <h1>Final exam <span class="accent">logistics</span> &amp; reminders</h1>
+  <ul class="reminder-list">
+    <li>📝 <b>Final Exam and DNA Sequence Search project — BOTH due <span class="due" style="font-size:17px">Thursday 7/30, 11:59 PM</span>.</b> Same day. Plan for both now.</li>
+    <li>🔒 <b>Lockdown Browser with webcam proctoring is required</b> for the final. Test your setup <i>this week</i> — not at 11:00 PM on the 30th.</li>
+    <li>📅 <b>Last day of the semester is <span class="due">7/31</span>.</b> No extensions beyond the posted deadlines without a documented, pre-approved incomplete agreement.</li>
+    <li>⭐ <b>Chapter 11 (Modules) reading is extra credit</b> — optional, but easy points if you haven't done it yet.</li>
+    <li>📧 <b>Questions between now and the exam:</b> email jmasseri@mdc.edu — 48-hour response policy, may be longer on weekends, so don't wait until the last minute.</li>
+  </ul>
+  <div class="callout warn"><p><b>AI policy reminder</b> for both the DNA project and the final: AI tools may assist your understanding, but code entirely generated by AI is not permitted, and your usage must be cited and explained. Write code you understand — you may be asked to explain it.</p></div>
+</section>
+
+<!-- ================= CLOSING ================= -->
+<section class="slide" data-tag="Good Luck" data-title="You've Got This">
+  <div class="hero">
+    <span class="pill">See you at the finish line</span>
+    <h1>You've written a lot of <span class="accent">working code</span> this summer</h1>
+    <p class="sub">Twelve chapters, dozens of breakouts, a lot of tracebacks you fixed yourself. That's the class. Review your breakout code from tonight, retrace anything that felt shaky, and get some sleep before the exam.</p>
+    <p class="meta">Questions between now and July 30? Email <b>jmasseri@mdc.edu</b>. Good luck.</p>
+  </div>
+</section>
+
+</main>
+
+<nav>
+  <div class="nav-inner">
+    <button onclick="goto(0)" aria-label="First slide">⏮ First</button>
+    <button onclick="step(-1)" aria-label="Previous slide">◀ Prev</button>
+    <span id="counter">1 / 1</span>
+    <button onclick="step(1)" aria-label="Next slide">Next ▶</button>
+    <button onclick="goto(slides.length-1)" aria-label="Last slide">Last ⏭</button>
+  </div>
+</nav>
+<div class="kbd-hint">← → navigate</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+let cur = 0;
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active', i===cur));
+  document.getElementById('counter').textContent = (cur+1) + ' / ' + slides.length;
+  document.getElementById('hdrTag').textContent = slides[cur].dataset.tag || 'REVIEW';
+  document.getElementById('hdrTitle').textContent = slides[cur].dataset.title || '';
+  document.getElementById('progress').style.width = ((cur)/(slides.length-1)*100) + '%';
+  slides[cur].scrollTop = 0;
+}
+function step(d){ cur = Math.min(Math.max(cur+d,0), slides.length-1); render(); }
+function goto(i){ cur = i; render(); }
+document.addEventListener('keydown', e=>{
+  if(e.target.tagName==='BUTTON' && (e.key===' '||e.key==='Enter')) return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ') step(1);
+  else if(e.key==='ArrowLeft'||e.key==='PageUp') step(-1);
+  else if(e.key==='Home') goto(0);
+  else if(e.key==='End') goto(slides.length-1);
+});
+render();
+</script>
+</body>
+</html>
