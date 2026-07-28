@@ -110,6 +110,10 @@ th{background:var(--card2);color:var(--amber);text-align:left;padding:10px 14px;
 td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
 tr:last-child td{border-bottom:none}
 td code,li code,p code{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:1px 7px;font-size:14.5px;color:var(--teal)}
+/* Multi-line code blocks (pre > code) must never get the inline-snippet
+   pill styling above, even when the pre/code sits inside a <li>/<p>/<td> -
+   otherwise the border wraps each wrapped line individually. */
+pre code{background:transparent;border:none;padding:0;border-radius:0;color:inherit;font-size:inherit}
 .q{margin:14px 0}
 .q .prompt{font-weight:600;margin-bottom:8px}
 .reveal-btn{font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--bg);
@@ -133,7 +137,8 @@ nav button:hover{border-color:var(--amber);color:var(--amber)}
 nav button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 #counter{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--muted);min-width:86px;text-align:center}
 .kbd-hint{position:fixed;bottom:66px;right:18px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);z-index:40}
-.part-divider{border:1px solid var(--amber);background:linear-gradient(135deg,#1a1508,#0e1523)}
+.part-divider{border:1px solid var(--amber);border-radius:22px;background:linear-gradient(135deg,#1a1508,#0e1523)}
+.divider-card{display:inline-block;max-width:100%;border:1px solid var(--border);border-radius:14px;padding:26px 34px;background:rgba(255,255,255,.03)}
 @media (max-width:760px){
   .two-col{grid-template-columns:1fr}
   .hero h1{font-size:36px}
@@ -188,9 +193,11 @@ nav button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
      ================================================================ -->
 <section class="slide part-divider" data-tag="Part 1" data-title="Chapters 1-5 Recap">
   <div class="hero">
+    <div class="divider-card">
     <span class="pill">Part 1 &nbsp;·&nbsp; ~30 minutes</span>
     <h1>Rapid recap: <span class="accent">Chapters 1&#8211;5</span></h1>
     <p class="sub">Intro, Variables &amp; Expressions, Types, Branching, Loops. You've written hundreds of lines using this material — tonight's goal is just to knock the rust off before we move to the heavier material.</p>
+    </div>
   </div>
 </section>
 
@@ -313,7 +320,7 @@ print(x * y)</code></pre></div>
 
 <!-- ================= BREAKOUT 1 ================= -->
 <section class="slide" data-tag="Breakout 1" data-title="Warm-Up Trace">
-  <span class="pill breakout">Breakout 1 · <span class="timer">8 minutes</span> · Teams of 3&#8211;4</span>
+  <span class="pill breakout">Breakout 1 · <span class="timer">8 minutes</span></span>
   <h1>🔥 Warm-up: <span class="accent">trace it, then fix it</span></h1>
   <div class="activity">
     <p class="task-num">SCENARIO</p>
@@ -347,9 +354,11 @@ print("Done!")</code></pre></div>
      ================================================================ -->
 <section class="slide part-divider" data-tag="Part 2" data-title="Chapters 6-12 Deep Review">
   <div class="hero">
+    <div class="divider-card">
     <span class="pill">Part 2 &nbsp;·&nbsp; ~90 minutes &nbsp;·&nbsp; Most of tonight lives here</span>
     <h1>Deep review: <span class="accent">Chapters 6&#8211;12</span></h1>
     <p class="sub">Functions, Strings, Exceptions, Lists &amp; Dictionaries, Classes, Modules, Files. This is where most of the final's questions come from — slow down, ask questions, and use the breakouts to practice the exact skills you'll be tested on.</p>
+    </div>
   </div>
 </section>
 
@@ -480,7 +489,7 @@ False</div><p class="lead" style="font-size:16px">Slicing gives "World" (capital
 
 <!-- ================= BREAKOUT 2 ================= -->
 <section class="slide" data-tag="Breakout 2" data-title="Functions &amp; Strings Practice">
-  <span class="pill breakout">Breakout 2 · <span class="timer">10 minutes</span> · Same teams</span>
+  <span class="pill breakout">Breakout 2 · <span class="timer">10 minutes</span></span>
   <h1>📊 Functions &amp; strings — <span class="accent">exam-style practice</span></h1>
   <div class="activity">
     <p class="task-num">SCENARIO</p>
@@ -629,7 +638,7 @@ copy.append(20)</code></pre></div>
 
 <!-- ================= BREAKOUT 3 ================= -->
 <section class="slide" data-tag="Breakout 3" data-title="Exceptions &amp; Data Structures Practice">
-  <span class="pill breakout">Breakout 3 · <span class="timer">10 minutes</span> · Same teams</span>
+  <span class="pill breakout">Breakout 3 · <span class="timer">10 minutes</span></span>
   <h1>🗂️ Exceptions, lists &amp; dicts — <span class="accent">exam-style practice</span></h1>
   <div class="activity">
     <p class="task-num">SCENARIO</p>
@@ -838,7 +847,7 @@ with open("output.txt", "a") as outfile:
 
 <!-- ================= BREAKOUT 4 ================= -->
 <section class="slide" data-tag="Breakout 4" data-title="Classes &amp; Files Practice">
-  <span class="pill breakout">Breakout 4 · <span class="timer">12 minutes</span> · Same teams</span>
+  <span class="pill breakout">Breakout 4 · <span class="timer">12 minutes</span></span>
   <h1>🎓 Classes &amp; files — <span class="accent">exam-style practice</span></h1>
   <div class="activity">
     <p class="task-num">SCENARIO</p>
@@ -889,7 +898,7 @@ with open("output.txt", "a") as outfile:
     <ul class="points">
       <li><b>Same day, same deadline:</b> both the project and the final are due Thursday, July 30 at 11:59 PM.</li>
       <li><b>It's a synthesis project</b> — functions, file reading, and (if you use them) modules all show up in a clean submission.</li>
-      <li><b>Office hours are open this week</b> for project-specific questions — email me to schedule.</li>
+      <li><b>Virtual office hours: Wednesday at 6:00 PM</b> — join via <a href="https://teams.microsoft.com/meet/26004381380101?p=8hua6XQvav4DxuTFyh" target="_blank" rel="noopener" style="color:var(--teal)">this Teams link</a> for project-specific questions.</li>
     </ul>
     <p class="meta">Full walkthrough was covered in Lecture 11 — this is just the reminder, not a repeat.</p>
   </div>
