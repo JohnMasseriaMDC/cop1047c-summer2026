@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Final Exam Review — COP 1047C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c14; --surface:#0f1724; --surface2:#16202e; --border:#1e2d42; --border2:#253347;
+  --accent:#f59e0b; --accent-dk:#d97706; --text:#e2e8f0; --muted:#7d93af;
+  --green-bg:#071510; --green-bdr:#0d3322; --green-txt:#34d399;
+  --mono:'JetBrains Mono','Courier New',monospace; --sans:'Outfit',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;}
+pre, code, kbd{
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "calt" 0 !important;
+}
+header{position:sticky;top:0;z-index:100;background:rgba(8,12,20,0.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:16px 24px;}
+.header-inner{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;}
+.course-tag{display:inline-block;background:var(--accent);color:#1a1005;font-weight:700;font-size:0.72rem;letter-spacing:0.06em;padding:3px 10px;border-radius:20px;text-transform:uppercase;}
+h1{font-size:1.3rem;margin:6px 0 2px;font-weight:700;}
+.meta{color:var(--muted);font-size:0.85rem;text-align:right;}
+nav{max-width:860px;margin:10px auto 0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:0.85rem;}
+nav a{color:var(--muted);text-decoration:none;border-bottom:1px dotted transparent;}
+nav a:hover{color:var(--accent);border-bottom-color:var(--accent);}
+main{max-width:860px;margin:0 auto;padding:20px 24px 80px;}
+html{scroll-padding-top:150px;scroll-behavior:smooth;}
+.section{padding:38px 0;border-bottom:1px solid var(--border);}
+.section:last-of-type{border-bottom:none;}
+.section-eyebrow{font-family:var(--mono);color:var(--accent);font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+h2{font-size:1.5rem;margin:0 0 18px;}
+h3{font-size:1.1rem;color:var(--text);margin:26px 0 10px;}
+p{color:#c9d5e3;}
+.topic-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--surface2);color:var(--accent);border-radius:6px;font-family:var(--mono);font-size:0.75rem;margin-right:8px;}
+.callout-warn, .callout-info, .callout-note{border-radius:10px;padding:16px 18px;margin:18px 0;font-size:0.94rem;}
+.callout-warn{background:#1a0d0d;border:1px solid #4a1f1f;color:#fca5a5;}
+.callout-info{background:#0a1420;border:1px solid #1e3a5f;color:#93c5fd;}
+.callout-note{background:#1a1408;border:1px solid #4a3a1a;color:#fcd34d;}
+.callout-warn strong, .callout-info strong, .callout-note strong{color:#fff;}
+.code-wrap{background:var(--surface);border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin:16px 0;}
+.code-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface2);border-bottom:1px solid var(--border2);}
+.dot-r{width:10px;height:10px;border-radius:50%;background:#ef4444;}
+.dot-y{width:10px;height:10px;border-radius:50%;background:#f59e0b;}
+.dot-g{width:10px;height:10px;border-radius:50%;background:#22c55e;}
+.code-filename{color:var(--muted);font-family:var(--mono);font-size:0.78rem;margin-left:4px;}
+pre{margin:0;padding:16px;overflow-x:auto;background:transparent !important;}
+code{font-family:var(--mono);font-size:0.87rem;}
+.table-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:0.9rem;}
+th{background:var(--surface2);color:var(--accent);text-align:left;padding:10px 12px;border-bottom:2px solid var(--border2);}
+td{padding:9px 12px;border-bottom:1px solid var(--border);color:#c9d5e3;}
+.activity{background:var(--green-bg);border:1px solid var(--green-bdr);border-radius:10px;padding:18px 20px;margin:18px 0;}
+.activity-tag{display:inline-block;background:var(--green-bdr);color:var(--green-txt);font-family:var(--mono);font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
+.reminder-list{margin:16px 0;}
+.reminder-list div{border-left:3px solid var(--accent);background:var(--surface);padding:10px 14px;margin-bottom:8px;border-radius:0 8px 8px 0;color:#c9d5e3;font-size:0.92rem;}
+footer{max-width:860px;margin:0 auto;padding:30px 24px 60px;color:var(--muted);font-size:0.85rem;border-top:1px solid var(--border);}
+footer a{color:var(--accent);text-decoration:none;}
+ul{color:#c9d5e3;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <span class="course-tag">COP 1047C</span>
+      <h1>Final Exam Review — Chapters 1–12</h1>
+    </div>
+    <div class="meta">July 28, 2026 &middot; Last Class Session &middot; John Masseria</div>
+  </div>
+  <nav>
+    <a href="#objectives">Objectives</a>
+    <a href="#aliasing">Variables &amp; Aliasing</a>
+    <a href="#operators">Operators &amp; Types</a>
+    <a href="#truthiness">Truthiness &amp; None</a>
+    <a href="#loops">Loops</a>
+    <a href="#functions">Functions &amp; Tuples</a>
+    <a href="#strings">Strings</a>
+    <a href="#exceptions">Exceptions</a>
+    <a href="#lists-dicts">Lists &amp; Dictionaries</a>
+    <a href="#classes">Classes &amp; Inheritance</a>
+    <a href="#modules-files">Modules &amp; Files</a>
+    <a href="#dna-reminder">DNA Project Reminder</a>
+    <a href="#final-logistics">Final Exam Logistics</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="section" id="objectives">
+  <div class="section-eyebrow">Agenda</div>
+  <h2>🎯 Exam-Ready Checklist</h2>
+  <p>This was the last class session of the semester — a comprehensive review of Chapters 1–12 to prepare for the 50-question multiple-choice final (same format as the midterm, LockDown Browser required). By the end of tonight, you should feel comfortable with:</p>
+  <ul>
+    <li>Variables as references, and the list-aliasing/copying distinction</li>
+    <li>Operators, type casting, and operator overloading (<code>+</code> and <code>*</code> behaving differently for numbers vs. strings)</li>
+    <li>Truthiness, <code>None</code>, and how functions without an explicit return behave</li>
+    <li>Loops, <code>range()</code>, <code>break</code> vs. <code>continue</code></li>
+    <li>Functions, tuple return values, and tuple unpacking (including how to misorder it)</li>
+    <li>String methods, slicing, comparison, and formatted (f-string) output</li>
+    <li>Exception handling with <code>try</code>/<code>except</code>/<code>finally</code></li>
+    <li>List and dictionary operations, including the copy-vs-alias distinction one more time</li>
+    <li>Classes: attributes, constructors, <code>self</code>, and inheritance</li>
+    <li>Modules, packages, and reading/writing files</li>
+  </ul>
+  <div class="reminder-list">
+    <div>📌 The final exam is already open. It draws mostly from Chapters 6–12, with a handful of questions from Chapters 1–5.</div>
+    <div>📌 You may use one page of notes/cheat sheet on the final — same policy as the midterm.</div>
+    <div>📌 All assignments, the DNA Sequence Search project, and the final exam are due <strong>Thursday, July 30 at 11:59 PM</strong>.</div>
+    <div>📌 <strong>DNA Sequence Search bonus:</strong> submit today for +20 points, tomorrow for +10 points (on top of the 150-point assignment).</div>
+    <div>📌 <strong>Test your LockDown Browser before exam day</strong> — don't wait until you're ready to submit to discover a problem.</div>
+    <div>📌 Office hours tomorrow at 6 PM via the Teams link posted in the announcement and on the lecture slide.</div>
+  </div>
+</section>
+
+<section class="section" id="aliasing">
+  <div class="section-eyebrow">Chapters 1–2 Recap</div>
+  <h2>🔗 Variables Are References — The Copy vs. Alias Trap, One More Time</h2>
+  <p><span class="topic-num">1</span>A variable is a name bound to an object in memory, not a box holding a value directly. This matters most with mutable objects like lists:</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">alias_vs_copy.py</span></div>
+    <pre><code class="language-python">my_list = [1, 2, 3, 4, 5]
+
+my_list_save1 = my_list          # ALIAS — same list in memory
+my_list_save2 = my_list.copy()   # COPY — a new, independent list
+
+my_list_save1[2] = "2A"   # this ALSO changes my_list!
+my_list_save2[2] = "A"    # this only changes the copy</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>Two other equivalent ways to make a real copy of a list:</strong> <code>my_list[:]</code> (a full slice) and <code>list(my_list)</code> both create an independent copy, exactly like <code>.copy()</code>. All three are fair game for exam questions.
+  </div>
+</section>
+
+<section class="section" id="operators">
+  <h2>🧮 Operators, Casting &amp; Overloading</h2>
+  <p><span class="topic-num">2</span>The <strong>same operator can behave differently depending on the type of its operands</strong> — this is called operator overloading.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">overloading.py</span></div>
+    <pre><code class="language-python">print(7 + 3)        # 10 — numeric addition
+print("7" + "3")    # "73" — string concatenation
+print("ha" * 3)     # "hahaha" — string repetition, not multiplication</code></pre>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Operator</th><th>Behavior</th></tr>
+      <tr><td><code>%</code> (modulus)</td><td>Remainder after division — the classic even/odd test: <code>n % 2 == 0</code> means even</td></tr>
+      <tr><td><code>//</code> (floor division)</td><td>Divides and <strong>truncates</strong> the remainder — it does not round</td></tr>
+      <tr><td><code>**</code> (exponentiation)</td><td>Higher precedence than <code>*</code>, <code>/</code>, <code>+</code>, <code>-</code> — <code>2 ** 5</code> is 32</td></tr>
+    </table>
+  </div>
+  <div class="callout-warn">
+    <strong><code>int()</code> truncates, it never rounds.</strong> <code>int(9.9)</code> is <code>9</code>, not <code>10</code>. Remember also that <code>input()</code> and reading numbers out of a text file always return strings — you must explicitly cast with <code>int()</code> or <code>float()</code> before doing arithmetic.
+  </div>
+</section>
+
+<section class="section" id="truthiness">
+  <h2>✅❌ Truthiness and <code>None</code></h2>
+  <p><span class="topic-num">3</span>When an <code>if</code> condition isn't an explicit comparison, Python evaluates the expression's <strong>truthiness</strong>. These values are all "falsy":</p>
+  <ul>
+    <li>The number <code>0</code> (integer or float)</li>
+    <li>The empty string <code>""</code></li>
+    <li>The empty list <code>[]</code></li>
+    <li><code>None</code></li>
+    <li><code>False</code> itself</li>
+  </ul>
+  <div class="callout-info">
+    <strong>What causes a function to return <code>None</code>:</strong> a function with no <code>return</code> statement at all, or a "naked" <code>return</code> with no value, both implicitly return <code>None</code>. This is different from explicitly returning <code>0</code> — <code>0</code> is a real (falsy) value, while <code>None</code> means "nothing was returned." Trying to use a <code>None</code> value in arithmetic (e.g., dividing by it) raises a <code>TypeError</code>.
+  </div>
+</section>
+
+<section class="section" id="loops">
+  <h2>🔁 Loops, <code>range()</code>, <code>break</code> vs. <code>continue</code></h2>
+  <p><span class="topic-num">4</span><code>range(start, stop, step)</code> never includes the stop value. If the step's sign doesn't match the direction from start to stop (e.g., a positive step but a start greater than stop), the loop produces nothing at all — no error, just zero iterations.</p>
+  <div class="callout-note">
+    <strong><code>break</code> vs. <code>continue</code> in nested loops:</strong> <code>break</code> exits only the loop it's directly inside — an inner loop's <code>break</code> doesn't affect the outer loop. <code>continue</code> skips the rest of the current iteration and jumps back to the loop's condition check, without exiting the loop entirely.
+  </div>
+</section>
+
+<section class="section" id="functions">
+  <h2>🎁 Functions, Tuples &amp; Unpacking</h2>
+  <p><span class="topic-num">5</span>A function can return multiple values as a <strong>tuple</strong>. The receiving side "unpacks" that tuple into separate variables — and the order has to match exactly, or you'll silently get the wrong values assigned to the wrong names.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">unpacking_bug.py</span></div>
+    <pre><code class="language-python">def order_totals(prices):
+    subtotal = sum(prices)
+    cheapest = min(prices)
+    priciest = max(prices)
+    return subtotal, cheapest, priciest   # returned in THIS order
+
+# BUG: this assumes the wrong order
+low, high, total = order_totals([12, 45, 20])
+# low actually gets subtotal, high gets cheapest, total gets priciest — all wrong!
+
+# CORRECT — must match the return order exactly
+total, low, high = order_totals([12, 45, 20])</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>Tuples are immutable</strong> — once created, they can't be changed, unlike lists. This immutability is also part of why Python can apply certain performance optimizations to tuples that it can't apply to lists.
+  </div>
+</section>
+
+<section class="section" id="strings">
+  <h2>🔤 Strings: Methods, Slicing, Comparison, Formatting</h2>
+  <p><span class="topic-num">6</span>Strings behave like immutable sequences of characters — similar to a tuple of characters. Every string method returns a <strong>new</strong> string; it never modifies the original.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">string_review.py</span></div>
+    <pre><code class="language-python">s = "Miami Dade College"
+s_new = s.lower()      # s is unchanged; s_new is the new lowercase string
+
+fields = "John,Masseria\tMiami,Dade,College".split("\t")
+first_last = fields[0].split(",")   # chained: split the result of a split
+
+"date" in "candidate"   # True — checks if a substring appears anywhere</code></pre>
+  </div>
+  <div class="callout-warn">
+    <strong>String comparison is case-sensitive and character-code based.</strong> Uppercase letters have <em>lower</em> numeric values than lowercase letters, so <code>"Zebra" &lt; "apple"</code> is <code>True</code> (capital Z's code is less than lowercase a's) — but after converting both to the same case, ordinary alphabetical order applies. To compare strings while ignoring case, convert both sides with <code>.lower()</code> first.
+  </div>
+  <div class="callout-info">
+    <strong>F-string formatting recap:</strong> <code>f"{value:.1f}"</code> means one digit of precision after the decimal point; <code>{value:.0f}"</code> rounds to a whole number. Remember Python's f-string rounding uses banker's rounding (round-to-even) rather than the "round half up" rule — this won't be tested directly, but it explains why a value like <code>92.5</code> can round to <code>92</code> rather than <code>93</code>.
+  </div>
+</section>
+
+<section class="section" id="exceptions">
+  <h2>💥 Exceptions Recap</h2>
+  <p><span class="topic-num">7</span><code>try</code>/<code>except</code>/<code>finally</code> — code in the <code>finally</code> block always executes, whether or not an exception occurred. This includes exceptions raised inside a function called from within the <code>try</code> block, not just errors on the immediate line.</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Exception</th><th>Common Cause</th></tr>
+      <tr><td><code>IndexError</code></td><td>Accessing a list/string index that's out of range</td></tr>
+      <tr><td><code>KeyError</code></td><td>Accessing a dictionary key that doesn't exist</td></tr>
+      <tr><td><code>TypeError</code></td><td>An operation between incompatible types (e.g., comparing a string's length directly to a string instead of an integer)</td></tr>
+      <tr><td><code>ValueError</code></td><td>Converting an invalid value, e.g. <code>int("abc")</code></td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="section" id="lists-dicts">
+  <h2>📋 Lists &amp; Dictionaries Recap</h2>
+  <p><span class="topic-num">8</span>The <strong><code>sort()</code> vs. <code>sorted()</code></strong> distinction is worth locking in cold: <code>list.sort()</code> sorts in place and returns <code>None</code>; <code>sorted(list)</code> returns a brand-new sorted list and leaves the original untouched.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">dict_get.py</span></div>
+    <pre><code class="language-python">scores = {"math": 88, "science": 95}
+scores.get("history", 0)   # 0 — no KeyError, since "history" isn't a key
+scores["history"]          # KeyError! Direct access raises if the key is missing</code></pre>
+  </div>
+  <p><code>dictionary.get(key, default)</code> is the safe way to look up a key that might not exist — it returns your chosen default instead of raising <code>KeyError</code>.</p>
+</section>
+
+<section class="section" id="classes">
+  <h2>🏗️ Classes &amp; Inheritance Recap</h2>
+  <p><span class="topic-num">9</span>An attribute declared outside <code>__init__</code> (no <code>self.</code>) is a <strong>class attribute</strong>, shared across all instances. Attributes declared with <code>self.</code> inside <code>__init__</code> are <strong>instance attributes</strong>, unique to each object.</p>
+  <div class="code-wrap">
+    <div class="code-bar"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="code-filename">vehicle_inheritance.py</span></div>
+    <pre><code class="language-python">class Vehicle:
+    def __init__(self, make, model):
+        self.make = make
+        self.model = model
+
+    def display(self):
+        print(f"{self.make} {self.model}")
+
+class Car(Vehicle):
+    def __init__(self, make, model, doors):
+        Vehicle.__init__(self, make, model)   # calls the parent constructor
+        self.doors = doors
+
+my_car = Car("Toyota", "Camry", 4)
+my_car.display()      # "Toyota Camry" — display() only knows about Vehicle's fields
+print(my_car.doors)   # 4 — Car's own attribute</code></pre>
+  </div>
+  <div class="callout-info">
+    <strong>What <code>self</code> really is, under the hood:</strong> when Python calls <code>Car("Toyota", "Camry", 4)</code>, it allocates memory for the new object first, then passes a pointer to that memory as the first argument (<code>self</code>) to <code>__init__</code> automatically. Every instance method needs <code>self</code> as its first parameter for exactly this reason — it's how the method knows which specific object's data to operate on.
+  </div>
+  <div class="callout-warn">
+    <strong>A required parameter with no default value must always be supplied.</strong> If a constructor's first parameter has no default, calling it without a value for that parameter raises an error — a common source of "which of these constructor calls is valid?" exam-style questions.
+  </div>
+</section>
+
+<section class="section" id="modules-files">
+  <h2>📦 Modules &amp; Files Recap</h2>
+  <p><span class="topic-num">10</span>A module is only executed once, no matter how many times (or how many different places) it's imported — Python tracks loaded modules in <code>sys.modules</code> and skips re-running an already-imported module.</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>File mode</th><th>Behavior</th></tr>
+      <tr><td><code>'r'</code></td><td>Read — safe; nothing is erased</td></tr>
+      <tr><td><code>'w'</code></td><td>Write — <strong>erases the existing file</strong> the moment it's opened, even before you write anything</td></tr>
+      <tr><td><code>'a'</code></td><td>Append — adds to the end of the existing file, without erasing it</td></tr>
+    </table>
+  </div>
+  <div class="callout-warn">
+    <strong>Closing files matters more for writes than reads.</strong> Closing (or using <code>with</code>, which closes automatically) is essential for files you've written to — otherwise your last updates might never actually reach disk. It's good practice for reads too, but the consequences of forgetting are more serious on the write side.
+  </div>
+  <p>For reading very large files, prefer processing one line at a time (<code>for line in file:</code>) over <code>read()</code> or <code>readlines()</code>, which load the entire file into memory at once — exactly the technique your DNA Sequence Search program should use.</p>
+</section>
+
+<section class="section" id="dna-reminder">
+  <div class="section-eyebrow">Capstone Reminder</div>
+  <h2>🧬 DNA Sequence Search — Submission Incentive</h2>
+  <div class="activity">
+    <span class="activity-tag">Bonus Points</span>
+    <ul>
+      <li>Submit today: <strong>+20 points</strong></li>
+      <li>Submit tomorrow: <strong>+10 points</strong></li>
+      <li>Base assignment: 150 points — a perfect, on-time submission today can reach 170 points total</li>
+    </ul>
+  </div>
+  <p>Submit your program as an actual <code>.py</code> file (not a Word document), include a screenshot proving it ran correctly, and record yourself explaining your code line by line, per the instructions posted earlier.</p>
+</section>
+
+<section class="section" id="final-logistics">
+  <div class="section-eyebrow">Last Reminders</div>
+  <h2>📝 Final Exam Logistics</h2>
+  <ul>
+    <li>50 multiple-choice questions, same LockDown Browser requirement as the midterm.</li>
+    <li>One page of notes/cheat sheet allowed — same policy as the midterm.</li>
+    <li>Mostly Chapters 6–12, with a handful of questions from Chapters 1–5.</li>
+    <li>Everything — final exam, DNA Sequence Search, and any remaining assignments — is due <strong>Thursday, July 30 at 11:59 PM</strong>.</li>
+    <li>Office hours tomorrow at 6 PM via Teams; the link is in the class announcement and on the lecture slide.</li>
+  </ul>
+  <p>Thank you for a great semester — review the lecture notes and slides posted for every session on the course homepage, and don't hesitate to reach out with any last questions before the final. Good luck!</p>
+</section>
+
+</main>
+
+<footer>
+  COP 1047C &middot; Introduction to Python Programming &middot; Summer 2026 &middot; Miami Dade College West Campus<br>
+  Questions? <a href="mailto:jmasseri@mdc.edu">jmasseri@mdc.edu</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script>
+(function () {
+  const header = document.querySelector('header');
+  function setScrollOffset() {
+    document.documentElement.style.scrollPaddingTop = (header.offsetHeight + 12) + 'px';
+  }
+  setScrollOffset();
+  window.addEventListener('resize', setScrollOffset);
+})();
+</script>
+</body>
+</html>
